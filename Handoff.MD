@@ -24,6 +24,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 - No official artwork of any kind, and no character drawings. Everything visual is original SVG/CSS.
 - When wiki data is ambiguous, add it to the review list instead of guessing.
 - Commit at logical checkpoints. Keep the README current.
+- Push to GitHub at the end of every phase (owner's standing instruction, 2026-10-01).
 
 ## Where things diverge from PLAN.md
 
