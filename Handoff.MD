@@ -8,7 +8,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 
 | | |
 |---|---|
-| Phase | **Phase 2 (data pipeline) is done** and waiting for the owner to review the arc list and TODO-REVIEW items (PLAN.md requires this stop). Next is Phase 3 (island placement). |
+| Phase | **Phase 2 (data pipeline) is done** and reviewed. Phase 3 (island placement) is in progress. |
 | Data | Through episode 1180, as of 2026-10-01: 51 arcs, 42 places, 10 crew. `npm run data:fetch -- --refresh && npm run data:build` updates it. |
 | Repo | https://github.com/Zander-M75/grand-line-atlas (public), branch `main` |
 | Hosting | None yet (Vercel in Phase 9). |
@@ -19,7 +19,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 2. [README.md](README.md): how to run things, stack, credits.
 3. [src/config.ts](src/config.ts): map dimensions, zone layout, timings. The layout comment there explains how the flat map represents the world.
 4. [scripts/sources/journey.ts](scripts/sources/journey.ts): the curated arc list (which arcs, which places each visits) that the data build checks against the wiki. The header comments in `scripts/build-arcs.ts` and `scripts/build-locations.ts` record what the wiki pages actually look like.
-5. [data/generated/review/](data/generated/review/): the open TODO-REVIEW items from the last data build.
+5. [data/generated/review/](data/generated/review/): the TODO-REVIEW items from the last data build (the Phase 2 ones are accepted; see Owner decisions).
 
 ## Working rules (from PLAN.md §9)
 
@@ -62,14 +62,11 @@ Settled:
 - **World layout** (2026-10-01): the default in `config.ts` stands. Red Line down the middle at Mary Geoise, Reverse Mountain on the far-west edge, Paradise west, New World east, East Blue north-west.
 - **Wiki User-Agent contact** (2026-10-01): use the repo URL, not an email.
 
-Open, from the Phase 2 review list ([data/generated/review/arcs.json](data/generated/review/arcs.json)):
+- **Phase 2 review list** (2026-10-01): all items accepted as built. Buggy Side Story and Koby and Helmeppo stay anime-only and off-route; Uta's Past and Elbaph are in; sagas follow the wiki; the eight arcs with no named island have no map stop; the place choices and crew join episodes (Nami 44, Jinbe 980) stand.
 
-1. **Buggy Side Story and Koby and Helmeppo** adapt manga cover stories, so the wiki doesn't call them filler. They're kept as anime-only, off-route arcs, per PLAN.md's [F] marks.
-2. **Two arcs added** that PLAN.md doesn't list: Uta's Past (anime-only flashback inside Wano) and Elbaph (after Egghead, airing now).
-3. **Sagas** follow the wiki's episode guide, which differs from PLAN.md for 15 arcs (mostly filler the plan left between sagas, plus the Four Emperors split).
-4. **Eight arcs with no map stop**, because the wiki names no island: Koby and Helmeppo, Post-Arabasta, Ocean's Dream, Foxy's Return, Z's Ambition, Caesar Retrieval, Marine Rookie, Cidre Guild.
-5. **Place choices:** Romance Dawn starts at Foosha Village; Syrup Village includes the Island of Rare Animals; Reverse Mountain includes Twin Cape; Post-War is shown at Rusukaina; Thriller Bark is placed in Paradise (the wiki files it under West Blue, where the ship came from).
-6. **Crew joins with two readings:** Nami officially joins in episode 44 (she navigates from episode 9), Jinbe in episode 980 (invited in 568, pledged in Whole Cake Island).
+Open: none.
+
+The files in [data/generated/review/](data/generated/review/) are now the accepted baseline. Every data build rewrites them, so a new or changed item in their git diff is what needs the owner's eye.
 
 ## Open items
 
