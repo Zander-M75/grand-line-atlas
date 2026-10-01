@@ -1,0 +1,10 @@
+dist
+coverage
+node_modules
+package-lock.json
+# Cached wiki responses and script output: formatted by the scripts themselves.
+data/raw
+data/generated
+# Owner-authored docs: leave their formatting alone.
+*.md
+*.MD

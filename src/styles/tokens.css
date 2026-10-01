@@ -1,0 +1,89 @@
+/*
+ * Design tokens. Every color, font, size, space, and radius in the app comes from here.
+ *
+ * Direction: an old sea chart. The map is deep water; UI sits on chart paper, lettered
+ * in dark iron-gall ink. Brass marks the voyage itself (route, ship, focus), oxide red is
+ * reserved for the Red Line, and a muted violet marks anime-only (filler) content.
+ *
+ * Contrast (WCAG): every text pair below is AA (4.5:1+) on its intended surface; the
+ * route colors clear 3:1 against both open ocean and the Grand Line band.
+ */
+
+:root {
+  /* Sea */
+  --color-ocean-deep: #0e2633;
+  --color-ocean: #163b4d;
+  --color-grand-line: #275665;
+  --color-calm-belt: #5d7a7f;
+
+  /* Land and rock */
+  --color-land: #d8c79d;
+  --color-land-edge: #7d6a48;
+  --color-red-line: #8b3324;
+  --color-red-line-shadow: #5a1d15;
+
+  /* The voyage */
+  --color-route: #d8a94e;
+  --color-route-current: #f2cf7a;
+
+  /* Paper and ink (panels, cards, sheets) */
+  --color-paper: #e8dcbc;
+  --color-paper-shade: #d9caa3;
+  --color-rule: #a8956c;
+  --color-ink: #231c14;
+  --color-ink-muted: #5c4e3b;
+
+  /* Text set directly on the sea */
+  --color-on-ocean: #ece2c6;
+  --color-on-ocean-muted: #a7b8bb;
+
+  /* States */
+  --color-filler: #5a4a7c; /* anime-only, on paper */
+  --color-filler-on-ocean: #b7aad6; /* anime-only, on the sea */
+  --color-locked: #5f584e; /* past the viewer's spoiler limit */
+  --color-focus: #f2cf7a; /* focus ring on the sea */
+  --color-focus-on-paper: #231c14; /* focus ring on paper surfaces */
+
+  --shadow-panel: 0 12px 32px rgb(4 14 20 / 0.45), 0 2px 6px rgb(4 14 20 / 0.3);
+
+  /* Type: IM Fell English for titles and map lettering (18px and up only, it's a
+     rough historical cut); Atkinson Hyperlegible Next for all UI and reading text. */
+  --font-display:
+    'IM Fell English', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  --font-body:
+    'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible Next', system-ui, -apple-system,
+    'Segoe UI', sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.625rem;
+  --text-2xl: 2.25rem;
+  --text-display: clamp(2.5rem, 7vw, 4.75rem);
+
+  --leading-tight: 1.05;
+  --leading-body: 1.5;
+
+  /* Charts letter sea names wide-spaced; region and saga labels use this. */
+  --tracking-chart: 0.16em;
+
+  /* Spacing scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Radii: paper has soft corners, never pill-round panels */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-round: 999px;
+
+  /* Layout */
+  --timeline-height: 7.5rem; /* space reserved under the map for the timeline */
+}
