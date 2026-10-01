@@ -53,7 +53,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 
 Smaller choices:
 
-- **Coordinates:** map pixels use the SVG's own space (origin top-left, y down). `toLatLng` (Phase 1) will flip y for Leaflet. Every number in `config.ts` is in this space.
+- **Coordinates:** map pixels use the SVG's own space (origin top-left, y down). `toLatLng` in `src/map/coords.ts` flips y for Leaflet. Every number in `config.ts` is in this space.
 - **TypeScript 6.0:** typescript-eslint supports TS < 6.1, so don't bump TS past 6.0 until it catches up.
 - **Shared files:** `src/config.ts` and `src/types.ts` are imported by Node (vite.config.ts and the data scripts), so their imports use explicit `.ts` extensions and they can't touch browser or Vite-only APIs.
 - **Fonts:** IM Fell English (titles, map lettering) and Atkinson Hyperlegible Next (UI and reading text), self-hosted through Fontsource.
