@@ -69,13 +69,28 @@ export const BANDS = {
   },
 } as const;
 
+/**
+ * Zoom levels follow Leaflet's CRS.Simple: at zoom 0 one map pixel is one screen pixel,
+ * and each step doubles or halves that. The farthest-out zoom isn't fixed: it's whatever
+ * fits the whole map in the viewport, recomputed when the window resizes.
+ */
+export const ZOOM = {
+  max: 1,
+  /** Zoom levels snap to multiples of this (fractional zoom lets the map fit any screen). */
+  snap: 0.25,
+  /** How far one press of +/- or one wheel notch zooms. */
+  step: 0.5,
+  /** How far past the map's edge the view may pan, as a fraction of the map's size. */
+  panPadding: 0.1,
+} as const;
+
 export type Quadrant = 'nw' | 'ne' | 'sw' | 'se';
 type Blue = Extract<Region, `${string}-blue`>;
 
 /**
  * Which quadrant each Blue occupies (north/south of the Calm Belts, west/east of the Red Line).
  * East Blue sits north-west so the journey starts near Reverse Mountain and reads left to right.
- * Opposite Blues sit diagonally from each other. Placement is the owner's call.
+ * Opposite Blues sit diagonally from each other.
  */
 export const BLUE_QUADRANTS: Record<Blue, Quadrant> = {
   'east-blue': 'nw',

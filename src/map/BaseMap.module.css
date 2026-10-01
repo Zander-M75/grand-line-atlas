@@ -1,0 +1,112 @@
+/* Sizes are in map pixels: the SVG's viewBox scales them with the map. Hairlines
+   use non-scaling strokes so they stay one screen pixel at every zoom. */
+
+.graticule {
+  fill: none;
+  stroke: var(--color-on-ocean);
+  stroke-opacity: 0.08;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.calmBelt {
+  fill: var(--color-calm-belt);
+  fill-opacity: 0.3;
+}
+
+.calmBeltEdge {
+  fill: none;
+  stroke: var(--color-on-ocean);
+  stroke-opacity: 0.14;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.hachures {
+  fill: none;
+  stroke: var(--color-red-line-shadow);
+  stroke-opacity: 0.85;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+
+/* Compass rose */
+
+.compass {
+  opacity: 0.4;
+}
+
+.compassRing {
+  fill: none;
+  stroke: var(--color-on-ocean);
+  stroke-width: 2;
+}
+
+.compassLit {
+  fill: var(--color-on-ocean);
+}
+
+.compassShaded {
+  fill: var(--color-ocean-deep);
+  stroke: var(--color-on-ocean);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.compassNorth {
+  font-family: var(--font-display);
+  font-size: 44px;
+  fill: var(--color-on-ocean);
+}
+
+/* Region labels: italic and spaced out, the way charts letter bodies of water.
+   Title case, not capitals: IM Fell's italic capital U reads as a V. */
+
+.label {
+  font-family: var(--font-display);
+  font-style: italic;
+  fill: var(--color-on-ocean);
+}
+
+.blueLabel {
+  font-size: 80px;
+  letter-spacing: 0.12em;
+  fill-opacity: 0.45;
+}
+
+.grandLineLabel {
+  font-size: 60px;
+  letter-spacing: 0.45em;
+  fill-opacity: 0.32;
+}
+
+.calmBeltLabel {
+  font-size: 30px;
+  letter-spacing: 0.3em;
+  fill-opacity: 0.55;
+}
+
+/* Land features are lettered upright, in spaced capitals. */
+.redLineLabel {
+  font-style: normal;
+  text-transform: uppercase;
+  font-size: 34px;
+  letter-spacing: 0.45em;
+  fill: var(--color-paper);
+  fill-opacity: 0.75;
+}
+
+/* Chart border */
+
+.neatlineBars {
+  fill: var(--color-paper);
+  fill-opacity: 0.5;
+}
+
+.neatlineRule {
+  fill: none;
+  stroke: var(--color-paper);
+  stroke-opacity: 0.6;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
