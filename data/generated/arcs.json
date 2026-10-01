@@ -1,0 +1,764 @@
+[
+  {
+    "id": "romance-dawn",
+    "name": "Romance Dawn Arc",
+    "saga": "East Blue Saga",
+    "order": 1,
+    "episodes": [
+      1,
+      3
+    ],
+    "filler": false,
+    "locationIds": [
+      "foosha-village",
+      "shells-town"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "orange-town",
+    "name": "Orange Town Arc",
+    "saga": "East Blue Saga",
+    "order": 2,
+    "episodes": [
+      4,
+      8
+    ],
+    "filler": false,
+    "locationIds": [
+      "orange-town"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "syrup-village",
+    "name": "Syrup Village Arc",
+    "saga": "East Blue Saga",
+    "order": 3,
+    "episodes": [
+      9,
+      18
+    ],
+    "filler": false,
+    "locationIds": [
+      "syrup-village",
+      "island-of-rare-animals"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "baratie",
+    "name": "Baratie Arc",
+    "saga": "East Blue Saga",
+    "order": 4,
+    "episodes": [
+      19,
+      30
+    ],
+    "filler": false,
+    "locationIds": [
+      "baratie"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "arlong-park",
+    "name": "Arlong Park Arc",
+    "saga": "East Blue Saga",
+    "order": 5,
+    "episodes": [
+      31,
+      45
+    ],
+    "filler": false,
+    "locationIds": [
+      "arlong-park"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "buggy-side-story",
+    "name": "Buggy Side Story Arc",
+    "saga": "East Blue Saga",
+    "order": 6,
+    "episodes": [
+      46,
+      47
+    ],
+    "filler": true,
+    "offRoute": true,
+    "locationIds": [
+      "orange-town"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "loguetown",
+    "name": "Loguetown Arc",
+    "saga": "East Blue Saga",
+    "order": 7,
+    "episodes": [
+      48,
+      53
+    ],
+    "filler": false,
+    "locationIds": [
+      "loguetown"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "warship-island",
+    "name": "Warship Island Arc",
+    "saga": "East Blue Saga",
+    "order": 8,
+    "episodes": [
+      54,
+      61
+    ],
+    "filler": true,
+    "locationIds": [
+      "warship-island"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "reverse-mountain",
+    "name": "Reverse Mountain Arc",
+    "saga": "Arabasta Saga",
+    "order": 9,
+    "episodes": [
+      62,
+      63
+    ],
+    "filler": false,
+    "locationIds": [
+      "reverse-mountain",
+      "twin-cape"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "whisky-peak",
+    "name": "Whisky Peak Arc",
+    "saga": "Arabasta Saga",
+    "order": 10,
+    "episodes": [
+      64,
+      67
+    ],
+    "filler": false,
+    "locationIds": [
+      "whisky-peak"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "koby-and-helmeppo",
+    "name": "Koby and Helmeppo Arc",
+    "saga": "Arabasta Saga",
+    "order": 11,
+    "episodes": [
+      68,
+      69
+    ],
+    "filler": true,
+    "offRoute": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "little-garden",
+    "name": "Little Garden Arc",
+    "saga": "Arabasta Saga",
+    "order": 12,
+    "episodes": [
+      70,
+      77
+    ],
+    "filler": false,
+    "locationIds": [
+      "little-garden"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "drum-island",
+    "name": "Drum Island Arc",
+    "saga": "Arabasta Saga",
+    "order": 13,
+    "episodes": [
+      78,
+      91
+    ],
+    "filler": false,
+    "locationIds": [
+      "drum-island"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "arabasta",
+    "name": "Arabasta Arc",
+    "saga": "Arabasta Saga",
+    "order": 14,
+    "episodes": [
+      92,
+      130
+    ],
+    "filler": false,
+    "locationIds": [
+      "arabasta"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "post-arabasta",
+    "name": "Post-Arabasta Arc",
+    "saga": "Arabasta Saga",
+    "order": 15,
+    "episodes": [
+      131,
+      135
+    ],
+    "filler": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "goat-island",
+    "name": "Goat Island Arc",
+    "saga": "Sky Island Saga",
+    "order": 16,
+    "episodes": [
+      136,
+      138
+    ],
+    "filler": true,
+    "locationIds": [
+      "goat-island"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "ruluka-island",
+    "name": "Ruluka Island Arc",
+    "saga": "Sky Island Saga",
+    "order": 17,
+    "episodes": [
+      139,
+      143
+    ],
+    "filler": true,
+    "locationIds": [
+      "ruluka-island"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "jaya",
+    "name": "Jaya Arc",
+    "saga": "Sky Island Saga",
+    "order": 18,
+    "episodes": [
+      144,
+      152
+    ],
+    "filler": false,
+    "locationIds": [
+      "jaya"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "skypiea",
+    "name": "Skypiea Arc",
+    "saga": "Sky Island Saga",
+    "order": 19,
+    "episodes": [
+      153,
+      195
+    ],
+    "filler": false,
+    "locationIds": [
+      "skypiea"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "g-8",
+    "name": "G-8 Arc",
+    "saga": "Sky Island Saga",
+    "order": 20,
+    "episodes": [
+      196,
+      206
+    ],
+    "filler": true,
+    "locationIds": [
+      "navarone"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "long-ring-long-land",
+    "name": "Long Ring Long Land Arc",
+    "saga": "Water 7 Saga",
+    "order": 21,
+    "episodes": [
+      207,
+      228
+    ],
+    "filler": false,
+    "locationIds": [
+      "long-ring-long-land"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "oceans-dream",
+    "name": "Ocean's Dream Arc",
+    "saga": "Water 7 Saga",
+    "order": 22,
+    "episodes": [
+      220,
+      224
+    ],
+    "filler": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "foxys-return",
+    "name": "Foxy's Return Arc",
+    "saga": "Water 7 Saga",
+    "order": 23,
+    "episodes": [
+      225,
+      226
+    ],
+    "filler": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "water-7",
+    "name": "Water 7 Arc",
+    "saga": "Water 7 Saga",
+    "order": 24,
+    "episodes": [
+      229,
+      263
+    ],
+    "filler": false,
+    "locationIds": [
+      "water-7"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "enies-lobby",
+    "name": "Enies Lobby Arc",
+    "saga": "Water 7 Saga",
+    "order": 25,
+    "episodes": [
+      264,
+      312
+    ],
+    "filler": false,
+    "locationIds": [
+      "enies-lobby"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "post-enies-lobby",
+    "name": "Post-Enies Lobby Arc",
+    "saga": "Water 7 Saga",
+    "order": 26,
+    "episodes": [
+      313,
+      325
+    ],
+    "filler": false,
+    "locationIds": [
+      "water-7"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "ice-hunter",
+    "name": "Ice Hunter Arc",
+    "saga": "Thriller Bark Saga",
+    "order": 27,
+    "episodes": [
+      326,
+      336
+    ],
+    "filler": true,
+    "locationIds": [
+      "lovely-land"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "thriller-bark",
+    "name": "Thriller Bark Arc",
+    "saga": "Thriller Bark Saga",
+    "order": 28,
+    "episodes": [
+      337,
+      381
+    ],
+    "filler": false,
+    "locationIds": [
+      "thriller-bark"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "spa-island",
+    "name": "Spa Island Arc",
+    "saga": "Thriller Bark Saga",
+    "order": 29,
+    "episodes": [
+      382,
+      384
+    ],
+    "filler": true,
+    "locationIds": [
+      "spa-island"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "sabaody-archipelago",
+    "name": "Sabaody Archipelago Arc",
+    "saga": "Summit War Saga",
+    "order": 30,
+    "episodes": [
+      385,
+      407
+    ],
+    "filler": false,
+    "locationIds": [
+      "sabaody-archipelago"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "amazon-lily",
+    "name": "Amazon Lily Arc",
+    "saga": "Summit War Saga",
+    "order": 31,
+    "episodes": [
+      408,
+      421
+    ],
+    "filler": false,
+    "offRoute": true,
+    "locationIds": [
+      "amazon-lily"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "impel-down",
+    "name": "Impel Down Arc",
+    "saga": "Summit War Saga",
+    "order": 32,
+    "episodes": [
+      422,
+      456
+    ],
+    "filler": false,
+    "offRoute": true,
+    "locationIds": [
+      "impel-down"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "little-east-blue",
+    "name": "Little East Blue Arc",
+    "saga": "Summit War Saga",
+    "order": 33,
+    "episodes": [
+      426,
+      429
+    ],
+    "filler": true,
+    "offRoute": true,
+    "locationIds": [
+      "little-east-blue"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "marineford",
+    "name": "Marineford Arc",
+    "saga": "Summit War Saga",
+    "order": 34,
+    "episodes": [
+      457,
+      489
+    ],
+    "filler": false,
+    "offRoute": true,
+    "locationIds": [
+      "marineford"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "post-war",
+    "name": "Post-War Arc",
+    "saga": "Summit War Saga",
+    "order": 35,
+    "episodes": [
+      490,
+      516
+    ],
+    "filler": false,
+    "offRoute": true,
+    "locationIds": [
+      "rusukaina"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "return-to-sabaody",
+    "name": "Return to Sabaody Arc",
+    "saga": "Fish-Man Island Saga",
+    "order": 36,
+    "episodes": [
+      517,
+      522
+    ],
+    "filler": false,
+    "locationIds": [
+      "sabaody-archipelago"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "fish-man-island",
+    "name": "Fish-Man Island Arc",
+    "saga": "Fish-Man Island Saga",
+    "order": 37,
+    "episodes": [
+      523,
+      574
+    ],
+    "filler": false,
+    "locationIds": [
+      "fish-man-island"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "zs-ambition",
+    "name": "Z's Ambition Arc",
+    "saga": "Dressrosa Saga",
+    "order": 38,
+    "episodes": [
+      575,
+      578
+    ],
+    "filler": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "punk-hazard",
+    "name": "Punk Hazard Arc",
+    "saga": "Dressrosa Saga",
+    "order": 39,
+    "episodes": [
+      579,
+      625
+    ],
+    "filler": false,
+    "locationIds": [
+      "punk-hazard"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "caesar-retrieval",
+    "name": "Caesar Retrieval Arc",
+    "saga": "Dressrosa Saga",
+    "order": 40,
+    "episodes": [
+      626,
+      628
+    ],
+    "filler": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "dressrosa",
+    "name": "Dressrosa Arc",
+    "saga": "Dressrosa Saga",
+    "order": 41,
+    "episodes": [
+      629,
+      746
+    ],
+    "filler": false,
+    "locationIds": [
+      "dressrosa"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "silver-mine",
+    "name": "Silver Mine Arc",
+    "saga": "Whole Cake Island Saga",
+    "order": 42,
+    "episodes": [
+      747,
+      750
+    ],
+    "filler": true,
+    "locationIds": [
+      "silver-mine"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "zou",
+    "name": "Zou Arc",
+    "saga": "Whole Cake Island Saga",
+    "order": 43,
+    "episodes": [
+      751,
+      779
+    ],
+    "filler": false,
+    "locationIds": [
+      "zou"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "marine-rookie",
+    "name": "Marine Rookie Arc",
+    "saga": "Whole Cake Island Saga",
+    "order": 44,
+    "episodes": [
+      780,
+      782
+    ],
+    "filler": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "whole-cake-island",
+    "name": "Whole Cake Island Arc",
+    "saga": "Whole Cake Island Saga",
+    "order": 45,
+    "episodes": [
+      783,
+      877
+    ],
+    "filler": false,
+    "locationIds": [
+      "whole-cake-island"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "levely",
+    "name": "Levely Arc",
+    "saga": "Whole Cake Island Saga",
+    "order": 46,
+    "episodes": [
+      878,
+      889
+    ],
+    "filler": false,
+    "offRoute": true,
+    "locationIds": [
+      "mary-geoise"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "wano-country",
+    "name": "Wano Country Arc",
+    "saga": "Wano Country Saga",
+    "order": 47,
+    "episodes": [
+      890,
+      1085
+    ],
+    "filler": false,
+    "locationIds": [
+      "wano-country"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "cidre-guild",
+    "name": "Cidre Guild Arc",
+    "saga": "Wano Country Saga",
+    "order": 48,
+    "episodes": [
+      895,
+      896
+    ],
+    "filler": true,
+    "locationIds": [],
+    "summary": ""
+  },
+  {
+    "id": "utas-past",
+    "name": "Uta's Past Arc",
+    "saga": "Wano Country Saga",
+    "order": 49,
+    "episodes": [
+      1029,
+      1030
+    ],
+    "filler": true,
+    "offRoute": true,
+    "locationIds": [
+      "foosha-village"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "egghead",
+    "name": "Egghead Arc",
+    "saga": "Final Saga",
+    "order": 50,
+    "episodes": [
+      1086,
+      1155
+    ],
+    "filler": false,
+    "locationIds": [
+      "egghead"
+    ],
+    "summary": ""
+  },
+  {
+    "id": "elbaph",
+    "name": "Elbaph Arc",
+    "saga": "Final Saga",
+    "order": 51,
+    "episodes": [
+      1156,
+      1180
+    ],
+    "filler": false,
+    "locationIds": [
+      "elbaph"
+    ],
+    "summary": "",
+    "ongoing": true
+  }
+]

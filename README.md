@@ -2,7 +2,7 @@
 
 An interactive, animated map of the One Piece world that follows the Straw Hat Pirates' voyage through the anime, arc by arc. A timeline steps through every anime arc in episode order (anime-only arcs included and marked). As it moves, the route draws itself across the sea, the ship sails to the next island, and panels show the arc, the island, and who's aboard. A spoiler gate lets viewers set the episode they're on, so nothing past it is shown.
 
-> **Status:** early development. The base map is in (Phase 1); story data comes next. See [PLAN.md](PLAN.md) for the full roadmap.
+> **Status:** early development. The base map (Phase 1) and the story data pipeline (Phase 2) are in; island placement comes next. See [PLAN.md](PLAN.md) for the full roadmap.
 
 ## Running it
 
@@ -17,13 +17,13 @@ npm run typecheck  # TypeScript, app and Node configs
 npm run build      # type-check, then production build
 ```
 
-Data scripts (built in Phase 2; they exit with "not implemented" until then):
+Data scripts:
 
 ```sh
-npm run data:fetch     # pull wiki text into data/raw (cached, throttled)
+npm run data:fetch     # pull wiki text into data/raw (cached, throttled; -- --refresh to re-fetch)
 npm run data:build     # parse it into data/generated/*.json
-npm run data:layout    # assign starting island positions (Phase 3)
-npm run data:validate  # schema and integrity checks
+npm run data:validate  # schema, integrity, and episode checks; exits non-zero on errors
+npm run data:layout    # assign starting island positions (Phase 3; not built yet)
 ```
 
 ## Tech stack
@@ -40,6 +40,8 @@ npm run data:validate  # schema and integrity checks
 | Fonts              | Fontsource (self-hosted)             | No third-party font requests; both faces are OFL-licensed                                    |
 | Tests              | Vitest + React Testing Library       | Shares Vite's config and module resolution                                                   |
 | Lint/format        | ESLint (typescript-eslint) + Prettier |                                                                                              |
+| Wikitext parsing   | wtf_wikipedia (scripts only)         | Parses the wiki's templates, including nested ones, so scripts don't hand-roll regexes       |
+| Data validation    | zod (scripts only)                   | Schemas checked against `src/types.ts` at compile time with `satisfies`                      |
 
 ## Project layout
 
@@ -47,7 +49,6 @@ npm run data:validate  # schema and integrity checks
 src/        the app (map/, ui/, store/, hooks/, animation/, styles/, config.ts, types.ts)
 scripts/    Node data pipeline, run with tsx, never shipped to the client
 data/       raw/ (cached wiki responses, gitignored), generated/ (committed), overrides/
-public/map/ the original base map SVG
 tests/      Vitest unit and component tests
 ```
 
@@ -63,9 +64,26 @@ The world is an original chart, not a real-world map, so Leaflet runs in `CRS.Si
 
 In development, clicking the map logs its pixel coordinates to the console, for placing islands by hand.
 
+## The data
+
+Story data comes from the One Piece Fandom wiki, following the **anime**: arc order, arc boundaries, and spoiler limits all use anime episode numbers, and anime-only (filler) arcs are included and marked.
+
+```
+wiki API ──fetch-wiki──▶ data/raw/ (cached) ──build-arcs / build-locations / build-crew──▶ data/generated/*.json ──validate-data
+                                                  ▲
+                              scripts/sources/ (curated: which arcs, which places, crew joins)
+```
+
+- **Fetching is polite.** One request per second, an identifying User-Agent, retries with backoff, and every response cached to disk, so re-running costs nothing. Text only; no images are ever requested.
+- **Curated input is separate from facts.** [scripts/sources/journey.ts](scripts/sources/journey.ts) says which arcs to show and which places each visits; [scripts/sources/crew.ts](scripts/sources/crew.ts) holds each Straw Hat's join episode, with the wiki text that backs it. Everything the wiki can answer (episode ranges, sagas, anime-only status, order, regions) is pulled from it, and the build checks the curated files against it.
+- **The wiki's episode guide is the main source.** Its saga pages list every arc in airing order with each episode's air date, so the build knows which arcs interleave (Little East Blue airs inside Impel Down) and which episode aired last. Each arc's episode category is used as a cross-check.
+- **Judgment calls aren't silent.** Anything ambiguous goes on a TODO-REVIEW list, printed by the build and saved to [data/generated/review/](data/generated/review/).
+
+The data currently runs through episode 1180 (as of 2026-10-01): 51 arcs, 42 places, and the ten Straw Hats.
+
 ## Credits and licenses
 
-- Story data will come from the [One Piece Fandom wiki](https://onepiece.fandom.com/), used under [CC-BY-SA](https://creativecommons.org/licenses/by-sa/3.0/). Arc and island summaries are written originally for this project.
+- Story data comes from the [One Piece Fandom wiki](https://onepiece.fandom.com/), used under [CC-BY-SA](https://creativecommons.org/licenses/by-sa/3.0/). Arc and island summaries are written originally for this project.
 - Fonts: [IM Fell English](https://fonts.google.com/specimen/IM+Fell+English) (Igino Marini) and [Atkinson Hyperlegible Next](https://www.brailleinstitute.org/freefont/) (Braille Institute), both under the SIL Open Font License.
 - All map art is original, hand-coded SVG. Island positions are approximate; the series' own geography isn't consistent.
 

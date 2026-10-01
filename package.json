@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "data:fetch": "tsx scripts/fetch-wiki.ts",
-    "data:build": "tsx scripts/build-arcs.ts && tsx scripts/build-locations.ts",
+    "data:build": "tsx scripts/build-arcs.ts && tsx scripts/build-locations.ts && tsx scripts/build-crew.ts",
     "data:layout": "tsx scripts/auto-layout.ts",
     "data:validate": "tsx scripts/validate-data.ts"
   },
@@ -51,6 +51,8 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.71.0",
     "vite": "^8.3.0",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.3",
+    "wtf_wikipedia": "^10.4.2",
+    "zod": "^4.6.5"
   }
 }

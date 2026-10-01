@@ -1,0 +1,72 @@
+[
+  {
+    "id": "luffy",
+    "name": "Monkey D. Luffy",
+    "role": "Captain",
+    "joinedArcId": "romance-dawn",
+    "joinedEpisode": 1
+  },
+  {
+    "id": "zoro",
+    "name": "Roronoa Zoro",
+    "role": "Swordsman",
+    "joinedArcId": "romance-dawn",
+    "joinedEpisode": 3
+  },
+  {
+    "id": "nami",
+    "name": "Nami",
+    "role": "Navigator",
+    "joinedArcId": "arlong-park",
+    "joinedEpisode": 44
+  },
+  {
+    "id": "usopp",
+    "name": "Usopp",
+    "role": "Sniper",
+    "joinedArcId": "syrup-village",
+    "joinedEpisode": 17
+  },
+  {
+    "id": "sanji",
+    "name": "Sanji",
+    "role": "Cook",
+    "joinedArcId": "baratie",
+    "joinedEpisode": 30
+  },
+  {
+    "id": "chopper",
+    "name": "Tony Tony Chopper",
+    "role": "Doctor",
+    "joinedArcId": "drum-island",
+    "joinedEpisode": 91
+  },
+  {
+    "id": "robin",
+    "name": "Nico Robin",
+    "role": "Archaeologist",
+    "joinedArcId": "arabasta",
+    "joinedEpisode": 130
+  },
+  {
+    "id": "franky",
+    "name": "Franky",
+    "role": "Shipwright",
+    "joinedArcId": "post-enies-lobby",
+    "joinedEpisode": 322
+  },
+  {
+    "id": "brook",
+    "name": "Brook",
+    "role": "Musician",
+    "joinedArcId": "thriller-bark",
+    "joinedEpisode": 381
+  },
+  {
+    "id": "jinbe",
+    "name": "Jinbe",
+    "role": "Helmsman",
+    "joinedArcId": "wano-country",
+    "joinedEpisode": 980
+  }
+]
