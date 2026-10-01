@@ -86,6 +86,14 @@ export const ZOOM = {
   labels: -0.5,
 } as const;
 
+/** How the camera frames the current arc. */
+export const CAMERA = {
+  /** On load, the camera opens on the current arc at this zoom (or farther out, to fit it). */
+  arcZoom: 0,
+  /** Screen pixels kept clear around whatever the camera frames. */
+  padding: 72,
+} as const;
+
 export type Quadrant = 'nw' | 'ne' | 'sw' | 'se';
 type Blue = Extract<Region, `${string}-blue`>;
 

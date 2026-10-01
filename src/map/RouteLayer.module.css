@@ -1,0 +1,46 @@
+/* Widths are screen pixels: non-scaling strokes keep the route the same weight at every
+   zoom, and dash patterns scale with them. */
+
+.casing,
+.line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* A dark edge under the line keeps it readable over the grid, labels, and Grand Line. */
+.casing {
+  stroke: var(--color-ocean-deep);
+  stroke-opacity: 0.6;
+  stroke-width: 6;
+}
+
+.line {
+  stroke: var(--color-route);
+  stroke-width: 2.5;
+}
+
+.current .casing {
+  stroke-width: 8;
+}
+
+.current .line {
+  stroke: var(--color-route-current);
+  stroke-width: 3.5;
+}
+
+/* Anime-only legs: a run of round dots. The casing stays solid so the dots don't float. */
+.filler .line {
+  stroke-dasharray: 0.1 7;
+  stroke-width: 4;
+}
+
+.filler.current .line {
+  stroke-width: 5;
+  stroke-dasharray: 0.1 8;
+}
+
+.filler .casing {
+  stroke-opacity: 0.35;
+}

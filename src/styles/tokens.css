@@ -88,3 +88,10 @@
   /* Layout */
   --timeline-height: 7.5rem; /* space reserved under the map for the timeline */
 }
+
+/* Phones: the timeline's details wrap below the arc name. */
+@media (max-width: 640px) {
+  :root {
+    --timeline-height: 8.5rem;
+  }
+}

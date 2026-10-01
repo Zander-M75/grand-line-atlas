@@ -1,0 +1,232 @@
+[
+  {
+    "fromLocationId": "foosha-village",
+    "toLocationId": "shells-town",
+    "arcId": "romance-dawn"
+  },
+  {
+    "fromLocationId": "shells-town",
+    "toLocationId": "orange-town",
+    "arcId": "orange-town"
+  },
+  {
+    "fromLocationId": "orange-town",
+    "toLocationId": "syrup-village",
+    "arcId": "syrup-village"
+  },
+  {
+    "fromLocationId": "syrup-village",
+    "toLocationId": "island-of-rare-animals",
+    "arcId": "syrup-village"
+  },
+  {
+    "fromLocationId": "island-of-rare-animals",
+    "toLocationId": "baratie",
+    "arcId": "baratie"
+  },
+  {
+    "fromLocationId": "baratie",
+    "toLocationId": "arlong-park",
+    "arcId": "arlong-park"
+  },
+  {
+    "fromLocationId": "arlong-park",
+    "toLocationId": "loguetown",
+    "arcId": "loguetown"
+  },
+  {
+    "fromLocationId": "loguetown",
+    "toLocationId": "warship-island",
+    "arcId": "warship-island"
+  },
+  {
+    "fromLocationId": "warship-island",
+    "toLocationId": "reverse-mountain",
+    "arcId": "reverse-mountain",
+    "waypoints": [
+      [
+        150,
+        745
+      ],
+      [
+        82,
+        870
+      ]
+    ]
+  },
+  {
+    "fromLocationId": "loguetown",
+    "toLocationId": "reverse-mountain",
+    "arcId": "reverse-mountain",
+    "waypoints": [
+      [
+        150,
+        745
+      ],
+      [
+        82,
+        870
+      ]
+    ]
+  },
+  {
+    "fromLocationId": "reverse-mountain",
+    "toLocationId": "twin-cape",
+    "arcId": "reverse-mountain"
+  },
+  {
+    "fromLocationId": "twin-cape",
+    "toLocationId": "whisky-peak",
+    "arcId": "whisky-peak"
+  },
+  {
+    "fromLocationId": "whisky-peak",
+    "toLocationId": "little-garden",
+    "arcId": "little-garden"
+  },
+  {
+    "fromLocationId": "little-garden",
+    "toLocationId": "drum-island",
+    "arcId": "drum-island"
+  },
+  {
+    "fromLocationId": "drum-island",
+    "toLocationId": "arabasta",
+    "arcId": "arabasta"
+  },
+  {
+    "fromLocationId": "arabasta",
+    "toLocationId": "goat-island",
+    "arcId": "goat-island"
+  },
+  {
+    "fromLocationId": "goat-island",
+    "toLocationId": "ruluka-island",
+    "arcId": "ruluka-island"
+  },
+  {
+    "fromLocationId": "ruluka-island",
+    "toLocationId": "jaya",
+    "arcId": "jaya"
+  },
+  {
+    "fromLocationId": "arabasta",
+    "toLocationId": "jaya",
+    "arcId": "jaya"
+  },
+  {
+    "fromLocationId": "jaya",
+    "toLocationId": "skypiea",
+    "arcId": "skypiea"
+  },
+  {
+    "fromLocationId": "skypiea",
+    "toLocationId": "navarone",
+    "arcId": "g-8"
+  },
+  {
+    "fromLocationId": "navarone",
+    "toLocationId": "long-ring-long-land",
+    "arcId": "long-ring-long-land"
+  },
+  {
+    "fromLocationId": "skypiea",
+    "toLocationId": "long-ring-long-land",
+    "arcId": "long-ring-long-land"
+  },
+  {
+    "fromLocationId": "long-ring-long-land",
+    "toLocationId": "water-7",
+    "arcId": "water-7"
+  },
+  {
+    "fromLocationId": "water-7",
+    "toLocationId": "enies-lobby",
+    "arcId": "enies-lobby"
+  },
+  {
+    "fromLocationId": "enies-lobby",
+    "toLocationId": "water-7",
+    "arcId": "post-enies-lobby"
+  },
+  {
+    "fromLocationId": "water-7",
+    "toLocationId": "lovely-land",
+    "arcId": "ice-hunter"
+  },
+  {
+    "fromLocationId": "lovely-land",
+    "toLocationId": "thriller-bark",
+    "arcId": "thriller-bark"
+  },
+  {
+    "fromLocationId": "water-7",
+    "toLocationId": "thriller-bark",
+    "arcId": "thriller-bark"
+  },
+  {
+    "fromLocationId": "thriller-bark",
+    "toLocationId": "spa-island",
+    "arcId": "spa-island"
+  },
+  {
+    "fromLocationId": "spa-island",
+    "toLocationId": "sabaody-archipelago",
+    "arcId": "sabaody-archipelago"
+  },
+  {
+    "fromLocationId": "thriller-bark",
+    "toLocationId": "sabaody-archipelago",
+    "arcId": "sabaody-archipelago"
+  },
+  {
+    "fromLocationId": "sabaody-archipelago",
+    "toLocationId": "fish-man-island",
+    "arcId": "fish-man-island"
+  },
+  {
+    "fromLocationId": "fish-man-island",
+    "toLocationId": "punk-hazard",
+    "arcId": "punk-hazard"
+  },
+  {
+    "fromLocationId": "punk-hazard",
+    "toLocationId": "dressrosa",
+    "arcId": "dressrosa"
+  },
+  {
+    "fromLocationId": "dressrosa",
+    "toLocationId": "silver-mine",
+    "arcId": "silver-mine"
+  },
+  {
+    "fromLocationId": "silver-mine",
+    "toLocationId": "zou",
+    "arcId": "zou"
+  },
+  {
+    "fromLocationId": "dressrosa",
+    "toLocationId": "zou",
+    "arcId": "zou"
+  },
+  {
+    "fromLocationId": "zou",
+    "toLocationId": "whole-cake-island",
+    "arcId": "whole-cake-island"
+  },
+  {
+    "fromLocationId": "whole-cake-island",
+    "toLocationId": "wano-country",
+    "arcId": "wano-country"
+  },
+  {
+    "fromLocationId": "wano-country",
+    "toLocationId": "egghead",
+    "arcId": "egghead"
+  },
+  {
+    "fromLocationId": "egghead",
+    "toLocationId": "elbaph",
+    "arcId": "elbaph"
+  }
+]

@@ -1,0 +1,231 @@
+/* Every arc owns one equal column, shared by the saga row and the stop row; --count and
+   --value (set inline) place the rail, the voyage-so-far bar, the thumb, and the tooltip. */
+
+.slider {
+  position: relative;
+  display: grid;
+  row-gap: var(--space-1);
+  cursor: pointer;
+  /* Dragging scrubs the timeline; the strip itself never scrolls. */
+  touch-action: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border-radius: var(--radius-sm);
+}
+
+.slider:focus-visible {
+  outline-offset: 4px;
+}
+
+.sagas,
+.track {
+  display: grid;
+  grid-template-columns: repeat(var(--count), minmax(0, 1fr));
+}
+
+/* Sagas: labeled brackets over their arcs, the way a chart marks out a stretch of coast. */
+
+.saga {
+  position: relative;
+  min-width: 0;
+  padding-bottom: 2px;
+  border-left: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.saga:last-child {
+  border-right: 1px solid var(--color-rule);
+}
+
+.sagaName {
+  display: block;
+  padding: 0 var(--space-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+.currentSaga {
+  border-color: var(--color-ink);
+  border-bottom-width: 2px;
+  padding-bottom: 1px;
+}
+
+/* The current saga is always named in full, laid over its neighbors if it must be. */
+.currentSaga .sagaName {
+  position: absolute;
+  bottom: 3px;
+  left: 0;
+  z-index: 1;
+  overflow: visible;
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.sagaOnRight.currentSaga .sagaName {
+  left: auto;
+  right: 0;
+}
+
+/* Stops */
+
+.track {
+  position: relative;
+  height: 26px;
+}
+
+/* The rail runs from the first stop's center to the last's; the bar over it is the
+   voyage so far, up to the current stop. */
+.track::before,
+.track::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(50% / var(--count));
+  right: calc(50% / var(--count));
+  height: 2px;
+  margin-top: -1px;
+  background: var(--color-rule);
+}
+
+.track::after {
+  right: auto;
+  width: calc(100% * var(--value) / var(--count));
+  height: 3px;
+  margin-top: -1.5px;
+  background: var(--color-ink);
+}
+
+.stop {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+}
+
+.stop::before {
+  content: '';
+  /* Shrinks to fit when stops are packed tight (on phones, 51 arcs share ~300px). */
+  width: min(8px, 75%);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--color-paper);
+  border: 1.5px solid var(--color-ink-muted);
+}
+
+.passed::before {
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+/* Anime-only arcs: a hatched band and a smaller violet stop. */
+.filler {
+  background: repeating-linear-gradient(135deg, transparent 0 3px, rgb(90 74 124 / 0.3) 3px 4.5px)
+    center / 100% 14px no-repeat;
+}
+
+.filler::before {
+  width: min(7px, 65%);
+  border-color: var(--color-filler);
+}
+
+.filler.passed::before {
+  background: var(--color-filler);
+}
+
+/* Past the spoiler limit. */
+.locked {
+  cursor: not-allowed;
+}
+
+.locked::before {
+  background: transparent;
+  border-style: dotted;
+  border-color: var(--color-locked);
+}
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  left: calc((var(--value) + 0.5) * 100% / var(--count));
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border-radius: 50%;
+  background: var(--color-ink);
+  border: 2px solid var(--color-paper);
+  box-shadow:
+    0 0 0 1.5px var(--color-ink),
+    0 2px 6px rgb(4 14 20 / 0.35);
+  pointer-events: none;
+}
+
+/* A brass center: the same color as the ship and route on the map. */
+.thumb::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 50%;
+  background: var(--color-route);
+}
+
+/* Tooltip */
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + var(--space-2));
+  left: calc((var(--at) + 0.5) * 100% / var(--count));
+  z-index: 3;
+  display: grid;
+  gap: 1px;
+  padding: var(--space-1) var(--space-3);
+  transform: translateX(-50%);
+  background: var(--color-ink);
+  color: var(--color-paper);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-panel);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.pinStart {
+  transform: translateX(-12px);
+}
+
+.pinEnd {
+  transform: translateX(calc(-100% + 12px));
+}
+
+.tooltipName {
+  font-weight: 600;
+  font-size: var(--text-sm);
+}
+
+.tooltipDetails {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--color-paper-shade);
+}
+
+.tooltipTag {
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-filler-on-ocean);
+}
+
+/* Narrow screens: only the current saga is named. */
+@media (max-width: 640px) {
+  .saga:not(.currentSaga) .sagaName {
+    visibility: hidden;
+  }
+}

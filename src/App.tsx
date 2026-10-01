@@ -1,9 +1,14 @@
 import { APP_TITLE } from '@/config';
+import { useKeyboardNav } from '@/hooks/useKeyboardNav';
+import { useUrlSync } from '@/hooks/useUrlSync';
 import { WorldMap } from '@/map/WorldMap';
 import { Timeline } from '@/ui/Timeline';
 import styles from './App.module.css';
 
 export function App() {
+  useUrlSync();
+  useKeyboardNav();
+
   return (
     <div className={styles.app}>
       <main className={styles.mapArea}>

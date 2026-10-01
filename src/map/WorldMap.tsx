@@ -5,11 +5,14 @@ import { MapContainer, ZoomControl } from 'react-leaflet';
 import { ZOOM } from '@/config';
 import { locations } from '@/data';
 import { useDevToggle } from '@/hooks/useDevToggle';
+import { ArcCamera } from './ArcCamera';
 import { BaseMap } from './BaseMap';
 import { MAP_BOUNDS } from './coords';
 import { DevCoordinateLogger } from './DevCoordinateLogger';
 import { FitWorldZoom } from './FitWorldZoom';
 import { IslandLayer } from './IslandLayer';
+import { RouteLayer } from './RouteLayer';
+import { Ship } from './Ship';
 import styles from './WorldMap.module.css';
 
 const PANNABLE_BOUNDS = latLngBounds(MAP_BOUNDS).pad(ZOOM.panPadding);
@@ -42,14 +45,21 @@ export function WorldMap() {
     >
       <BaseMap />
       {DevPositioner && positioning ? (
+        // Placing islands: every island, draggable. The route and ship are hidden, since
+        // they'd still follow the saved positions while islands move.
         <Suspense fallback={null}>
           <DevPositioner locations={locations} />
         </Suspense>
       ) : (
-        <IslandLayer locations={locations} />
+        <>
+          <RouteLayer />
+          <IslandLayer />
+          <Ship />
+        </>
       )}
       <ZoomControl position="bottomright" />
       <FitWorldZoom />
+      <ArcCamera />
       {import.meta.env.DEV && <DevCoordinateLogger />}
     </MapContainer>
   );

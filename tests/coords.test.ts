@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { MAP_HEIGHT, MAP_WIDTH } from '@/config';
-import { fromLatLng, MAP_BOUNDS, toLatLng } from '@/map/coords';
+import { fromLatLng, keepOnMap, MAP_BOUNDS, toLatLng } from '@/map/coords';
 
 describe('toLatLng', () => {
   it('maps the four corners of the base map', () => {
@@ -36,5 +36,33 @@ describe('MAP_BOUNDS', () => {
       [0, 0],
       [MAP_HEIGHT, MAP_WIDTH],
     ]);
+  });
+});
+
+describe('keepOnMap', () => {
+  const view = { x: 1000, y: 600 }; // screen pixels
+
+  it('leaves a center alone when the view already fits on the map', () => {
+    expect(keepOnMap({ x: 2000, y: 1000 }, view, 0)).toEqual({ x: 2000, y: 1000 });
+  });
+
+  it('pulls the view back from the map edges', () => {
+    // At zoom 0 the view is 1000 × 600 map pixels, so its center stays 500 / 300 from the edges.
+    expect(keepOnMap({ x: 100, y: 50 }, view, 0)).toEqual({ x: 500, y: 300 });
+    expect(keepOnMap({ x: MAP_WIDTH, y: MAP_HEIGHT }, view, 0)).toEqual({
+      x: MAP_WIDTH - 500,
+      y: MAP_HEIGHT - 300,
+    });
+  });
+
+  it('accounts for zoom: one zoom level out doubles the map pixels in view', () => {
+    expect(keepOnMap({ x: 0, y: 0 }, view, -1)).toEqual({ x: 1000, y: 600 });
+  });
+
+  it('centers the map along any axis the view is bigger than', () => {
+    expect(keepOnMap({ x: 100, y: 100 }, { x: 8000, y: 600 }, 0)).toEqual({
+      x: MAP_WIDTH / 2,
+      y: 300,
+    });
   });
 });

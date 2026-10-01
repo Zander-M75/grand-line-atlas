@@ -9,6 +9,8 @@ import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
+import { MAP_HEIGHT, MAP_WIDTH } from '../src/config';
+import { routeKey, voyageLegs } from '../src/data/voyage';
 import type { Arc, CrewMember, Location, Region, RouteSegment } from '../src/types';
 import { GENERATED_DIR, OVERRIDES_DIR } from './lib/paths';
 
@@ -111,7 +113,7 @@ const arcs = (await load(generated('arcs.json'), z.array(ArcSchema))) ?? [];
 const locations = (await load(generated('locations.json'), z.array(LocationSchema))) ?? [];
 const crew = (await load(generated('crew.json'), z.array(CrewMemberSchema))) ?? [];
 const meta = await load(generated('meta.json'), MetaSchema);
-const route = await load(generated('route.json'), z.array(RouteSegmentSchema), { optional: true });
+const route = (await load(generated('route.json'), z.array(RouteSegmentSchema))) ?? [];
 const positions = await load(path.join(OVERRIDES_DIR, 'positions.json'), PositionsSchema, {
   optional: true,
 });
@@ -232,21 +234,47 @@ for (const member of crew) {
 }
 
 // ---------------------------------------------------------------------------
-// Route (Phase 4)
+// Route: an entry for every leg the ship sails, with anime-only arcs shown and hidden
 
-for (const segment of route ?? []) {
-  const label = `route ${segment.fromLocationId}→${segment.toLocationId}`;
-  if (!locationById.has(segment.fromLocationId)) errors.push(`${label}: unknown from location`);
-  if (!locationById.has(segment.toLocationId)) errors.push(`${label}: unknown to location`);
-  if (!arcById.has(segment.arcId)) errors.push(`${label}: unknown arc "${segment.arcId}"`);
+const segments = new Map<string, RouteSegment>();
+for (const segment of route) {
+  const key = routeKey(segment.fromLocationId, segment.toLocationId);
+  if (segments.has(key)) errors.push(`route ${key}: listed twice`);
+  segments.set(key, segment);
+  if (!locationById.has(segment.fromLocationId)) errors.push(`route ${key}: unknown from location`);
+  if (!locationById.has(segment.toLocationId)) errors.push(`route ${key}: unknown to location`);
+  if (!arcById.has(segment.arcId)) errors.push(`route ${key}: unknown arc "${segment.arcId}"`);
+  for (const [x, y] of segment.waypoints ?? []) {
+    if (x < 0 || x > MAP_WIDTH || y < 0 || y > MAP_HEIGHT) {
+      errors.push(`route ${key}: waypoint ${x},${y} is off the map`);
+    }
+  }
+}
+
+const sailed = new Set<string>();
+for (const [mode, shown] of [
+  ['with anime-only arcs', byOrder],
+  ['without anime-only arcs', byOrder.filter((a) => !a.filler)],
+] as const) {
+  for (const leg of voyageLegs(shown)) {
+    const key = routeKey(leg.fromLocationId, leg.toLocationId);
+    sailed.add(key);
+    const segment = segments.get(key);
+    if (!segment) errors.push(`route.json: no entry for ${key}, sailed ${mode}`);
+    else if (segment.arcId !== leg.arcId) {
+      errors.push(`route ${key}: leads into ${leg.arcId}, not ${segment.arcId}`);
+    }
+  }
+}
+for (const key of segments.keys()) {
+  if (!sailed.has(key)) warnings.push(`route ${key}: never sailed; rebuild with data:build`);
 }
 
 // ---------------------------------------------------------------------------
 
 console.log(
-  `Checked ${arcs.length} arcs, ${locations.length} locations, ${crew.length} crew` +
-    (route ? `, ${route.length} route segments` : '') +
-    '.',
+  `Checked ${arcs.length} arcs, ${locations.length} locations, ${crew.length} crew, ` +
+    `${route.length} route segments.`,
 );
 for (const warning of warnings) console.warn(`  warning: ${warning}`);
 for (const error of errors) console.error(`  error: ${error}`);

@@ -64,6 +64,7 @@
   top: calc(50% + 10px);
   transform: translateX(-50%);
   white-space: nowrap;
+  text-align: center;
   font-family: var(--font-body);
   font-size: 0.78rem;
   font-weight: 600;
@@ -86,6 +87,62 @@
 /* Farther out than ZOOM.labels, islands are dots only (see useZoomLabels). */
 :global(.leaflet-container[data-labels='off']) .label {
   display: none;
+}
+
+/* Story state (src/map/journey.ts). These come after the variants above so the brass
+   ring wins over the sky and undersea styles. */
+
+/* The current arc's islands: larger, ringed in brass, and named at every zoom. */
+.current .dot,
+.away .dot {
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-color: var(--color-route-current);
+  box-shadow:
+    0 0 0 1.5px var(--color-ocean-deep),
+    0 0 0 6px rgb(242 207 122 / 0.25),
+    0 1px 4px rgb(4 14 20 / 0.5);
+}
+
+/* Where an off-route arc happens: the same ring, dashed, with a note under the name. */
+.away .dot {
+  outline: 1.5px dashed var(--color-route-current);
+  outline-offset: 4px;
+  box-shadow:
+    0 0 0 1.5px var(--color-ocean-deep),
+    0 1px 4px rgb(4 14 20 / 0.5);
+}
+
+.current .label,
+.away .label {
+  color: var(--color-route-current);
+  font-size: 0.85rem;
+}
+
+:global(.leaflet-container[data-labels='off']) .current .label,
+:global(.leaflet-container[data-labels='off']) .away .label {
+  display: block;
+}
+
+.note {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  color: var(--color-on-ocean);
+}
+
+/* Islands the voyage hasn't reached yet, faded back until pointed at. */
+.ahead {
+  opacity: 0.5;
+}
+
+.ahead:hover,
+.ahead:focus-visible {
+  opacity: 1;
 }
 
 /* Dev positioner. */
