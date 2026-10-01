@@ -9,7 +9,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 | | |
 |---|---|
 | Phase | **Phase 0 (project setup) is done** and waiting for owner review. Next is Phase 1 (base map + map shell). |
-| Repo | Local git repo, branch `main`. No remote yet. |
+| Repo | https://github.com/Zander-M75/grand-line-atlas (public), branch `main` |
 | Hosting | None yet (Vercel in Phase 9). |
 
 ## Read first
@@ -45,8 +45,7 @@ Smaller choices:
 ## Owner decisions needed
 
 1. **World layout (needed before Phase 1 draws the map).** Current default in `config.ts`: the Red Line runs down the middle at Mary Geoise, Reverse Mountain sits on the far-west edge (the Red Line wraps around the cylinder), Paradise fills the west half of the Grand Line, the New World the east half, and East Blue is the north-west quadrant so the voyage reads left to right. Confirm, or name the reference map to match.
-2. **Wiki User-Agent contact (Phase 2).** PLAN.md asks for a contact in the User-Agent. Which email or URL should go there?
-3. **GitHub repo URL (Phase 5 footer).** Not needed yet.
+2. **Wiki User-Agent contact (Phase 2).** PLAN.md asks for a contact in the User-Agent. Which email or URL should go there? (The repo URL works if the owner prefers not to list an email.)
 
 ## Open items
 
