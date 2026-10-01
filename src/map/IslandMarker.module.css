@@ -1,0 +1,98 @@
+/* The Leaflet icon element: a 24px hit target centered on the island. */
+.marker {
+  --dot-fill: var(--color-paper);
+  --dot-ring: var(--color-ocean-deep);
+}
+
+.dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  border-radius: 50%;
+  background: var(--dot-fill);
+  border: 2px solid var(--dot-ring);
+  /* An outer paper ring: the classic chart symbol for a settlement. */
+  box-shadow:
+    0 0 0 1.5px var(--color-paper),
+    0 1px 4px rgb(4 14 20 / 0.5);
+  transition: transform 0.15s ease;
+}
+
+.marker:hover .dot {
+  transform: scale(1.2);
+}
+
+.marker:focus-visible {
+  outline: none;
+}
+
+.marker:focus-visible .dot {
+  box-shadow:
+    0 0 0 1.5px var(--color-paper),
+    0 0 0 4px var(--color-focus);
+}
+
+/* Anime-only places: violet, like the rest of the app's anime-only marks. */
+.animeOnly {
+  --dot-fill: var(--color-filler-on-ocean);
+}
+
+/* Undersea: deep water inside the ring, and a dashed ripple around it. */
+.undersea .dot {
+  background: var(--color-ocean-deep);
+  border-color: var(--color-paper);
+  box-shadow: none;
+  outline: 1.5px dashed var(--color-paper);
+  outline-offset: 2px;
+}
+
+/* In the sky: a hollow ring with a soft glow, floating above the island below it. */
+.sky .dot {
+  background: transparent;
+  border-color: var(--color-paper);
+  box-shadow:
+    0 0 0 1.5px var(--color-ocean-deep),
+    0 0 10px 2px rgb(236 226 198 / 0.45);
+}
+
+.label {
+  position: absolute;
+  left: 50%;
+  top: calc(50% + 10px);
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-on-ocean);
+  /* A halo of deep water keeps names legible over the grid and the Grand Line. */
+  text-shadow:
+    0 0 3px var(--color-ocean-deep),
+    0 0 6px var(--color-ocean-deep),
+    0 1px 2px var(--color-ocean-deep);
+  pointer-events: none;
+}
+
+.above .label {
+  top: auto;
+  bottom: calc(50% + 10px);
+}
+
+/* Farther out than ZOOM.labels, islands are dots only (see useZoomLabels). */
+:global(.leaflet-container[data-labels='off']) .label {
+  display: none;
+}
+
+/* Dev positioner. */
+.draggable {
+  cursor: grab;
+}
+
+.draggable .dot {
+  --dot-ring: var(--color-route-current);
+}

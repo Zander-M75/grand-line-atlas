@@ -1,0 +1,112 @@
+/* A dev tool: plain and clear, but in the app's paper-and-ink materials. */
+.panel {
+  --focus-ring: var(--color-focus-on-paper);
+
+  position: fixed;
+  top: var(--space-4);
+  right: var(--space-4);
+  z-index: 2000;
+  width: min(20rem, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-4);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  font-size: var(--text-sm);
+}
+
+.heading {
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.count,
+.status:not(:empty),
+.hint {
+  margin-top: var(--space-2);
+}
+
+.hint,
+.count {
+  color: var(--color-ink-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.actions button {
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-paper-shade);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.actions button:hover:not(:disabled) {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.actions button:disabled {
+  color: var(--color-locked);
+  cursor: default;
+}
+
+.legend {
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.legend li::before {
+  content: '';
+  display: inline-block;
+  width: 1.5rem;
+  margin-right: var(--space-2);
+  vertical-align: middle;
+  border-top: 2px dashed var(--legend-color);
+}
+
+/* Zone outlines on the map, and their legend swatches. Classes go on Leaflet's SVG paths,
+   where CSS overrides Leaflet's stroke attributes. */
+.zoneGrandLine,
+.legendGrandLine {
+  --legend-color: var(--color-route-current);
+  stroke: var(--color-route-current);
+}
+
+.zoneCalmBelt,
+.legendCalmBelt {
+  --legend-color: #8fb8bf;
+  stroke: #8fb8bf;
+}
+
+.zoneRedLine,
+.legendRedLine {
+  --legend-color: #e07a62;
+  stroke: #e07a62;
+}
+
+.zoneBlue,
+.legendBlue {
+  --legend-color: var(--color-filler-on-ocean);
+  stroke: var(--color-filler-on-ocean);
+}
+
+.zoneGrandLine,
+.zoneCalmBelt,
+.zoneRedLine,
+.zoneBlue {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-dasharray: 8 6;
+  stroke-opacity: 0.8;
+}

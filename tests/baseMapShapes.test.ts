@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MAP_WIDTH } from '@/config';
-import { redLineBand, seededRandom } from '@/map/baseMapShapes';
+import { redLineBand } from '@/map/baseMapShapes';
+import { randomFor, seededRandom } from '@/utils/random';
 
 describe('seededRandom', () => {
   it('repeats the same sequence for the same seed', () => {
@@ -9,6 +10,11 @@ describe('seededRandom', () => {
     const first = [a(), a(), a()];
     expect([b(), b(), b()]).toEqual(first);
     expect(first.every((n) => n >= 0 && n < 1)).toBe(true);
+  });
+
+  it('can be seeded by a string, such as an island id', () => {
+    expect(randomFor('water-7')()).toBe(randomFor('water-7')());
+    expect(randomFor('water-7')()).not.toBe(randomFor('enies-lobby')());
   });
 });
 

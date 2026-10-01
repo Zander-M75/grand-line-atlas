@@ -82,6 +82,8 @@ export const ZOOM = {
   step: 0.5,
   /** How far past the map's edge the view may pan, as a fraction of the map's size. */
   panPadding: 0.1,
+  /** Island names show from this zoom in; farther out, islands are dots only. */
+  labels: -0.5,
 } as const;
 
 export type Quadrant = 'nw' | 'ne' | 'sw' | 'se';

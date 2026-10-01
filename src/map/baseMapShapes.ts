@@ -4,20 +4,9 @@
  * map dimensions and a fixed seed, so the map is identical on every load.
  */
 import { MAP_HEIGHT, MAP_WIDTH } from '@/config';
+import { seededRandom } from '@/utils/random';
 
 type Point = [number, number];
-
-/** Seeded pseudo-random numbers in [0, 1) (mulberry32): same seed, same sequence. */
-export function seededRandom(seed: number): () => number {
-  let state = seed >>> 0;
-  return () => {
-    state = (state + 0x6d2b79f5) >>> 0;
-    let t = state;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
 
 const round = (n: number) => Math.round(n * 10) / 10;
 const line = ([x1, y1]: Point, [x2, y2]: Point) =>

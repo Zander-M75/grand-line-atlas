@@ -2,7 +2,7 @@
 
 An interactive, animated map of the One Piece world that follows the Straw Hat Pirates' voyage through the anime, arc by arc. A timeline steps through every anime arc in episode order (anime-only arcs included and marked). As it moves, the route draws itself across the sea, the ship sails to the next island, and panels show the arc, the island, and who's aboard. A spoiler gate lets viewers set the episode they're on, so nothing past it is shown.
 
-> **Status:** early development. The base map (Phase 1) and the story data pipeline (Phase 2) are in; island placement comes next. See [PLAN.md](PLAN.md) for the full roadmap.
+> **Status:** early development. The base map, the story data pipeline, and island placement are in (Phases 1–3); the timeline and route come next. See [PLAN.md](PLAN.md) for the full roadmap.
 
 ## Running it
 
@@ -21,9 +21,9 @@ Data scripts:
 
 ```sh
 npm run data:fetch     # pull wiki text into data/raw (cached, throttled; -- --refresh to re-fetch)
-npm run data:build     # parse it into data/generated/*.json
+npm run data:build     # parse it into data/generated/*.json, including island positions
 npm run data:validate  # schema, integrity, and episode checks; exits non-zero on errors
-npm run data:layout    # assign starting island positions (Phase 3; not built yet)
+npm run data:layout    # re-run just the island auto-layout
 ```
 
 ## Tech stack
@@ -62,7 +62,12 @@ The world is an original chart, not a real-world map, so Leaflet runs in `CRS.Si
 - **The base map is drawn from config.** [BaseMap.tsx](src/map/BaseMap.tsx) renders the ocean, Calm Belts, Grand Line, Red Line, graticule, compass rose, and labels as inline SVG, positioned from the zone boundaries in `config.ts`, so moving a zone there moves the art. Inline SVG (rather than an `<img>`) stays sharp at every zoom and lets the labels use the app's fonts. The Red Line's ragged cliffs and hachures are generated from a fixed seed, so the map is identical on every load.
 - **Zoom fits the screen.** The farthest-out zoom is recomputed on resize to "whole world in view", so the map works from a phone to a wide monitor without letting anyone zoom out into empty space.
 
-In development, clicking the map logs its pixel coordinates to the console, for placing islands by hand.
+- **Islands are placed in two layers.** [scripts/auto-layout.ts](scripts/auto-layout.ts) gives every island a starting spot from the zones in `config.ts`: East Blue islands follow a curve toward Reverse Mountain, Grand Line islands spread out in visit order on alternating sides of the centerline (so neighbors' labels don't collide), and special cases (Mary Geoise on the Red Line, Fish-Man Island beneath it, Skypiea above Jaya, the Calm Belt islands) follow written rules. Hand-placed positions in `data/overrides/positions.json` win over it when the app loads, so re-running the layout never loses hand work.
+- **Names appear as you zoom in.** At the full-world view islands are dots; names show from zoom −0.5 inward. Anime-only places are violet, Fish-Man Island has an undersea ring, and Skypiea floats.
+
+### Placing islands by hand (dev only)
+
+Run `npm run dev` and press **Shift+D**. Every island becomes draggable, faint outlines show the zones from `config.ts`, and a panel offers **Save to positions.json** (written straight to `data/overrides/positions.json` by the dev server) or **Copy JSON**. Commit the file to keep the positions. Unsaved moves survive a reload. In development, clicking the map also logs its pixel coordinates to the console.
 
 ## The data
 

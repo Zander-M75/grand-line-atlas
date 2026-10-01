@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import react from '@vitejs/plugin-react';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
+import { devPositionsPlugin } from './scripts/lib/devPositionsPlugin.ts';
 import { APP_TITLE } from './src/config.ts';
 
 /** Fills `%APP_TITLE%` in index.html so the title is set in exactly one place (src/config.ts). */
@@ -17,7 +18,7 @@ function appTitle(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), appTitle()],
+  plugins: [react(), appTitle(), devPositionsPlugin()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
