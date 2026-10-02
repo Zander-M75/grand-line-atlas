@@ -1,4 +1,4 @@
-import { act, render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { goToArc, setSpoilerLimit, useAtlasStore } from '@/store';
@@ -75,8 +75,12 @@ describe('SettingsMenu', () => {
 
     await user.click(screen.getByLabelText('Last episode you’ve watched'));
     await user.keyboard('{Escape}');
-    expect(screen.queryByRole('group', { name: 'Settings' })).not.toBeInTheDocument();
+    expect(button).toHaveAttribute('aria-expanded', 'false');
     expect(button).toHaveFocus();
+    // The panel slides away, then it's gone.
+    await waitFor(() =>
+      expect(screen.queryByRole('group', { name: 'Settings' })).not.toBeInTheDocument(),
+    );
   });
 
   it('changes the spoiler limit and the display settings', async () => {

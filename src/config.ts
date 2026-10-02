@@ -100,6 +100,15 @@ export const CAMERA = {
   arcZoom: 0,
   /** Screen pixels kept clear around whatever the camera frames. */
   padding: 72,
+  /**
+   * The voyage's three big crossings get a slower, closer camera move (TIMING.cameraFlyDramatic):
+   * climbing Reverse Mountain into the Grand Line, diving to Fish-Man Island, and surfacing in
+   * the New World. A leg into one of `arriving`, or out of one of `leaving`, counts.
+   */
+  dramatic: {
+    arriving: ['reverse-mountain', 'fish-man-island'],
+    leaving: ['fish-man-island'],
+  },
 } as const;
 
 export type Quadrant = 'nw' | 'ne' | 'sw' | 'se';
@@ -123,9 +132,9 @@ export const BLUE_QUADRANTS: Record<Blue, Quadrant> = {
 // ---------------------------------------------------------------------------
 
 export const TIMING = {
-  /** Route segments draw at this speed, clamped to the min/max duration below. */
-  routeDrawPxPerSecond: 900,
-  routeDrawMin: 0.6,
+  /** Route legs draw at this speed (map pixels per second), clamped to the min/max below. */
+  routeDrawPxPerSecond: 240,
+  routeDrawMin: 0.8,
   routeDrawMax: 2.4,
   cameraFly: 1.2,
   /** Crossing Reverse Mountain, descending to Fish-Man Island, entering the New World. */
@@ -135,10 +144,39 @@ export const TIMING = {
   islandPulsePeriod: 2,
   panel: 0.28,
   arcCardFade: 0.22,
+  /** The crew card pop when someone joins. */
+  crewPop: 0.35,
   intro: 3.5,
   /** Timeline changes closer together than this count as scrubbing: snap, don't animate. */
   scrubThreshold: 0.25,
+  /** A wake dot's fade, from when the ship passes to gone. */
+  wakeFade: 0.9,
+  /** One full swell of the ocean: its wave marks drift to their other state and back. */
+  oceanPeriod: 12,
 } as const;
+
+/** The ship's wake: small dots dropped behind it while it sails. Sizes are screen pixels. */
+export const WAKE = {
+  dots: 8,
+  spacing: 11,
+  radius: 2,
+} as const;
+
+/**
+ * Weather around three islands (PLAN.md §7 Phase 6), drawn with particles in a square of
+ * `radius` map pixels around the island. It runs only while that square is on screen at
+ * `minZoom` or closer, and only for islands the viewer's spoiler limit shows.
+ */
+export const WEATHER = {
+  minZoom: -1,
+  zones: [
+    { locationId: 'drum-island', kind: 'snow', radius: 120 },
+    { locationId: 'thriller-bark', kind: 'fog', radius: 130 },
+    { locationId: 'skypiea', kind: 'sparkle', radius: 100 },
+  ],
+} as const;
+
+export type WeatherKind = (typeof WEATHER.zones)[number]['kind'];
 
 // ---------------------------------------------------------------------------
 // Feature switches: whether an optional feature ships at all. Viewers can still

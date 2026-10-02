@@ -14,7 +14,7 @@ export function useReducedMotion(): boolean {
 
 /** Just the OS setting, for Settings to explain why motion is already reduced. */
 export function useSystemReducedMotion(): boolean {
-  return useSyncExternalStore(subscribe, systemPrefersReduced, () => false);
+  return useSyncExternalStore(subscribe, systemPrefersReducedMotion, () => false);
 }
 
 /**
@@ -34,6 +34,7 @@ function subscribe(onChange: () => void) {
   return () => query?.removeEventListener('change', onChange);
 }
 
-function systemPrefersReduced(): boolean {
+/** The OS setting, read once (outside React). */
+export function systemPrefersReducedMotion(): boolean {
   return window.matchMedia?.(QUERY).matches ?? false;
 }

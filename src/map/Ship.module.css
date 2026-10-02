@@ -8,8 +8,21 @@
   overflow: visible;
 }
 
-.west svg {
-  transform: scaleX(-1);
+/* At rest, the ship rides a slow swell (period and height from TIMING, set inline by
+   ship.ts). Reduced motion stops it (global.css). */
+.bob {
+  display: block;
+  animation: bob var(--bob-period) ease-in-out infinite;
+}
+
+.sailing .bob {
+  animation: none;
+}
+
+@keyframes bob {
+  50% {
+    transform: translateY(var(--bob-height));
+  }
 }
 
 .hull {

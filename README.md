@@ -2,7 +2,7 @@
 
 An interactive, animated map of the One Piece world that follows the Straw Hat Pirates' voyage through the anime, arc by arc. A timeline steps through every anime arc in episode order (anime-only arcs included and marked). As it moves, the route draws itself across the sea, the ship sails to the next island, and panels show the arc, the island, and who's aboard. A spoiler gate lets viewers set the episode they're on, so nothing past it is shown.
 
-> **Status:** early development. The base map, the story data pipeline, island placement, the timeline with the crew's route, and the arc, island, and crew panels with the spoiler gate are in (Phases 1–5); animation comes next. See [PLAN.md](PLAN.md) for the full roadmap.
+> **Status:** early development. The base map, the story data pipeline, island placement, the timeline with the crew's route, the arc, island, and crew panels with the spoiler gate, and the animation (route drawing, the sailing ship, the camera, the ocean, weather, sound, and the intro) are in (Phases 1–6); written summaries come next. See [PLAN.md](PLAN.md) for the full roadmap.
 
 ## Running it
 
@@ -33,8 +33,9 @@ npm run data:layout    # re-run just the island auto-layout
 | Build              | Vite                                 | Fast dev server and a static build                                                           |
 | UI                 | React 19 + TypeScript (strict)       | React 19 because react-leaflet 5 requires it                                                 |
 | Map                | Leaflet + react-leaflet              | `CRS.Simple` lets us pan and zoom an original pixel-space map instead of a real-world globe |
-| UI animation       | Framer Motion                        | Panel and card transitions                                                                   |
-| Sequence animation | GSAP                                 | Route drawing, ship movement, intro                                                          |
+| UI animation       | Framer Motion (`LazyMotion`)         | Panels sliding in and out, the arc card fading in, crew cards popping in                     |
+| Sequence animation | GSAP                                 | Route drawing and the ship sailing it (one tween drives both), the intro                     |
+| Particles          | tsParticles (slim, lazy-loaded)      | Snow, fog, and sparkles around three islands; fetched only when one comes into view          |
 | State              | Zustand                              | One small store for the current arc, spoiler limit, and settings                            |
 | Styling            | CSS Modules + CSS custom properties  | Theme tokens in one file (`src/styles/tokens.css`)                                           |
 | Fonts              | Fontsource (self-hosted)             | No third-party font requests; both faces are OFL-licensed                                    |
@@ -74,7 +75,7 @@ The strip under the map is the timeline: one stop per anime arc in airing order,
 - **Bends are hand-drawn, everything else is a curve.** The whole voyage is one centripetal Catmull-Rom spline through the islands, converted to SVG Bezier curves ([src/utils/spline.ts](src/utils/spline.ts)), so the route flows through islands instead of zigzagging. A few legs need a bend: East Blue ships climb Reverse Mountain along the Red Line instead of crossing the Calm Belt. Those bends live in [scripts/sources/waypoints.ts](scripts/sources/waypoints.ts), with a reason for each, and `build-route` writes them into `data/generated/route.json` for every leg sailed with anime-only arcs shown or hidden. `data:validate` fails if either set of legs is missing an entry.
 - **Drawn in map space.** The route is inline SVG in the base map's own pixel space, so each leg is a single `<path>` that keeps its shape at every zoom. The ship is a small original sailing ship, moored a little way back along the leg it arrived on so it never hides the island.
 - **Every view has a link.** The URL tracks the current arc (`?arc=enies-lobby`, updated with `history.replaceState`). Links can also name an episode, `?ep=300`, which opens the arc it belongs to; where an anime-only arc airs inside a canon one, the canon arc wins. A link to an anime-only arc turns them on.
-- **The camera follows only when it has to.** On load the map opens on the current arc. After that it moves only when the arc's islands go off screen, and it never zooms in on its own.
+- **The camera follows only when it has to.** On load the map opens on the current arc. After that it moves only when the arc's islands go off screen or under a panel, and it never zooms in on its own (except for the three big crossings, below). It frames things in the part of the map the panels leave clear, and pans an island out from under its own panel when you open it.
 
 State lives in one small Zustand store ([src/store/index.ts](src/store/index.ts)): the current arc, the spoiler limit, the open island, and settings. The list of visible arcs is a selector over the filler setting, never a second copy.
 
@@ -88,6 +89,21 @@ State lives in one small Zustand store ([src/store/index.ts](src/store/index.ts)
   - The arc the limit falls inside shows its name and setup only: the map stops at its first island, and crew who join later in it stay hidden.
   - A shared link past the limit opens the gate instead of the arc, and the URL is rewritten to where the viewer actually is, so the address bar doesn't name it either. Raising the limit opens the linked arc.
 - **Reduced motion** is one hook, `useReducedMotion`, combining the OS setting and the override. It's also mirrored onto `<html data-motion>`, so the CSS safety net that stills transitions follows the override too.
+
+## Animation
+
+Durations live in `TIMING` in [src/config.ts](src/config.ts), easing curves in [src/animation/easing.ts](src/animation/easing.ts).
+
+- **The voyage.** Stepping forward draws the new arc's legs while the ship sails them; stepping back un-draws them as the ship rewinds. The decisions are pure functions in [src/animation/voyage.ts](src/animation/voyage.ts) (what to animate, the course the ship follows, its tilt); [src/map/voyageAnimator.ts](src/map/voyageAnimator.ts) plays them. One GSAP tween drives a single progress value: each frame reveals the legs up to the drawing tip through an SVG mask (so dotted anime-only legs draw in too), moves the ship along the same paths with `getPointAtLength` just behind the tip, tilts it to its heading, and drops fading wake dots. Drawing takes longer for longer legs, within a min and max.
+- **Scrubbing never queues.** Every change cancels whatever was playing. Changes closer together than `TIMING.scrubThreshold` count as scrubbing: the map snaps, holds the final step's starting frame, and animates only that step once the timeline settles. Jumps snap everything except the last arc.
+- **The camera** pans when it can (Leaflet slides the map, which is cheap) and flies only when the zoom has to change. Climbing Reverse Mountain, diving to Fish-Man Island, and surfacing in the New World always get a slower, closer flight (`CAMERA.dramatic`).
+- **The ocean** has faint wave marks over open water (none in the Calm Belts, which stay glassy), warped by an `feTurbulence` + `feDisplacementMap` filter. Redrawing that filter costs tens of milliseconds, so instead of animating it every frame there are two copies at different base frequencies, cross-fading with CSS opacity. The browser only fades two finished layers, and the marks step aside while the zoom changes.
+- **The current arc's islands pulse**, and the moored ship bobs on the swell (CSS animations).
+- **Panels** slide in from the edge they're docked to, the arc card fades in on each arc, and new crew members' cards pop in (Framer Motion).
+- **The intro** plays once per device: sea fog, the Red Line and the Grand Line drawing in as a cross, the title, then the fog lifts onto the map. Any click or key skips it. The spoiler prompt follows it.
+- **Weather** (Settings): snow at Drum Island, fog at Thriller Bark, and sparkles in the sky over Skypiea, drawn by tsParticles in a box around each island that moves and scales with the map. It runs only while that box is on screen at close zoom, only for islands the spoiler limit shows, and tsParticles is downloaded only when the first one starts.
+- **Sound** (Settings, off by default): a low wash of waves and a soft chime when someone joins the crew, both synthesized with the Web Audio API, so there are no audio files. Nothing plays until a click or key press after sound is on, and the waves pause in background tabs.
+- **With reduced motion** (the OS setting or the override): the route appears at once, the ship jumps, the camera jumps instead of flying, Leaflet's own zoom animation is off, the ocean holds still, and there's no intro, weather, pulsing, or bobbing. Framer Motion transitions take no time.
 
 ### Placing islands by hand (dev only)
 
@@ -115,5 +131,6 @@ The data currently runs through episode 1180 (as of 2026-10-01): 51 arcs, 42 pla
 - Story data comes from the [One Piece Fandom wiki](https://onepiece.fandom.com/), used under [CC-BY-SA](https://creativecommons.org/licenses/by-sa/3.0/). Arc and island summaries are written originally for this project.
 - Fonts: [IM Fell English](https://fonts.google.com/specimen/IM+Fell+English) (Igino Marini) and [Atkinson Hyperlegible Next](https://www.brailleinstitute.org/freefont/) (Braille Institute), both under the SIL Open Font License.
 - All map art is original, hand-coded SVG. Island positions are approximate; the series' own geography isn't consistent.
+- Sounds are synthesized in the browser; there are no audio files. Animation libraries: [GSAP](https://gsap.com/) (its standard no-charge license), [Framer Motion](https://motion.dev/) (MIT), [tsParticles](https://particles.js.org/) (MIT).
 
 Unofficial fan project, not affiliated with Eiichiro Oda, Shueisha, or Toei Animation.

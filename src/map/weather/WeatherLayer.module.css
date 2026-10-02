@@ -1,0 +1,16 @@
+/* A weather zone's box. Its edges fade out, so the weather thins away from the island instead
+   of stopping at a line. */
+.zone {
+  mask-image: radial-gradient(closest-side, #000 55%, transparent);
+}
+
+.zone canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Mist: the particles are plain circles; blurring them turns them into soft banks. */
+.fog canvas {
+  filter: blur(9px);
+}

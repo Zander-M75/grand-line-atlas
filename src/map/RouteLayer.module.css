@@ -44,3 +44,11 @@
 .filler .casing {
   stroke-opacity: 0.35;
 }
+
+/* The ship's wake: foam dots under the route, faded out by the voyage animation. */
+.wake circle {
+  fill: var(--color-on-ocean);
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}

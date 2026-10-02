@@ -125,6 +125,32 @@
   display: block;
 }
 
+/* The current arc's islands pulse softly: a brass ring swelling out and fading, once per
+   TIMING.islandPulsePeriod (set on the map by WorldMap). Reduced motion stops it (global.css). */
+.current .dot::after,
+.away .dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 2px solid var(--color-route-current);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  animation: pulse var(--island-pulse-period) ease-out infinite;
+}
+
+@keyframes pulse {
+  from {
+    opacity: 0.8;
+    transform: scale(0.8);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
 .note {
   display: block;
   margin-top: 3px;

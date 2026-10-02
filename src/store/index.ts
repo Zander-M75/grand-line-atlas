@@ -9,7 +9,15 @@ import { arcById, arcs, firstArc } from '@/data';
 import { arcForEpisode, canonArcFor, isLocked } from '@/data/arcs';
 import { knownArcs } from '@/data/spoilers';
 import type { Arc } from '@/types';
-import { loadSettings, loadSpoilerLimit, saveSettings, saveSpoilerLimit } from './persist';
+import { FEATURES } from '@/config';
+import {
+  loadIntroSeen,
+  loadSettings,
+  loadSpoilerLimit,
+  saveIntroSeen,
+  saveSettings,
+  saveSpoilerLimit,
+} from './persist';
 
 export interface Settings {
   /** Anime-only (filler) arcs on the timeline and the map. */
@@ -38,6 +46,8 @@ export interface AtlasState {
   settings: Settings;
   /** The spoiler prompt, while it's showing. */
   gate: Gate | null;
+  /** The first-visit intro is playing; the spoiler prompt waits for it. */
+  intro: boolean;
 }
 
 export const useAtlasStore = create<AtlasState>()(() => ({
@@ -46,6 +56,7 @@ export const useAtlasStore = create<AtlasState>()(() => ({
   selectedLocationId: null,
   settings: { showFiller: true, reducedMotion: false, sound: false, weather: true },
   gate: null,
+  intro: false,
 }));
 
 // ---------------------------------------------------------------------------
@@ -212,6 +223,25 @@ export function restoreSaved() {
   } else {
     setSpoilerLimit(saved);
   }
+}
+
+// ---------------------------------------------------------------------------
+// The intro
+
+/**
+ * Plays the intro if this is the viewer's first visit, unless motion is reduced (by the OS,
+ * or saved in settings): then it's skipped entirely, and not marked as seen.
+ */
+export function startIntro(systemReducedMotion: boolean) {
+  const { settings } = useAtlasStore.getState();
+  if (!FEATURES.intro || loadIntroSeen() || systemReducedMotion || settings.reducedMotion) return;
+  useAtlasStore.setState({ intro: true });
+}
+
+/** The intro finished or was skipped: remember that, and hand over to the app. */
+export function finishIntro() {
+  saveIntroSeen();
+  useAtlasStore.setState({ intro: false });
 }
 
 // ---------------------------------------------------------------------------

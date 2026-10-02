@@ -7,14 +7,19 @@
  * limit. An island they can't see on the map can't be open here either.
  *
  * Opening it moves focus to its heading. Escape or the close button hands focus back to the
- * island that opened it.
+ * island that opened it. It slides in from the edge it's docked to, and back out on close.
  */
-import { useEffect, useId, useRef, type MouseEvent } from 'react';
+import { AnimatePresence, m } from 'framer-motion';
+import { useEffect, useId, useRef, type MouseEvent, type Ref } from 'react';
+import { UI_EASE } from '@/animation/easing';
+import { useUiTransition } from '@/animation/ui';
+import { TIMING } from '@/config';
 import { episodeLabel } from '@/data/arcs';
 import { REGION_NAMES, wikiUrl } from '@/data/places';
 import { useJourney } from '@/hooks/useJourney';
+import { NARROW, useMediaQuery } from '@/hooks/useMediaQuery';
 import { goToArc, selectKnownArcs, selectLocation, useAtlasStore } from '@/store';
-import type { Arc } from '@/types';
+import type { Arc, Location } from '@/types';
 import { CloseIcon, ExternalIcon } from './icons';
 import { Tag } from './Tag';
 import styles from './IslandPanel.module.css';
@@ -32,6 +37,9 @@ export function IslandPanel() {
   const headingId = useId();
 
   const open = Boolean(island);
+  const transition = useUiTransition();
+  const narrow = useMediaQuery(NARROW);
+  const offset = narrow ? { y: 48 } : { x: 32 };
 
   // Move focus into the panel whenever it opens or switches island, remembering what had it.
   useEffect(() => {
@@ -52,13 +60,60 @@ export function IslandPanel() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
-  if (!island) return null;
-  const { location } = island;
-  const arcsHere = known.filter((arc) => arc.locationIds.includes(location.id));
-  const region = REGION_NAMES[location.region];
-
   return (
-    <aside ref={panelRef} className={styles.panel} aria-labelledby={headingId}>
+    <AnimatePresence>
+      {island && (
+        <m.aside
+          key="island-panel"
+          ref={panelRef}
+          className={styles.panel}
+          aria-labelledby={headingId}
+          data-map-cover
+          // Slides in from the side it's docked to: the right, or the bottom on phones.
+          initial={{ opacity: 0, ...offset }}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          exit={{ opacity: 0, ...offset, transition: transition(TIMING.panel * 0.7, UI_EASE.exit) }}
+          transition={transition(TIMING.panel)}
+        >
+          <IslandDetails
+            location={island.location}
+            arcs={known.filter((arc) => arc.locationIds.includes(island.location.id))}
+            currentArcId={currentArc.id}
+            limited={limit !== null}
+            headingId={headingId}
+            headingRef={headingRef}
+            onClose={() => close(openerRef.current)}
+          />
+        </m.aside>
+      )}
+    </AnimatePresence>
+  );
+}
+
+interface IslandDetailsProps {
+  location: Location;
+  /** The arcs set here that the viewer may know about. */
+  arcs: Arc[];
+  currentArcId: string;
+  /** The viewer has a spoiler limit, so the wiki link gets a warning. */
+  limited: boolean;
+  headingId: string;
+  headingRef: Ref<HTMLHeadingElement>;
+  onClose: () => void;
+}
+
+function IslandDetails({
+  location,
+  arcs,
+  currentArcId,
+  limited,
+  headingId,
+  headingRef,
+  onClose,
+}: IslandDetailsProps) {
+  const region = REGION_NAMES[location.region];
+  return (
+    <>
       <header className={styles.header}>
         <div>
           {region && <p className={styles.eyebrow}>{region}</p>}
@@ -70,7 +125,7 @@ export function IslandPanel() {
           type="button"
           className={styles.close}
           aria-label="Close island details"
-          onClick={() => close(openerRef.current)}
+          onClick={onClose}
         >
           <CloseIcon />
         </button>
@@ -83,11 +138,11 @@ export function IslandPanel() {
       )}
       {location.summary && <p className={styles.summary}>{location.summary}</p>}
 
-      <h3 className={styles.subheading}>{arcsHere.length === 1 ? 'Arc here' : 'Arcs here'}</h3>
+      <h3 className={styles.subheading}>{arcs.length === 1 ? 'Arc here' : 'Arcs here'}</h3>
       <ul className={styles.arcs}>
-        {arcsHere.map((arc) => (
+        {arcs.map((arc) => (
           <li key={arc.id}>
-            <ArcLink arc={arc} current={arc.id === currentArc.id} />
+            <ArcLink arc={arc} current={arc.id === currentArcId} />
           </li>
         ))}
       </ul>
@@ -103,13 +158,13 @@ export function IslandPanel() {
           <ExternalIcon />
           <span className={styles.visuallyHidden}> (opens in a new tab)</span>
         </a>
-        {limit !== null && (
+        {limited && (
           <span className={styles.wikiNote}>
             Wiki pages cover the whole story, spoilers included.
           </span>
         )}
       </p>
-    </aside>
+    </>
   );
 }
 

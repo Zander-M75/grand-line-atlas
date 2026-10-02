@@ -15,7 +15,8 @@ import { SpoilerForm } from './SpoilerForm';
 import styles from './SpoilerGate.module.css';
 
 export function SpoilerGate() {
-  const gate = useAtlasStore((state) => state.gate);
+  // A first visit plays the intro first; the prompt follows it.
+  const gate = useAtlasStore((state) => (state.intro ? null : state.gate));
   const limit = useAtlasStore((state) => state.spoilerLimitEpisode);
   const headingId = useId();
   const textId = useId();

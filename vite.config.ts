@@ -22,6 +22,11 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  // The weather's particle engine loads lazily, so the dev server would only find it at first
+  // use and pre-bundle the engine and its plugins separately, as two copies of the engine.
+  optimizeDeps: {
+    include: ['@tsparticles/engine', '@tsparticles/slim'],
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],

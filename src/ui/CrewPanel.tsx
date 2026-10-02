@@ -1,20 +1,26 @@
 /**
  * Who's aboard by the end of the current arc, as typographic cards (no character art).
- * Members who join in this arc are highlighted; anyone joining after the viewer's spoiler
+ * Members who join in this arc pop in and are highlighted; anyone joining after the viewer's spoiler
  * limit isn't listed at all, and the count never says how many are still to come.
  *
  * It folds down to a single line (open by default on wide screens, closed on phones), and
  * the folded line still announces a new member.
  */
+import { m } from 'framer-motion';
 import { useId, useMemo, useState } from 'react';
+import type { Bezier } from '@/animation/easing';
+import { useUiTransition } from '@/animation/ui';
+import { TIMING } from '@/config';
 import { crew } from '@/data';
 import { crewAboard } from '@/data/spoilers';
+import { NARROW } from '@/hooks/useMediaQuery';
 import { selectCurrentArc, useAtlasStore } from '@/store';
 import { cx } from '@/utils/cx';
 import { ChevronIcon } from './icons';
 import styles from './CrewPanel.module.css';
 
-const NARROW = '(max-width: 640px)';
+/** A little overshoot, so the pop lands with a bounce. */
+const POP: Bezier = [0.34, 1.56, 0.64, 1];
 
 export function CrewPanel() {
   const arc = useAtlasStore(selectCurrentArc);
@@ -22,6 +28,7 @@ export function CrewPanel() {
   const aboard = useMemo(() => crewAboard(crew, arc, limit), [arc, limit]);
   const [open, setOpen] = useState(() => !window.matchMedia?.(NARROW).matches);
   const listId = useId();
+  const transition = useUiTransition();
 
   const joining = aboard.filter(({ joinsHere }) => joinsHere);
   const joinNote =
@@ -50,13 +57,20 @@ export function CrewPanel() {
 
       <ul id={listId} className={styles.list} hidden={!open}>
         {aboard.map(({ member, joinsHere }) => (
-          <li key={member.id} className={cx(styles.member, joinsHere && styles.joins)}>
+          <m.li
+            key={member.id}
+            className={cx(styles.member, joinsHere && styles.joins)}
+            // A new member's card pops in; everyone else is just there.
+            initial={joinsHere ? { opacity: 0, scale: 0.85 } : false}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={transition(TIMING.crewPop, POP)}
+          >
             <span className={styles.name}>{member.name}</span>
             <span className={styles.role}>{member.role}</span>
             {joinsHere && (
               <span className={styles.joined}>Aboard from ep. {member.joinedEpisode}</span>
             )}
-          </li>
+          </m.li>
         ))}
       </ul>
     </section>

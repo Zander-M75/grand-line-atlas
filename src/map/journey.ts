@@ -24,6 +24,11 @@ export interface LegShape {
 
 export type LegState = 'traveled' | 'current';
 
+/** A leg's key in the drawn route (and in route.json): "from>to". */
+export function legKey(shape: LegShape): string {
+  return routeKey(shape.leg.fromLocationId, shape.leg.toLocationId);
+}
+
 /**
  * current: a stop in the current arc. away: where the current arc happens, when it doesn't
  * follow the ship. visited: reached by an earlier arc. ahead: reached by a later arc.

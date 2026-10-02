@@ -1,6 +1,6 @@
 /**
- * What the app remembers between visits, in localStorage: the viewer's spoiler limit and
- * their settings. Storage can be missing, full, or blocked (private windows, strict privacy
+ * What the app remembers between visits, in localStorage: the viewer's spoiler limit, their
+ * settings, and whether they've seen the intro. Storage can be missing, full, or blocked (private windows, strict privacy
  * settings), so every read and write is wrapped and fails quietly: the app then just asks
  * again next time.
  */
@@ -9,6 +9,7 @@ import type { Settings } from './index';
 const KEYS = {
   spoilerLimit: 'gla:spoiler-limit',
   settings: 'gla:settings',
+  introSeen: 'gla:intro-seen',
 } as const;
 
 /**
@@ -40,6 +41,15 @@ export function loadSettings(): Partial<Settings> {
 
 export function saveSettings(settings: Settings) {
   write(KEYS.settings, settings);
+}
+
+/** True once the intro has played (or been skipped) on this device. */
+export function loadIntroSeen(): boolean {
+  return read(KEYS.introSeen) === true;
+}
+
+export function saveIntroSeen() {
+  write(KEYS.introSeen, true);
 }
 
 function read(key: string): unknown {

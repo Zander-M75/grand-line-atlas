@@ -3,11 +3,12 @@
  * About notes (approximate positions, credits). It's a disclosure: the panel follows the
  * button in tab order. Escape, the close button, or a click outside closes it.
  *
- * Weather and sound switches arrive with those features in Phase 6, so nothing here offers
- * a setting that doesn't do anything yet.
  */
+import { AnimatePresence, m } from 'framer-motion';
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
-import { APP_TITLE, LINKS } from '@/config';
+import { UI_EASE } from '@/animation/easing';
+import { useUiTransition } from '@/animation/ui';
+import { APP_TITLE, LINKS, TIMING } from '@/config';
 import { meta } from '@/data';
 import { useSystemReducedMotion } from '@/hooks/useReducedMotion';
 import { chooseSpoilerLimit, setSetting, setShowFiller, useAtlasStore } from '@/store';
@@ -22,6 +23,7 @@ export function SettingsMenu() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelId = useId();
   const headingId = useId();
+  const transition = useUiTransition();
 
   useEffect(() => {
     if (!open) return;
@@ -57,26 +59,39 @@ export function SettingsMenu() {
         <span className={styles.triggerLabel}>Settings</span>
       </button>
 
-      {open && (
-        <div id={panelId} className={styles.panel} role="group" aria-labelledby={headingId}>
-          <header className={styles.header}>
-            <h2 id={headingId} className={styles.heading}>
-              Settings
-            </h2>
-            <button
-              type="button"
-              className={styles.close}
-              aria-label="Close settings"
-              onClick={close}
-            >
-              <CloseIcon />
-            </button>
-          </header>
-          <SpoilerSection />
-          <DisplaySection />
-          <AboutSection />
-        </div>
-      )}
+      <AnimatePresence>
+        {open && (
+          <m.div
+            key="settings-panel"
+            id={panelId}
+            className={styles.panel}
+            role="group"
+            aria-labelledby={headingId}
+            // Drops down from the button.
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8, transition: transition(TIMING.panel * 0.6, UI_EASE.exit) }}
+            transition={transition(TIMING.panel)}
+          >
+            <header className={styles.header}>
+              <h2 id={headingId} className={styles.heading}>
+                Settings
+              </h2>
+              <button
+                type="button"
+                className={styles.close}
+                aria-label="Close settings"
+                onClick={close}
+              >
+                <CloseIcon />
+              </button>
+            </header>
+            <SpoilerSection />
+            <DisplaySection />
+            <AboutSection />
+          </m.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -99,6 +114,7 @@ function SpoilerSection() {
 function DisplaySection() {
   const settings = useAtlasStore((state) => state.settings);
   const systemReduced = useSystemReducedMotion();
+  const reduced = systemReduced || settings.reducedMotion;
   return (
     <section className={styles.section}>
       <h3 className={styles.subheading}>Display</h3>
@@ -114,6 +130,18 @@ function DisplaySection() {
       {systemReduced && (
         <p className={styles.note}>Your device already asks for reduced motion, so it stays on.</p>
       )}
+      <Switch checked={settings.weather} onChange={(on) => setSetting('weather', on)}>
+        Weather
+      </Switch>
+      <p className={styles.note}>
+        {reduced
+          ? 'Snow, fog, and sparkles stay off while motion is reduced.'
+          : 'Snow, fog, and sparkles around a few islands, when you zoom in close.'}
+      </p>
+      <Switch checked={settings.sound} onChange={(on) => setSetting('sound', on)}>
+        Sound
+      </Switch>
+      <p className={styles.note}>Ocean waves, and a chime when someone joins the crew.</p>
     </section>
   );
 }
@@ -142,7 +170,10 @@ function AboutSection() {
           </a>
           . Summaries are written for this project.
         </li>
-        <li>Map, ship, and icons are original artwork, drawn in code.</li>
+        <li>
+          Map, ship, and icons are original artwork, drawn in code. Sounds are synthesized in the
+          browser.
+        </li>
         <li>Fonts: IM Fell English and Atkinson Hyperlegible Next (SIL Open Font License).</li>
         <li>
           Unofficial fan project, not affiliated with Eiichiro Oda, Shueisha, or Toei Animation.{' '}

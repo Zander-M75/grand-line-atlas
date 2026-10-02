@@ -1,0 +1,78 @@
+/* Sea fog: chart paper washed over the map, thickest in the middle. The map shows through
+   faintly at the edges, so the fog reads as lifting off it. */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 3000; /* over everything, the spoiler prompt included */
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse at center, var(--color-paper) 35%, rgb(232 220 188 / 0.92) 75%),
+    var(--color-ocean-deep);
+  color: var(--color-ink);
+  cursor: pointer;
+  user-select: none;
+}
+
+.chart,
+.title {
+  grid-area: 1 / 1;
+}
+
+.chart {
+  width: min(92vw, 70rem);
+  height: auto;
+  overflow: visible;
+}
+
+.redLine,
+.grandLine {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.redLine {
+  stroke: var(--color-red-line);
+  stroke-width: 7;
+}
+
+.grandLine {
+  stroke: var(--color-grand-line);
+  stroke-width: 22;
+  stroke-opacity: 0.55;
+}
+
+/* The title sits on a paper plate over the crossing, so the lines don't run through it. */
+.title {
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-paper);
+  border: 1px solid var(--color-rule);
+  outline: 1px solid var(--color-rule);
+  outline-offset: 4px;
+  text-align: center;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  font-weight: 400;
+  line-height: var(--leading-tight);
+}
+
+.tagline {
+  margin-top: var(--space-2);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--color-ink-muted);
+}
+
+.skip {
+  position: absolute;
+  bottom: var(--space-6);
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
