@@ -1,14 +1,22 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
+  chooseSpoilerLimit,
+  dismissGate,
   goToArc,
   goToIndex,
+  openLinkedArc,
+  restoreSaved,
+  selectFrontierArc,
+  selectKnownArcs,
   selectLastOpenIndex,
   selectVisibleArcs,
+  setSetting,
   setShowFiller,
   setSpoilerLimit,
   stepArc,
   useAtlasStore,
 } from '@/store';
+import { loadSettings, loadSpoilerLimit, saveSpoilerLimit } from '@/store/persist';
 
 const state = () => useAtlasStore.getState();
 
@@ -75,5 +83,98 @@ describe('atlas store', () => {
   it('ignores unknown arc ids', () => {
     goToArc('atlantis');
     expect(state().currentArcId).toBe('romance-dawn');
+  });
+});
+
+describe('the viewer’s place in the story', () => {
+  it('finds the arc their limit falls in, preferring canon over anime-only arcs inside it', () => {
+    setSpoilerLimit(1000);
+    // Cidre Guild (895–896) is the last arc to start by episode 1000, but they're in Wano.
+    expect(selectFrontierArc(state()).id).toBe('wano-country');
+    setSpoilerLimit(427);
+    expect(selectFrontierArc(state()).id).toBe('impel-down');
+    setSpoilerLimit(null);
+    expect(selectFrontierArc(state()).id).toBe(selectVisibleArcs(state()).at(-1)?.id);
+  });
+
+  it('keeps the known arcs as one stable list per filler setting and limit', () => {
+    setSpoilerLimit(300);
+    const known = selectKnownArcs(state());
+    expect(known.at(-1)?.id).toBe('enies-lobby');
+    expect(selectKnownArcs(state())).toBe(known);
+  });
+});
+
+describe('spoiler gate', () => {
+  it('asks on a first visit, hiding everything past the first episode until answered', () => {
+    restoreSaved();
+    expect(state().gate).toEqual({ reason: 'welcome' });
+    expect(state().spoilerLimitEpisode).toBe(1);
+    expect(loadSpoilerLimit()).toBeUndefined(); // the stand-in limit isn't saved
+  });
+
+  it('restores a saved limit and settings without asking', () => {
+    saveSpoilerLimit(300);
+    localStorage.setItem('gla:settings', JSON.stringify({ reducedMotion: true }));
+    restoreSaved();
+    expect(state().gate).toBeNull();
+    expect(state().spoilerLimitEpisode).toBe(300);
+    expect(state().settings.reducedMotion).toBe(true);
+    expect(state().settings.showFiller).toBe(true);
+  });
+
+  it('turns a link past the limit into a question, landing where the viewer is', () => {
+    setSpoilerLimit(300);
+    openLinkedArc('wano-country');
+    expect(state().currentArcId).toBe('enies-lobby');
+    expect(state().gate).toEqual({ reason: 'past-limit', requestedArcId: 'wano-country' });
+  });
+
+  it('opens the linked arc once the new limit allows it, and saves the answer', () => {
+    setSpoilerLimit(300);
+    openLinkedArc('wano-country');
+    chooseSpoilerLimit(1000);
+    expect(state().gate).toBeNull();
+    expect(state().currentArcId).toBe('wano-country');
+    expect(loadSpoilerLimit()).toBe(1000);
+  });
+
+  it('lands where the viewer is if the linked arc is still locked', () => {
+    restoreSaved();
+    openLinkedArc('wano-country');
+    expect(state().gate).toEqual({ reason: 'welcome', requestedArcId: 'wano-country' });
+    chooseSpoilerLimit(300);
+    expect(state().currentArcId).toBe('enies-lobby');
+  });
+
+  it('opens everything for "caught up"', () => {
+    restoreSaved();
+    chooseSpoilerLimit(null);
+    expect(state().spoilerLimitEpisode).toBeNull();
+    expect(loadSpoilerLimit()).toBeNull();
+  });
+
+  it('can be dismissed without changing the limit', () => {
+    setSpoilerLimit(300);
+    openLinkedArc('wano-country');
+    dismissGate();
+    expect(state().gate).toBeNull();
+    expect(state().spoilerLimitEpisode).toBe(300);
+    expect(state().currentArcId).toBe('enies-lobby');
+  });
+});
+
+describe('settings', () => {
+  it('remembers settings the viewer changes', () => {
+    setSetting('reducedMotion', true);
+    setShowFiller(false);
+    expect(loadSettings()).toMatchObject({ reducedMotion: true, showFiller: false });
+  });
+
+  it('doesn’t remember filler turned on by a link (that lasts the session)', () => {
+    setShowFiller(false);
+    goToArc('g-8');
+    expect(state().settings.showFiller).toBe(true);
+    expect(loadSettings().showFiller).toBe(false);
   });
 });

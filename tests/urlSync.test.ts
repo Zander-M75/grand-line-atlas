@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { arcFromSearch, restoreFromUrl, useUrlSync } from '@/hooks/useUrlSync';
-import { goToArc, setShowFiller, useAtlasStore } from '@/store';
+import { goToArc, setShowFiller, setSpoilerLimit, useAtlasStore } from '@/store';
 
 beforeEach(() => {
   useAtlasStore.setState(useAtlasStore.getInitialState(), true);
@@ -36,6 +36,24 @@ describe('restoreFromUrl', () => {
     restoreFromUrl('?arc=g-8');
     expect(useAtlasStore.getState().currentArcId).toBe('g-8');
     expect(useAtlasStore.getState().settings.showFiller).toBe(true);
+  });
+});
+
+describe('restoreFromUrl past the spoiler limit', () => {
+  it('shows the spoiler prompt instead, and the URL stops naming the locked arc', () => {
+    setSpoilerLimit(300);
+    window.history.replaceState(null, '', '/?arc=wano-country');
+    restoreFromUrl();
+    renderHook(() => useUrlSync());
+    expect(useAtlasStore.getState().gate?.requestedArcId).toBe('wano-country');
+    expect(window.location.search).toBe('?arc=enies-lobby');
+  });
+
+  it('treats ?ep= past the limit the same way', () => {
+    setSpoilerLimit(300);
+    restoreFromUrl('?ep=900');
+    expect(useAtlasStore.getState().gate?.requestedArcId).toBe('wano-country');
+    expect(useAtlasStore.getState().currentArcId).toBe('enies-lobby');
   });
 });
 

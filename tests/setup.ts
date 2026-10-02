@@ -5,6 +5,7 @@ import { afterEach } from 'vitest';
 // Vitest globals are off, so Testing Library can't register its own cleanup.
 afterEach(() => {
   cleanup();
+  localStorage.clear();
 });
 
 // jsdom has no pointer capture; the timeline slider uses it to keep a drag going.

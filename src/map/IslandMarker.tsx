@@ -1,4 +1,4 @@
-import { divIcon } from 'leaflet';
+import { divIcon, type LeafletEvent, type LeafletKeyboardEvent } from 'leaflet';
 import { useMemo } from 'react';
 import { Marker } from 'react-leaflet';
 import { BANDS, ZONES } from '@/config';
@@ -12,15 +12,20 @@ interface IslandMarkerProps {
   location: Location;
   /** Where the island sits in the story so far. Unset in the dev positioner. */
   state?: IslandState;
+  /** Its panel is open. */
+  selected?: boolean;
+  /** Clicking the island (or Enter or Space on it) opens its panel. */
+  onSelect?: (locationId: string) => void;
   /** Dev positioner only: lets the island be dragged, reporting where it's dropped. */
   onMove?: (point: MapPoint) => void;
 }
 
 /**
  * An island: a small chart-style dot, with its name shown at closer zoom levels. The current
- * arc's islands are ringed in brass and always named; islands still ahead are faded.
+ * arc's islands are ringed in brass and always named; islands still ahead are faded. Leaflet
+ * makes each one a focusable button.
  */
-export function IslandMarker({ location, state, onMove }: IslandMarkerProps) {
+export function IslandMarker({ location, state, selected, onSelect, onMove }: IslandMarkerProps) {
   const variant = markerVariant(location);
   const above = labelGoesAbove(location);
   const draggable = Boolean(onMove);
@@ -31,6 +36,7 @@ export function IslandMarker({ location, state, onMove }: IslandMarkerProps) {
           styles.marker,
           styles[variant],
           state && styles[state],
+          selected && styles.selected,
           above && styles.above,
           draggable && styles.draggable,
         ),
@@ -42,8 +48,24 @@ export function IslandMarker({ location, state, onMove }: IslandMarkerProps) {
         iconSize: [24, 24],
         iconAnchor: [12, 12],
       }),
-    [location.name, variant, state, above, draggable],
+    [location.name, variant, state, selected, above, draggable],
   );
+
+  const eventHandlers = useMemo(() => {
+    if (onMove) {
+      return { dragend: (event: LeafletEvent) => onMove(fromLatLng(event.target.getLatLng())) };
+    }
+    if (!onSelect) return undefined;
+    return {
+      click: () => onSelect(location.id),
+      // Leaflet makes markers focusable buttons but doesn't press them from the keyboard.
+      keydown: ({ originalEvent }: LeafletKeyboardEvent) => {
+        if (originalEvent.key !== 'Enter' && originalEvent.key !== ' ') return;
+        originalEvent.preventDefault();
+        onSelect(location.id);
+      },
+    };
+  }, [location.id, onMove, onSelect]);
 
   return (
     <Marker
@@ -51,9 +73,7 @@ export function IslandMarker({ location, state, onMove }: IslandMarkerProps) {
       icon={icon}
       title={location.name}
       draggable={draggable}
-      eventHandlers={
-        onMove ? { dragend: (event) => onMove(fromLatLng(event.target.getLatLng())) } : undefined
-      }
+      eventHandlers={eventHandlers}
     />
   );
 }

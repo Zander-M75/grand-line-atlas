@@ -1,6 +1,6 @@
 # Grand Line Atlas — Handoff
 
-Where the project stands and what to know before picking it up. Last updated 2026-10-01, at the end of Phase 4.
+Where the project stands and what to know before picking it up. Last updated 2026-10-01, at the end of Phase 5.
 
 ---
 
@@ -8,7 +8,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 
 | | |
 |---|---|
-| Phase | **Phase 4 (timeline + route) is done** and waiting for the owner's review. Next is Phase 5 (panels + spoiler gate). The Phase 3 placement review is still open (see Owner decisions). |
+| Phase | **Phase 5 (panels + spoiler gate) is done** and waiting for the owner's review. Next is Phase 6 (animation + polish). The Phase 3 placement review is still open, and Phase 5 adds a few decisions (see Owner decisions). |
 | Data | Through episode 1180, as of 2026-10-01: 51 arcs, 42 places, 10 crew, 42 route connections. `npm run data:fetch -- --refresh && npm run data:build` updates it. |
 | Repo | https://github.com/Zander-M75/grand-line-atlas (public), branch `main` |
 | Hosting | None yet (Vercel in Phase 9). |
@@ -20,7 +20,8 @@ Where the project stands and what to know before picking it up. Last updated 202
 3. [src/config.ts](src/config.ts): map dimensions, zone layout, timings. The layout comment there explains how the flat map represents the world.
 4. [scripts/sources/journey.ts](scripts/sources/journey.ts): the curated arc list (which arcs, which places each visits) that the data build checks against the wiki. The header comments in `scripts/build-arcs.ts` and `scripts/build-locations.ts` record what the wiki pages actually look like.
 5. [src/data/voyage.ts](src/data/voyage.ts) and [src/map/journey.ts](src/map/journey.ts): how the route is derived from the visible arcs, and what the map shows at any arc (legs sailed, ship pose, island states, camera focus).
-6. [data/generated/review/](data/generated/review/): the TODO-REVIEW items from the last data build (the Phase 2 ones are accepted; see Owner decisions).
+6. [src/data/spoilers.ts](src/data/spoilers.ts) and [src/store/index.ts](src/store/index.ts): the spoiler rules (locked, in progress, known arcs, crew aboard) and the store actions around them (the gate, links past the limit, saving the answer).
+7. [data/generated/review/](data/generated/review/): the TODO-REVIEW items from the last data build (the Phase 2 ones are accepted; see Owner decisions).
 
 ## Working rules (from PLAN.md §9)
 
@@ -47,9 +48,14 @@ Where the project stands and what to know before picking it up. Last updated 202
 | Hand-coded `public/map/world.svg` loaded with `ImageOverlay` | Inline SVG drawn by `src/map/BaseMap.tsx`, mounted with react-leaflet's `SVGOverlay` | A static file would duplicate every zone boundary in `config.ts`, so a config change wouldn't move the art (§6 wants config-only layout tweaks). An SVG loaded as an image also can't use the app's web fonts, so labels would fall back to a system serif. Still original, hand-written SVG; it just lives in a component. |
 | Off-route arcs: "a dashed side-route or a highlighted location with a short note" | Highlighted location (dashed brass ring, "Away from the ship" under its name and as a timeline tag); no side-route line | A side route from the ship's last stop misleads for most off-route arcs: Uta's Past would draw a line from Wano across the Red Line to Foosha, and Buggy Side Story one back to Orange Town. A Luffy-only path for the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) is possible; see Open in Owner decisions. |
 | `route.json` waypoints "added by hand" | Bends live in `scripts/sources/waypoints.ts` (with a reason each); `build-route` (last step of `data:build`) writes `route.json` for every leg in both filler modes | Matches the other curated sources: comments explain each bend, and every generated file stays reproducible. `data:validate` fails if a leg in either mode has no entry. |
-| "Show anime-only arcs" toggle in Settings (Phase 5) | Also a switch on the timeline itself, from Phase 4 | Phase 4's acceptance needs a way to toggle filler. It's also where the effect shows. Settings can bind the same store value. |
+| "Show anime-only arcs" toggle in Settings (Phase 5) | In Settings, and also a switch on the timeline itself | Phase 4's acceptance needs a way to toggle filler. It's also where the effect shows. Both bind the same store value. |
 | Episode range "on hover/focus" for each stop | Tooltip on hover and while dragging; on keyboard focus, the header right above shows the current arc's range | A focus tooltip only repeated the header and covered its tags. Screen readers get the full arc, episodes, and saga from `aria-valuetext`. |
 | `useReducedMotion` in Phase 6 | Built in Phase 4 | The Phase 4 camera already animates its pans (Leaflet), so it needed the check. |
+| ArcCard "floats top-left", separate from the title | One "logbook" panel top-left: title, current arc, crew | Two or three floating cards in one corner read as clutter; one ruled sheet reads as a chart cartouche. Resolves the Phase 4 note about the title covering East Blue. |
+| Islands past the limit "hidden or shown as '?'" | Hidden | "?" markers would still leak the route's shape and the special places (a floating sky marker, an undersea one). Hidden means the chart fills in as you watch. |
+| Spoiler limit only in localStorage | Settings too (`gla:settings`) | A reduce-motion override that resets every visit is an accessibility bug. Only changes the viewer makes are saved; filler turned on by a link lasts the session (§7 Phase 4). |
+| Settings: weather and sound toggles | Left out until Phase 6 builds those features | Same rule as the placeholders: nothing offers a setting that does nothing yet. |
+| Footer "icon credits" | "Map and icons are original" | No icon set is used; every icon is hand-written SVG in `src/ui/icons.tsx`. |
 
 Smaller choices:
 
@@ -65,7 +71,7 @@ Smaller choices:
 - **Dev positioner:** Shift+D ([useDevToggle](src/hooks/useDevToggle.ts)). It's lazy-loaded behind `import.meta.env.DEV`, and the production build contains none of it (checked). Unsaved moves live in localStorage under `gla:dev-positions-draft`.
 - **Shared randomness:** the seeded generator lives in `src/utils/random.ts` (no imports), shared by the base map and the Node auto-layout.
 - **Arcs with no map stop:** 8 anime-only arcs name no island. The ship stays where it was, and the timeline tags them "No island stop".
-- **Store:** `src/store/index.ts`. Actions are plain exported functions (`goToArc`, `stepArc`, `goToIndex`, `setShowFiller`, `setSpoilerLimit`), and they guarantee the current arc is always visible and never locked. Visible arcs come from a selector that returns one of two fixed lists (all arcs, canon only), so subscribers get a stable array. `spoilerLimitEpisode: null` means no limit; Phase 5's gate sets it. Locking already works in the store and the slider (locked stops show as "Locked arc" with no name).
+- **Store:** `src/store/index.ts`. Actions are plain exported functions (`goToArc`, `stepArc`, `goToIndex`, `setShowFiller`, `setSetting`, `setSpoilerLimit`, `chooseSpoilerLimit`, `openLinkedArc`, `selectLocation`), and they guarantee the current arc is always visible and never locked. Visible arcs come from a selector that returns one of two fixed lists (all arcs, canon only), so subscribers get a stable array. `spoilerLimitEpisode: null` means no limit. `setSpoilerLimit` is session-only; `chooseSpoilerLimit` (the gate and Settings) also saves it.
 - **Route geometry:** the whole voyage is one centripetal Catmull-Rom spline, cut into legs at each island (`src/map/journey.ts`, `src/utils/spline.ts`). Each leg's shape uses its neighbors' points, so toggling filler slightly reshapes the legs next to a filler detour. Legs are cached per arc list.
 - **Route drawing:** `RouteLayer` is an SVG overlay in map-pixel space in its own pane (z 450, between the base map and markers). Each leg is one `<path>`, ready for Phase 6's `stroke-dashoffset` and `getPointAtLength`. Strokes are non-scaling (screen pixels).
 - **Ship:** a Leaflet marker with an original inline-SVG ship. It sits 30px back along the arriving leg's end tangent, hull on the line, mirrored when sailing west.
@@ -73,6 +79,13 @@ Smaller choices:
 - **Camera (`ArcCamera`):** opens on the current arc (zoom ≤ `CAMERA.arcZoom`) and moves only if the arc's points leave the view. It never zooms in on its own and clamps the view to the map (`keepOnMap` in `coords.ts`). Phase 6 replaces the moves with `flyTo`.
 - **URL:** `restoreFromUrl()` runs in `main.tsx` before the first render (no flash of arc 1). `useUrlSync` writes `?arc=` with `replaceState`, drops `?ep=`, and keeps any other params.
 - **Keyboard:** arrows, Home, and End step arcs page-wide (`useKeyboardNav`), except in text fields and selects and on the map, where arrows pan. The slider itself also handles Page Up/Down (by saga).
+- **Spoilers:** `selectKnownArcs` (visible arcs minus locked ones, the in-progress arc cut to its first stop) feeds `useJourney`, so the route, islands, ship, camera, and island panel can't show anything past the limit. It's cached per list and limit, so its array identity is stable. Because the spline is built from known arcs only, the last leg no longer bends toward an island the viewer hasn't reached (the Phase 4 open item).
+- **Gate:** `restoreSaved()` then `restoreFromUrl()` run in `main.tsx` before the first render. First visit: a stand-in limit of episode 1 (not saved) and the welcome gate. A link past the limit (`openLinkedArc`) lands on `selectFrontierArc` (the arc containing the limit episode, canon preferred) and keeps the requested arc in `gate.requestedArcId` until `chooseSpoilerLimit` allows it. The app root is `inert` while the gate is open, and `useKeyboardNav` ignores keys.
+- **"I'm caught up"** stores `null` (no limit), not the latest episode, so a data refresh opens new arcs. A typed episode past the latest aired one is stored as typed.
+- **Island panel:** opens from a marker click or Enter/Space on a focused marker (Leaflet makes markers focusable `role=button` but doesn't press them). Focus moves to its heading and returns to the marker on Escape or close; clicking open sea closes it. Arc rows are real `?arc=` links (open in new tab works) that jump the timeline on a plain click.
+- **Settings** is a disclosure (button + panel in tab order), not a modal. Escape inside it closes it first (it calls `preventDefault`, which the island panel's window listener respects).
+- **Shared UI:** `paper.module.css` holds the panel surface, eyebrow, heading, icon-button, and link styles, `composes`-d into each panel. `Switch`, `Tag`, and `ArcTags` are shared by the timeline, logbook, and panels. The map container is `isolation: isolate`, so overlays need only z-indexes 1–3 (the gate uses 2000).
+- **Phones (≤640px):** the logbook drops the arc's name, saga, and tags (the timeline right below has them) and hides itself if there's no summary or progress note; the crew folds to one line by default; the island panel is a bottom sheet; the footer stacks into two lines (below 1100px) and drops its extras.
 - **Tests** use the real generated data for arc and journey facts (early-arc facts won't change as new episodes air), and fixtures for the pure voyage logic.
 
 ## Owner decisions
@@ -83,7 +96,12 @@ Settled:
 - **Wiki User-Agent contact** (2026-10-01): use the repo URL, not an email.
 - **Phase 2 review list** (2026-10-01): all items accepted as built. Buggy Side Story and Koby and Helmeppo stay anime-only and off-route; Uta's Past and Elbaph are in; sagas follow the wiki; the eight arcs with no named island have no map stop; the place choices and crew join episodes (Nami 44, Jinbe 980) stand.
 
-Open:
+Open (Phase 5):
+
+- **Arc picker spoilers.** The gate's "or the arc you're on" picker lists every arc name, which can hint at what's ahead (a note under it says so). Alternatives: only list arcs up to the current limit in Settings, or drop the picker and keep the episode field. Kept as PLAN.md asks for now.
+- **Where a first visit lands.** After answering the gate, a viewer stays on the first arc (unless they followed a link). Landing on their own arc (or the latest for "caught up", with the whole route drawn) is a one-line change if you'd prefer it.
+
+Open (earlier):
 
 - **Island placement review (Phase 3 stop).** Every island has an automatic position; `data/overrides/positions.json` is empty. The owner can drag islands with Shift+D in `npm run dev`, Save, and commit. Notable auto choices: Sabaody and Marineford sit against the Red Line; Amazon Lily and Rusukaina in the north Calm Belt near Sabaody; Impel Down in the south Calm Belt between Enies Lobby and Marineford; Skypiea floats above Jaya. With the route drawn, it's easier to judge: the Grand Line route zigzags because auto-layout alternates islands above and below the centerline. Moving an island far may mean updating the two Reverse Mountain bends in `scripts/sources/waypoints.ts`.
 - **Summit War side route (Phase 4).** Off-route arcs only highlight their island. Should Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) get a dashed side route? It would need a small data flag on those arcs, since a generic rule draws misleading lines for flashbacks and side stories.
@@ -92,10 +110,13 @@ The files in [data/generated/review/](data/generated/review/) are now the accept
 
 ## Open items
 
-- The title cartouche floats over the map's north-west corner, which at full-map zoom covers part of East Blue. Revisit when the ArcCard (also top-left) lands in Phase 5; the title may move into the timeline strip.
+- The camera ignores the floating panels: it can frame an arc partly under the logbook, and a clicked island can end up under its own panel (the phone bottom sheet especially). Phase 6's `flyTo` camera should pad for the panels and pan a selected island clear of its panel.
+- Arc and island summaries are empty until Phase 7, so the logbook shows none (and on phones the arc section is hidden unless the viewer is partway through it).
+- The island panel and settings don't trap focus on phones yet (Phase 8 per PLAN.md); the spoiler gate already does, via `inert`.
+- Locked timeline stops still show their episode range in the hover tooltip (no name, no anime-only tag). Episode numbers aren't story content, and the range says when an arc unlocks.
+- The dev server's file watcher didn't pick up edits in the Claude Code sandbox this phase (a restart fixed it); worth knowing if HMR looks stale.
 - Leaflet's own zoom animation (wheel, +/− buttons) doesn't check reduced motion yet; the arc camera does. Phase 6 should pass `useReducedMotion` to the map's `zoomAnimation`/`fadeAnimation`.
 - The prev/next buttons don't announce the new arc to screen readers (the slider does, via `aria-valuetext`). Phase 8 should add a polite live region, worded so it doesn't double up with the slider.
-- A leg's curve uses the next island's position for its tangent, so the drawn route bends slightly toward where the voyage goes next. Not visible as a spoiler in practice, but Phase 5 could cut the spline at the spoiler limit.
 - The timeline strip is 7.5rem tall (8.5rem under 640px, where the details wrap). Long arc names truncate with an ellipsis on phones.
 - No favicon yet (Phase 9).
 - Usopp leaves the crew during Water 7 and rejoins in episode 323; the crew data keeps him aboard throughout.

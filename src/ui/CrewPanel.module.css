@@ -1,0 +1,108 @@
+.crew {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.heading {
+  font: inherit;
+}
+
+/* The whole header line is the fold toggle. */
+.toggle {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-1) 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.title {
+  composes: eyebrow from './paper.module.css';
+  color: var(--color-ink);
+}
+
+.count {
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.joinNote {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.chevron {
+  display: grid;
+  margin-left: auto;
+  align-self: center;
+  color: var(--color-ink-muted);
+  transition: transform 0.15s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.list[hidden] {
+  display: none;
+}
+
+/* A crew card: name over role, set like an entry in a ship's muster roll. */
+.member {
+  display: grid;
+  align-content: start;
+  padding: var(--space-1) var(--space-2) calc(var(--space-1) + 1px);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+}
+
+.name {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.role {
+  font-size: var(--text-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* Joins in this arc: inked border and a brass wash that flares once, then settles. */
+.joins {
+  border-color: var(--color-ink);
+  background: rgb(216 169 78 / 0.2);
+  animation: joined 2.4s ease-out;
+}
+
+@keyframes joined {
+  0%,
+  25% {
+    background-color: rgb(242 207 122 / 0.85);
+  }
+}
+
+.joined {
+  margin-top: 2px;
+  font-size: var(--text-xs);
+  font-style: italic;
+  color: var(--color-ink);
+}

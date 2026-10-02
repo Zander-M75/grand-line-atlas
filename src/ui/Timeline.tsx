@@ -12,8 +12,9 @@ import {
   stepArc,
   useAtlasStore,
 } from '@/store';
-import type { Arc } from '@/types';
 import { ArcSlider } from './ArcSlider';
+import { ArcTags } from './ArcTags';
+import { Switch } from './Switch';
 import styles from './Timeline.module.css';
 
 export function Timeline() {
@@ -32,15 +33,14 @@ export function Timeline() {
           <span className={styles.saga}>{arc.saga}</span>
           <ArcTags arc={arc} />
         </p>
-        <label className={styles.fillerSwitch}>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={showFiller}
-            onChange={(event) => setShowFiller(event.target.checked)}
-          />
+        <Switch
+          className={styles.fillerSwitch}
+          filler
+          checked={showFiller}
+          onChange={setShowFiller}
+        >
           Anime-only arcs
-        </label>
+        </Switch>
       </div>
 
       <div className={styles.controls}>
@@ -49,21 +49,6 @@ export function Timeline() {
         <StepButton direction="next" disabled={index >= lastOpen} onClick={() => stepArc(1)} />
       </div>
     </div>
-  );
-}
-
-/** Short notes on what kind of arc this is, and why the ship might not move. */
-function ArcTags({ arc }: { arc: Arc }) {
-  return (
-    <>
-      {arc.filler && <span className={styles.fillerTag}>Anime-only</span>}
-      {arc.ongoing && <span className={styles.tag}>Now airing</span>}
-      {arc.offRoute ? (
-        <span className={styles.tag}>Away from the ship</span>
-      ) : (
-        arc.locationIds.length === 0 && <span className={styles.tag}>No island stop</span>
-      )}
-    </>
   );
 }
 

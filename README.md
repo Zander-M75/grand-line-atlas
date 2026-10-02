@@ -2,7 +2,7 @@
 
 An interactive, animated map of the One Piece world that follows the Straw Hat Pirates' voyage through the anime, arc by arc. A timeline steps through every anime arc in episode order (anime-only arcs included and marked). As it moves, the route draws itself across the sea, the ship sails to the next island, and panels show the arc, the island, and who's aboard. A spoiler gate lets viewers set the episode they're on, so nothing past it is shown.
 
-> **Status:** early development. The base map, the story data pipeline, island placement, and the timeline with the crew's route are in (Phases 1–4); the arc, island, and crew panels and the spoiler gate come next, then animation. See [PLAN.md](PLAN.md) for the full roadmap.
+> **Status:** early development. The base map, the story data pipeline, island placement, the timeline with the crew's route, and the arc, island, and crew panels with the spoiler gate are in (Phases 1–5); animation comes next. See [PLAN.md](PLAN.md) for the full roadmap.
 
 ## Running it
 
@@ -76,7 +76,18 @@ The strip under the map is the timeline: one stop per anime arc in airing order,
 - **Every view has a link.** The URL tracks the current arc (`?arc=enies-lobby`, updated with `history.replaceState`). Links can also name an episode, `?ep=300`, which opens the arc it belongs to; where an anime-only arc airs inside a canon one, the canon arc wins. A link to an anime-only arc turns them on.
 - **The camera follows only when it has to.** On load the map opens on the current arc. After that it moves only when the arc's islands go off screen, and it never zooms in on its own.
 
-State lives in one small Zustand store ([src/store/index.ts](src/store/index.ts)): the current arc, the spoiler limit, and settings. The list of visible arcs is a selector over the filler setting, never a second copy.
+State lives in one small Zustand store ([src/store/index.ts](src/store/index.ts)): the current arc, the spoiler limit, the open island, and settings. The list of visible arcs is a selector over the filler setting, never a second copy.
+
+## Panels and spoilers
+
+- **The logbook** (top-left) is one sheet of chart paper: the atlas title, the current arc (saga, episodes, anime-only and other tags, summary), and the crew. Crew are typographic cards, name over role, with no character art; whoever joins in the current arc is inked and briefly washed in brass. On phones the timeline right under the map names the arc, so the logbook keeps only the title, the arc's summary, and a folded crew line.
+- **Islands open a panel** (a card on the right, a bottom sheet on phones): region, summary, the arcs set there as links that jump the timeline, and the island's wiki page. Clicking open sea or pressing Escape closes it, and focus goes back to the island.
+- **Settings** (top-right) hold the spoiler limit, the anime-only switch, a reduce-motion override, and the About notes. Settings and the spoiler limit are remembered in `localStorage` (namespaced `gla:`, every access wrapped so a blocked store just means being asked again).
+- **The spoiler gate.** A first visit asks for the last episode watched (or an arc, or "I'm caught up") before showing anything past episode 1. The answer becomes a limit, and the rules live in one place, [src/data/spoilers.ts](src/data/spoilers.ts):
+  - Arcs that start after the limit are locked: timeline stops with no name, and their sagas go unnamed too. They contribute nothing else: the map is drawn from a "known arcs" list that leaves them out, so their islands, route legs, and crew simply don't exist yet. The chart fills in as you watch.
+  - The arc the limit falls inside shows its name and setup only: the map stops at its first island, and crew who join later in it stay hidden.
+  - A shared link past the limit opens the gate instead of the arc, and the URL is rewritten to where the viewer actually is, so the address bar doesn't name it either. Raising the limit opens the linked arc.
+- **Reduced motion** is one hook, `useReducedMotion`, combining the OS setting and the override. It's also mirrored onto `<html data-motion>`, so the CSS safety net that stills transitions follows the override too.
 
 ### Placing islands by hand (dev only)
 

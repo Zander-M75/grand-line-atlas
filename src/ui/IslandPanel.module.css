@@ -1,0 +1,145 @@
+/* Wide screens: a card down the map's right side, under the settings button and clear of
+   the zoom buttons at the bottom. */
+.panel {
+  composes: paper from './paper.module.css';
+
+  position: absolute;
+  top: calc(var(--space-4) + 2.75rem + var(--space-3));
+  right: var(--space-4);
+  z-index: 2;
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+  width: 21rem;
+  max-height: calc(100% - 2.75rem - 2 * var(--space-4) - var(--space-3) - 6rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.eyebrow {
+  composes: eyebrow from './paper.module.css';
+}
+
+.name {
+  composes: heading from './paper.module.css';
+}
+
+.name:focus {
+  outline: none;
+}
+
+.close {
+  composes: iconButton from './paper.module.css';
+  margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-2)) 0 0;
+}
+
+.summary {
+  font-size: var(--text-sm);
+}
+
+.subheading {
+  composes: eyebrow from './paper.module.css';
+  margin-top: var(--space-1);
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.arcs {
+  display: grid;
+  gap: var(--space-1);
+  margin: calc(-1 * var(--space-2)) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each arc is a row you can click to jump the timeline there. */
+.arcLink {
+  display: grid;
+  gap: 1px;
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid transparent;
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.arcLink:hover {
+  background: var(--color-paper-shade);
+}
+
+/* The arc on the timeline right now: a brass rule, like the route on the map. */
+.arcLink[aria-current] {
+  border-left-color: var(--color-route);
+  background: rgb(216 169 78 / 0.16);
+}
+
+.arcName {
+  font-weight: 600;
+}
+
+.arcLink:hover .arcName {
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: 0.18em;
+}
+
+.arcMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-ink-muted);
+}
+
+.wiki {
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.wikiLink {
+  composes: link from './paper.module.css';
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  justify-self: start;
+  font-weight: 600;
+}
+
+.wikiNote {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Phones: a bottom sheet across the map's lower part, above the timeline. */
+@media (max-width: 640px) {
+  .panel {
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    max-height: 60%;
+    padding: var(--space-4);
+    border-width: 1px 0 0;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+}

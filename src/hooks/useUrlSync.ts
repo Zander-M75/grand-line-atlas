@@ -1,11 +1,12 @@
 /**
  * The URL carries the current arc, so any view can be shared: `?arc=enies-lobby`. Links can
- * also name an episode, `?ep=300`, which opens the arc that episode belongs to.
+ * also name an episode, `?ep=300`, which opens the arc that episode belongs to. A link past
+ * the viewer's spoiler limit opens the spoiler prompt instead of the arc.
  */
 import { useEffect } from 'react';
 import { arcs, firstArc } from '@/data';
 import { arcForEpisode } from '@/data/arcs';
-import { goToArc, useAtlasStore } from '@/store';
+import { openLinkedArc, useAtlasStore } from '@/store';
 import type { Arc } from '@/types';
 
 /**
@@ -22,11 +23,12 @@ export function arcFromSearch(search: string): Arc {
 }
 
 /**
- * Opens the arc the page's URL points to. Call once, before the first render, so the app
- * never flashes the first arc on the way. Linking to an anime-only arc turns filler on.
+ * Opens the arc the page's URL points to. Call once, before the first render (after
+ * restoreSaved, so the spoiler limit is known), so the app never flashes the first arc on the
+ * way. Linking to an anime-only arc turns filler on; linking past the limit asks first.
  */
 export function restoreFromUrl(search = window.location.search) {
-  goToArc(arcFromSearch(search).id);
+  openLinkedArc(arcFromSearch(search).id);
 }
 
 /** Keeps `?arc=` in step with the current arc, without adding history entries. */

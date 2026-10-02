@@ -1,15 +1,17 @@
 import { useEffect } from 'react';
-import { goToIndex, stepArc } from '@/store';
+import { goToIndex, stepArc, useAtlasStore } from '@/store';
 
 /**
  * Arrow keys step through arcs from anywhere on the page, and Home/End jump to the ends,
  * except where those keys already mean something: in text fields and selects, and on the
- * map, where arrows pan. The timeline slider handles its own keys when it has focus.
+ * map, where arrows pan. The timeline slider handles its own keys when it has focus. While
+ * the spoiler prompt is open, the timeline behind it stays put.
  */
 export function useKeyboardNav() {
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (useAtlasStore.getState().gate) return;
       if (event.target instanceof Element && event.target.closest(IGNORE)) return;
 
       const action = ACTIONS[event.key];

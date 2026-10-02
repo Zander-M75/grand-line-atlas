@@ -3,7 +3,8 @@
  * sagas. It's a single ARIA slider, so it takes one Tab stop and the standard keys: arrows
  * step, Home/End jump to the ends, Page Up/Down jump by saga. Click or drag to scrub.
  *
- * Stops past `lastOpen` are locked (past the viewer's spoiler limit) and can't be selected.
+ * Stops past `lastOpen` are locked (past the viewer's spoiler limit): they can't be selected,
+ * and neither they nor sagas that start among them are named.
  */
 import {
   useMemo,
@@ -104,7 +105,10 @@ export function ArcSlider({ arcs, value, lastOpen, onChange }: ArcSliderProps) {
             )}
             style={{ gridColumn: `${run.start + 1} / ${run.end + 2}` }}
           >
-            <span className={styles.sagaName}>{shortSagaName(run.saga)}</span>
+            {/* A saga that hasn't started by the viewer's limit stays unnamed. */}
+            <span className={styles.sagaName}>
+              {run.start <= lastOpen && shortSagaName(run.saga)}
+            </span>
           </span>
         ))}
       </div>
@@ -156,7 +160,7 @@ function StopTooltip({
       <span className={styles.tooltipName}>{locked ? 'Locked arc' : arc.name}</span>
       <span className={styles.tooltipDetails}>
         {episodeLabel(arc)}
-        {arc.filler && <span className={styles.tooltipTag}>Anime-only</span>}
+        {arc.filler && !locked && <span className={styles.tooltipTag}>Anime-only</span>}
       </span>
     </div>
   );

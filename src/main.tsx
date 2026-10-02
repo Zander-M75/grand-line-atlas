@@ -6,9 +6,12 @@ import '@fontsource-variable/atkinson-hyperlegible-next';
 import './styles/tokens.css';
 import './styles/global.css';
 import { restoreFromUrl } from './hooks/useUrlSync';
+import { restoreSaved } from './store';
 import { App } from './App';
 
-// Open the arc a shared link points to before anything renders.
+// Before anything renders: the viewer's saved spoiler limit and settings, then the arc a
+// shared link points to (which may be past that limit).
+restoreSaved();
 restoreFromUrl();
 
 const root = document.getElementById('root');

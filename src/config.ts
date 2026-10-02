@@ -10,6 +10,14 @@ import type { Region } from './types.ts';
 
 export const APP_TITLE = 'Grand Line Atlas';
 
+/** Where credits and "read more" links point. */
+export const LINKS = {
+  wiki: 'https://onepiece.fandom.com/',
+  /** The license of the wiki's text (Fandom wikis use CC-BY-SA 3.0). */
+  wikiLicense: 'https://creativecommons.org/licenses/by-sa/3.0/',
+  repo: 'https://github.com/Zander-M75/grand-line-atlas',
+} as const;
+
 // ---------------------------------------------------------------------------
 // Map space (PLAN.md §6)
 //

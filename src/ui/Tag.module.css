@@ -1,0 +1,20 @@
+.tag {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-ink);
+}
+
+/* Anime-only: violet, on the same hatching the timeline uses for those arcs. */
+.filler {
+  border-color: var(--color-filler);
+  color: var(--color-filler);
+  background: repeating-linear-gradient(135deg, transparent 0 3px, rgb(90 74 124 / 0.12) 3px 4.5px);
+}

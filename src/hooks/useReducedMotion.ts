@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { useAtlasStore } from '@/store';
 
 const QUERY = '(prefers-reduced-motion: reduce)';
@@ -9,8 +9,23 @@ const QUERY = '(prefers-reduced-motion: reduce)';
  */
 export function useReducedMotion(): boolean {
   const fromSettings = useAtlasStore((state) => state.settings.reducedMotion);
-  const fromSystem = useSyncExternalStore(subscribe, systemPrefersReduced, () => false);
-  return fromSettings || fromSystem;
+  return useSystemReducedMotion() || fromSettings;
+}
+
+/** Just the OS setting, for Settings to explain why motion is already reduced. */
+export function useSystemReducedMotion(): boolean {
+  return useSyncExternalStore(subscribe, systemPrefersReduced, () => false);
+}
+
+/**
+ * Mirrors useReducedMotion onto <html data-motion>, so CSS transitions and animations follow
+ * the settings override too, not only the OS media query (see global.css).
+ */
+export function useMotionAttribute() {
+  const reduced = useReducedMotion();
+  useEffect(() => {
+    document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
+  }, [reduced]);
 }
 
 function subscribe(onChange: () => void) {

@@ -1,0 +1,62 @@
+/* Shared panel surfaces and type, composed into each panel's own module. */
+
+/* Chart paper: the surface every floating panel sits on. */
+.paper {
+  --focus-ring: var(--color-focus-on-paper);
+
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+}
+
+/* Small capitals over a heading: the saga over an arc, the region over an island. */
+.eyebrow {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--color-ink-muted);
+}
+
+/* A panel's title, in the chart's display face. */
+.heading {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: var(--leading-tight);
+}
+
+/* Round, quiet icon buttons (close, and the like). */
+.iconButton {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  border-color: var(--color-rule);
+  background: var(--color-paper-shade);
+  color: var(--color-ink);
+}
+
+/* Links on paper: ink, underlined, never browser blue. */
+.link {
+  color: var(--color-ink);
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: 0.18em;
+}
+
+.link:hover {
+  text-decoration-color: currentColor;
+}

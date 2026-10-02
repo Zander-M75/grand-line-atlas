@@ -1,6 +1,9 @@
 .map {
   width: 100%;
   height: 100%;
+  /* Keeps Leaflet's z-indexes (panes up to 700, controls 1000) inside the map, so the
+     panels floating over it need only small ones. */
+  isolation: isolate;
   /* Shows past the map's edges when panned there: more deep water, not grey. */
   background: var(--color-ocean-deep);
   font-family: var(--font-body);

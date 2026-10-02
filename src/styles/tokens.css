@@ -44,6 +44,7 @@
   --color-locked: #5f584e; /* past the viewer's spoiler limit */
   --color-focus: #f2cf7a; /* focus ring on the sea */
   --color-focus-on-paper: #231c14; /* focus ring on paper surfaces */
+  --color-error: #8f2a1d; /* form errors, on paper */
 
   --shadow-panel: 0 12px 32px rgb(4 14 20 / 0.45), 0 2px 6px rgb(4 14 20 / 0.3);
 

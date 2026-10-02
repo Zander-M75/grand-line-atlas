@@ -1,0 +1,49 @@
+.card {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.eyebrow {
+  composes: eyebrow from './paper.module.css';
+}
+
+.name {
+  composes: heading from './paper.module.css';
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.summary {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.progress {
+  margin-top: var(--space-1);
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: var(--color-ink-muted);
+}
+
+/* Phones: the timeline names the arc, so the card shows only the summary and progress. */
+@media (max-width: 640px) {
+  .eyebrow,
+  .name,
+  .tags {
+    display: none;
+  }
+
+  .nothingMore {
+    display: none;
+  }
+
+  .summary,
+  .progress {
+    margin-top: 0;
+  }
+}

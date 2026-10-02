@@ -1,0 +1,127 @@
+/* A column down the map's right edge: the button, and the panel dropping down under it,
+   shrinking (and scrolling) to fit whatever height the map has. Only they take clicks. */
+.settings {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  bottom: var(--space-4);
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.settings > * {
+  pointer-events: auto;
+}
+
+.trigger {
+  composes: paper from './paper.module.css';
+
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  height: 2.75rem;
+  padding: 0 var(--space-4);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+  background: var(--color-paper-shade);
+}
+
+.panel {
+  composes: paper from './paper.module.css';
+
+  display: grid;
+  gap: var(--space-4);
+  width: 23rem;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-4) var(--space-5) var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.heading {
+  composes: heading from './paper.module.css';
+}
+
+.close {
+  composes: iconButton from './paper.module.css';
+  margin-right: calc(-1 * var(--space-2));
+}
+
+.section {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.subheading {
+  composes: eyebrow from './paper.module.css';
+  padding-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.status {
+  font-weight: 600;
+}
+
+.note {
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.credits {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+.link {
+  composes: link from './paper.module.css';
+}
+
+/* Phones: an icon button, and a panel across the map's full width. */
+@media (max-width: 640px) {
+  .settings {
+    top: var(--space-3);
+    right: var(--space-3);
+    bottom: var(--space-3);
+  }
+
+  .trigger {
+    justify-content: center;
+    width: 2.75rem;
+    padding: 0;
+  }
+
+  /* Named for screen readers only. */
+  .triggerLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .panel {
+    width: calc(100vw - 2 * var(--space-3));
+    padding: var(--space-4);
+  }
+}

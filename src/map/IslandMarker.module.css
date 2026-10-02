@@ -153,3 +153,12 @@
 .draggable .dot {
   --dot-ring: var(--color-route-current);
 }
+
+/* Its panel is open: a brass dot inside whatever ring it has. */
+.selected .dot {
+  background: var(--color-route-current);
+}
+
+.selected.ahead {
+  opacity: 1;
+}

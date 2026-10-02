@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { arcById, locationById } from '@/data';
+import { knownArcs } from '@/data/spoilers';
 import { journeyAt } from '@/map/journey';
 import { visibleArcs } from '@/store';
 import type { Arc } from '@/types';
@@ -85,5 +86,21 @@ describe('journeyAt', () => {
         ).toBe(false);
       }
     }
+  });
+
+  it('draws nothing past the viewer’s spoiler limit', () => {
+    const known = knownArcs(all, 300);
+    const journey = journeyAt(known, arc('enies-lobby'));
+    expect(stateOf(journey, 'enies-lobby')).toBe('current');
+    expect(stateOf(journey, 'thriller-bark')).toBeUndefined();
+    expect(stateOf(journey, 'wano-country')).toBeUndefined();
+  });
+
+  it('shows only the first stop of the arc in progress', () => {
+    const known = knownArcs(all, 1);
+    const journey = journeyAt(known, known[0] ?? arc('romance-dawn'));
+    expect(journey.islands.map(({ location }) => location.id)).toEqual(['foosha-village']);
+    expect(journey.legs).toEqual([]);
+    expect(journey.ship?.at).toEqual(at('foosha-village'));
   });
 });

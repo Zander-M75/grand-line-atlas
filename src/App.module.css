@@ -1,11 +1,13 @@
-/* The map takes the whole screen above a fixed strip reserved for the timeline. */
+/* The map takes the whole screen above the timeline strip and the footer line. */
 .app {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) var(--timeline-height);
+  grid-template-rows: minmax(0, 1fr) var(--timeline-height) auto;
   height: 100vh;
   height: 100dvh; /* mobile: excludes the browser's own toolbars */
 }
 
+/* Panels float over the map. The map is its own stacking context (see WorldMap.module.css),
+   so these small z-indexes clear all of Leaflet's panes and controls. */
 .mapArea {
   position: relative;
   min-height: 0;
@@ -17,34 +19,41 @@
   border-top: 1px solid var(--color-rule);
   box-shadow: 0 -6px 18px rgb(4 14 20 / 0.35);
   position: relative;
-  /* Above Leaflet's panes and controls (which go up to z-index 1000). */
-  z-index: 1001;
+  z-index: 1;
 }
 
-/* The chart's title cartouche, floating over the map's north-west corner. */
-.cartouche {
+/* The logbook: one sheet of chart paper in the map's north-west corner, ruled into the
+   title, the current arc, and the crew. It scrolls if the map is too short to hold it. */
+.logbook {
   --focus-ring: var(--color-focus-on-paper);
 
   position: absolute;
   top: var(--space-4);
   left: var(--space-4);
-  z-index: 1000;
-  max-width: calc(100% - 2 * var(--space-4));
+  z-index: 2;
+  display: grid;
+  gap: var(--space-3);
+  width: 22rem;
+  max-height: calc(100% - 2 * var(--space-4));
+  overflow-y: auto;
+  overscroll-behavior: contain;
   padding: var(--space-4) var(--space-5);
   background: var(--color-paper);
   color: var(--color-ink);
   border: 1px solid var(--color-rule);
   border-radius: var(--radius-md);
-  outline: 1px solid var(--color-rule);
-  outline-offset: -5px;
   box-shadow: var(--shadow-panel);
-  /* Decoration only: let drags and clicks fall through to the map. */
-  pointer-events: none;
+}
+
+/* Rules between the logbook's sections. */
+.logbook > * + * {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-rule);
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: 400;
   line-height: var(--leading-tight);
 }
@@ -53,19 +62,36 @@
   margin-top: var(--space-1);
   font-family: var(--font-display);
   font-style: italic;
-  font-size: var(--text-lg);
+  font-size: 1.125rem; /* IM Fell's smallest comfortable size */
+  line-height: 1.25;
   color: var(--color-ink-muted);
 }
 
-@media (max-width: 480px) {
-  .cartouche {
+/* Short screens: drop the tagline so the logbook leaves more of the map clear. */
+@media (max-height: 760px) {
+  .tagline {
+    display: none;
+  }
+}
+
+/* Phones: the logbook spans the top, leaving room for the settings button. */
+@media (max-width: 640px) {
+  .logbook {
     top: var(--space-3);
     left: var(--space-3);
+    width: auto;
+    right: calc(2 * var(--space-3) + 2.75rem);
+    max-height: calc(100% - 2 * var(--space-3));
+    gap: var(--space-2);
     padding: var(--space-3) var(--space-4);
   }
 
+  .logbook > * + * {
+    padding-top: var(--space-2);
+  }
+
   .title {
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
   }
 
   .tagline {

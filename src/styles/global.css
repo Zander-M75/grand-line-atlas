@@ -41,7 +41,9 @@ select {
   outline-offset: 2px;
 }
 
-/* Safety net for any CSS motion. JS-driven animation checks useReducedMotion() instead. */
+/* Safety net for any CSS motion: the OS setting, or the viewer's override in Settings
+   (mirrored onto <html data-motion> by useMotionAttribute). JS-driven animation checks
+   useReducedMotion() instead. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -51,4 +53,13 @@ select {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+:root[data-motion='reduced'] *,
+:root[data-motion='reduced'] *::before,
+:root[data-motion='reduced'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
 }

@@ -1,0 +1,70 @@
+/* Sea fog over the whole app: the chart is there, but not readable yet. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000; /* above everything, Leaflet included */
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: var(--space-4);
+  background: rgb(14 38 51 / 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.dialog {
+  composes: paper from './paper.module.css';
+
+  display: grid;
+  gap: var(--space-3);
+  width: min(100%, 27rem);
+  padding: var(--space-5) var(--space-6) var(--space-5);
+  /* The chart's double rule, as on the title cartouche. */
+  outline: 1px solid var(--color-rule);
+  outline-offset: -6px;
+}
+
+.eyebrow {
+  composes: eyebrow from './paper.module.css';
+}
+
+.heading {
+  composes: heading from './paper.module.css';
+  font-size: var(--text-2xl);
+}
+
+.text {
+  margin-bottom: var(--space-1);
+}
+
+.stay {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--color-rule);
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+}
+
+.stay:hover {
+  text-decoration-color: currentColor;
+}
+
+.footnote {
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--text-xs);
+  color: var(--color-ink-muted);
+}
+
+@media (max-width: 480px) {
+  .dialog {
+    padding: var(--space-5) var(--space-4) var(--space-4);
+  }
+
+  .heading {
+    font-size: var(--text-xl);
+  }
+}
