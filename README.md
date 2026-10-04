@@ -2,7 +2,7 @@
 
 An interactive, animated map of the One Piece world that follows the Straw Hat Pirates' voyage through the anime, arc by arc. A timeline steps through every anime arc in episode order (anime-only arcs included and marked). As it moves, the route draws itself across the sea, the ship sails to the next island, and panels show the arc, the island, and who's aboard. A spoiler gate lets viewers set the episode they're on, so nothing past it is shown.
 
-> **Status:** in development. The base map, the story data pipeline, island placement, the timeline with the crew's route, the arc, island, and crew panels with the spoiler gate, the animation, and the writing pass (Phases 1–7) are in; accessibility, performance, and testing come next. See [PLAN.md](PLAN.md) for the full roadmap.
+> **Status:** in development. The base map, the story data pipeline, island placement, the timeline with the crew's route, the arc, island, and crew panels with the spoiler gate, the animation, the writing pass, and the accessibility, performance, and testing pass (Phases 1–8) are in; deployment comes next. See [PLAN.md](PLAN.md) for the full roadmap.
 
 ## Running it
 
@@ -12,10 +12,13 @@ Requires Node 22+.
 npm install
 npm run dev        # start the dev server
 npm test           # unit and component tests (Vitest)
+npm run test:e2e   # build, then browser tests (Playwright, desktop and phone)
 npm run lint       # ESLint
-npm run typecheck  # TypeScript, app and Node configs
-npm run build      # type-check, then production build
+npm run typecheck  # TypeScript, app, Node, and browser-test configs
+npm run build      # validate the data, type-check, then production build
 ```
+
+The first `test:e2e` run needs a browser for Playwright: `npx playwright install chromium`.
 
 Data scripts:
 
@@ -41,6 +44,7 @@ npm run data:layout    # re-run just the island auto-layout
 | Styling            | CSS Modules + CSS custom properties  | Theme tokens in one file (`src/styles/tokens.css`)                                           |
 | Fonts              | Fontsource (self-hosted)             | No third-party font requests; both faces are OFL-licensed                                    |
 | Tests              | Vitest + React Testing Library       | Shares Vite's config and module resolution                                                   |
+| Browser tests      | Playwright + axe-core                | A first visit end to end in real Chromium, plus an automated accessibility scan of each screen |
 | Lint/format        | ESLint (typescript-eslint) + Prettier |                                                                                              |
 | Wikitext parsing   | wtf_wikipedia (scripts only)         | Parses the wiki's templates, including nested ones, so scripts don't hand-roll regexes       |
 | Data validation    | zod (scripts only)                   | Schemas checked against `src/types.ts` at compile time with `satisfies`                      |
@@ -52,6 +56,7 @@ src/        the app (map/, ui/, store/, hooks/, animation/, styles/, config.ts, 
 scripts/    Node data pipeline, run with tsx, never shipped to the client
 data/       raw/ (cached wiki responses, gitignored), generated/ (committed), overrides/
 tests/      Vitest unit and component tests
+e2e/        Playwright browser tests, run against the production build
 ```
 
 `src/config.ts` holds the title, map dimensions, zone boundaries, and animation timings, so layout and timing tweaks never touch component code. The data scripts import it too.
@@ -65,7 +70,7 @@ The world is an original chart, not a real-world map, so Leaflet runs in `CRS.Si
 - **Zoom fits the screen.** The farthest-out zoom is recomputed on resize to "whole world in view", so the map works from a phone to a wide monitor without letting anyone zoom out into empty space.
 
 - **Islands are placed in two layers.** [scripts/auto-layout.ts](scripts/auto-layout.ts) gives every island a starting spot from the zones in `config.ts`: East Blue islands follow a curve toward Reverse Mountain, Grand Line islands spread out in visit order on alternating sides of the centerline (so neighbors' labels don't collide), and special cases (Mary Geoise on the Red Line, Fish-Man Island beneath it, Skypiea above Jaya, the Calm Belt islands) follow written rules. Hand-placed positions in `data/overrides/positions.json` win over it when the app loads, so re-running the layout never loses hand work.
-- **Names appear as you zoom in.** At the full-world view islands are dots; names show from zoom −0.5 inward. Anime-only places are violet, Fish-Man Island has an undersea ring, and Skypiea floats.
+- **Names appear as you zoom in.** At the full-world view islands are dots, named only while pointed at or focused; names show from zoom −0.5 inward. Anime-only places are violet, Fish-Man Island has an undersea ring, and Skypiea floats.
 
 ### Placing islands by hand (dev only)
 
@@ -113,7 +118,28 @@ Animation follows one rule set (PLAN.md §7, Phase 6, and §8): everything moves
 - **Sound**, off by default and never remembered between visits: a low sea wash and a bell when someone joins, synthesized with the Web Audio API, so there are no audio files at all.
 - **Reduced motion** (the OS setting, or the switch in Settings): one hook, `useReducedMotion`, that every animated piece checks. Route legs appear whole, the ship jumps, the camera cuts instead of flying, the ocean holds still, and there's no intro, weather, bobbing, or pulsing; Framer Motion transitions become instant. CSS animations are stilled by a global rule keyed to `<html data-motion>`. Animation timings live in `TIMING` in `src/config.ts`; the ones CSS needs are published as custom properties.
 
-Measured in Chrome on an Apple-silicon laptop, sailing and flying hold the display's full 120 Hz (95th-percentile frame 7.7 ms, ocean included). With the CPU throttled 4× in the production build, a step costs one 53 ms frame as React re-renders the new arc, and then animates smoothly.
+Measured in Chrome on an Apple-silicon laptop, sailing and flying hold the display's full 120 Hz (95th-percentile frame 7.7 ms, ocean included). With the CPU throttled 4× in the production build, most steps have no frame over 50 ms; one that starts a camera flight can have one of about 60 ms.
+
+## Accessibility
+
+The goal (PLAN.md §7, Phase 8) is that the whole journey works by keyboard and by screen reader, not just with a mouse.
+
+- **Keyboard.** Everything is reachable with Tab and shows a focus ring: brass on the sea, ink on paper. The first Tab stop is a "Skip to the timeline" link, past the map's islands. Source order is reading order: the title and logbook, settings, the map (each island a button), the timeline, the footer. The timeline is a single ARIA slider (arrows, Home/End, Page Up/Down by saga), and arrow keys step arcs from anywhere outside the map. On the map, arrows pan and plus/minus zoom; an island reached with Tab is panned into view, clear of the panels, and shows its name even when zoomed out. Enter or Space opens it.
+- **Screen readers.** The slider's value reads as the arc: "Impel Down Arc, episodes 422 to 456, Summit War Saga, away from the ship". Moving to an arc any other way (the step buttons, the arrow keys elsewhere on the page, an island's arc links) is announced through a status region, along with who comes aboard. Islands are named with their place in the story ("Syrup Village, visited", "Goat Island, ahead, anime-only"), the map is a labeled region with a hint about its keys, and the decorative SVG layers are hidden from assistive tech and kept out of the Tab order.
+- **Panels.** The island panel and settings close with Escape and hand focus back to what opened them. On phones, where they cover much of the map, they're modal dialogs: focus moves inside and Tab stays there until they close. The spoiler prompt is always modal.
+- **Contrast.** Every text color pair is WCAG AA (4.5:1) on its surface; the pairs are listed in [src/styles/tokens.css](src/styles/tokens.css). Islands still ahead fade their dot but only dim their name, to a tone that still passes. The one exception is the region lettering painted into the chart ("Grand Line", "East Blue"), kept faint like a watermark; WCAG exempts text that's part of a picture.
+- **Motion.** Reduced motion turns off every animation (see Animation).
+
+Checked automatically: axe finds no violations on any screen (the spoiler prompt, the map with an island open, settings) at desktop and phone sizes, as part of the browser tests, and Lighthouse scores Accessibility 100.
+
+## Performance and testing
+
+- **Lighthouse** (desktop, production build, first visit with the intro): Performance 97, Accessibility 100, Best Practices 96 (the missing favicon, coming in Phase 9). First and largest contentful paint come in under a second.
+- **Bundle.** The initial JavaScript is 201 KB gzipped, under the 250 KB budget: React DOM about a third, Leaflet a quarter, then the app and its data, GSAP, and Framer Motion. tsParticles loads only when weather shows (28 KB gzipped), and the dev positioner never ships. The sound code is about 1 KB and isn't split out, because Safari only lets audio start inside the click that turns it on. Source maps are published, so the production build can be read in devtools.
+- **The base map** is generated as inline SVG from `config.ts` with every number rounded: 73 elements, about 29 KB of markup. With no hand-drawn file there's nothing for SVGO to do.
+- **Unit and component tests** (Vitest, 177): the coordinate helper, route derivation with and without anime-only arcs, episode-to-arc lookup with interleaved arcs, spoiler filtering, URL parsing, merging hand-placed positions, the voyage animation plan, and components (timeline keyboard use and announcements, the spoiler gate, island panel links, phone dialogs). Arc and journey tests use the real generated data, since early arcs never change.
+- **Browser tests** (Playwright, at desktop and phone sizes, against the production build): a first visit end to end (skip the intro, answer the spoiler prompt, sail three arcs, open an island, check the URL), the same by keyboard alone inside a spoiler limit, and the axe scans. They run one at a time: headless Chromium draws the animated map in software, so parallel pages only slow each other down.
+- **The data is validated on every build**: `npm run build` runs `data:validate` first, so CI and deploys can't ship data that fails its checks.
 
 ## The data
 
@@ -139,6 +165,6 @@ The data currently runs through episode 1180 (as of 2026-10-04): 51 arcs, 42 pla
 - Fonts: [IM Fell English](https://fonts.google.com/specimen/IM+Fell+English) (Igino Marini) and [Atkinson Hyperlegible Next](https://www.brailleinstitute.org/freefont/) (Braille Institute), both under the SIL Open Font License.
 - All map art is original, hand-coded SVG. Island positions are approximate; the series' own geography isn't consistent.
 - Sounds are synthesized in the browser; there are no recordings or audio files.
-- Libraries: Leaflet (BSD-2-Clause), react-leaflet, Zustand, Framer Motion, and tsParticles (MIT), and GSAP (GreenSock's standard no-charge license).
+- Libraries: Leaflet (BSD-2-Clause), react-leaflet, Zustand, Framer Motion, and tsParticles (MIT), and GSAP (GreenSock's standard no-charge license). Development only: Playwright (Apache-2.0) and axe-core (MPL-2.0).
 
 Unofficial fan project, not affiliated with Eiichiro Oda, Shueisha, or Toei Animation.

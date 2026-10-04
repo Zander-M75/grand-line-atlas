@@ -1,6 +1,6 @@
 # Grand Line Atlas — Handoff
 
-Where the project stands and what to know before picking it up. Last updated 2026-10-03, at the end of Phase 7.
+Where the project stands and what to know before picking it up. Last updated 2026-10-03, at the end of Phase 8.
 
 ---
 
@@ -8,7 +8,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 
 | | |
 |---|---|
-| Phase | **Phase 7 (content pass) is done** and waiting for the owner's review. Next is Phase 8 (accessibility, performance, testing). Every arc and island has a summary, episode 45 moved to Loguetown, and the Summit War side route is built. Phase 7's own decisions are open, and so are the Phase 5 and Phase 6 ones (see Owner decisions). |
+| Phase | **Phase 8 (accessibility, performance, testing) is done** and waiting for the owner's review. Next is Phase 9 (deploy and portfolio packaging). Lighthouse desktop: Performance 97, Accessibility 100. axe finds nothing on any screen, and the Playwright smoke tests pass at desktop and phone sizes. Phase 8 has a few small decisions; the Phase 5–7 ones are still open too (see Owner decisions). |
 | Data | Through episode 1180, re-fetched 2026-10-04 (UTC): 51 arcs, 42 places, 10 crew, 46 route connections (42 the ship sails, 4 on Luffy's side route). `npm run data:fetch -- --refresh && npm run data:build` updates it. |
 | Repo | https://github.com/Zander-M75/grand-line-atlas (public), branch `main` |
 | Hosting | None yet (Vercel in Phase 9). |
@@ -23,6 +23,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 6. [src/data/spoilers.ts](src/data/spoilers.ts) and [src/store/index.ts](src/store/index.ts): the spoiler rules (locked, in progress, known arcs, crew aboard) and the store actions around them (the gate, links past the limit, saving the answer, the intro).
 7. [src/animation/voyagePlan.ts](src/animation/voyagePlan.ts), [src/animation/sail.ts](src/animation/sail.ts), and [src/map/Voyage.tsx](src/map/Voyage.tsx): what a timeline move animates and how it plays. [src/map/ArcCamera.tsx](src/map/ArcCamera.tsx) and [src/map/camera.ts](src/map/camera.ts): the camera. The README's Animation section is the overview.
 8. [data/generated/review/](data/generated/review/): the TODO-REVIEW items from the last data build (the Phase 2 ones are accepted; Phase 7 added one, see Owner decisions).
+9. [e2e/smoke.spec.ts](e2e/smoke.spec.ts) and [playwright.config.ts](playwright.config.ts): the browser tests, and why they run one at a time with traces only on retry. The README's Accessibility and Performance sections are the overview.
 
 ## Working rules (from PLAN.md §9)
 
@@ -67,6 +68,11 @@ Where the project stands and what to know before picking it up. Last updated 202
 | Weather: tsParticles **slim** bundle | tsParticles **basic** bundle + the star shape | Slim adds ~15 interaction plugins the weather never uses. Same library, smaller lazy chunk (~28 KB gzipped, loaded only when weather shows). |
 | Sound: "tiny self-made or CC0 audio files" | No files: the sea and the chime are synthesized with the Web Audio API | Self-made by construction, nothing to license or download. The module is ~1 KB, so it isn't lazy-loaded: Safari only lets audio start inside the click that turns it on, which an async import would break. |
 | Sound setting remembered like the others | Session-only | PLAN says never autoplay; a remembered "on" would start audio on a later visit's first click. |
+| Keep the base SVG optimized with SVGO | No SVGO | There's no SVG file: the base map is generated inline from `config.ts` with every number rounded (73 elements, about 29 KB of markup). |
+| Lazy-load audio | Not split out | Already decided in Phase 6 (see Sound above): ~1 KB, and Safari only starts audio inside the click itself. |
+| "Panels trap focus when open on mobile" | On phones (≤640px), the island panel and settings become modal dialogs (`role=dialog`, `aria-modal`, focus moves in, Tab wraps). Wider, they stay a side panel (`complementary`) and a disclosure. | On wide screens neither covers much of the map, and trapping focus would cut the viewer off from the timeline. |
+| One Playwright smoke test | Three tests, each at desktop and phone sizes: the smoke test as written, the same journey by keyboard alone, and axe scans of each screen | The plan's "manual keyboard-only run-through" and AA checks are cheap to automate, so regressions get caught. axe is a dev dependency (`@axe-core/playwright`). |
+| `data:validate` runs in CI before build | `npm run build` runs `data:validate` first | The CI workflow is Phase 9; with validation in the build itself, CI and Vercel both get it. |
 
 Smaller choices:
 
@@ -105,7 +111,15 @@ Smaller choices:
 - **Settings** is a disclosure (button + panel in tab order), not a modal. Escape inside it closes it first (it calls `preventDefault`, which the island panel's window listener respects).
 - **Shared UI:** `paper.module.css` holds the panel surface, eyebrow, heading, icon-button, and link styles, `composes`-d into each panel. `Switch`, `Tag`, and `ArcTags` are shared by the timeline, logbook, and panels. The map container is `isolation: isolate`, so overlays need only z-indexes 1–3 (the gate uses 2000).
 - **Phones (≤640px):** the logbook drops the arc's name, saga, and tags (the timeline right below has them) and hides itself if there's no summary or progress note; the crew folds to one line by default; the island panel is a bottom sheet; the footer stacks into two lines (below 1100px) and drops its extras.
-- **Tests** use the real generated data for arc and journey facts (early-arc facts won't change as new episodes air), and fixtures for the pure voyage logic.
+- **Tests** use the real generated data for arc and journey facts (early-arc facts won't change as new episodes air), and fixtures for the pure voyage logic. `tests/media.ts` stubs `matchMedia` (jsdom has none) to test the phone layout.
+- **Browser tests:** `npm run test:e2e` builds, then runs Playwright against `vite preview` on port 4173 (locally it reuses a preview already running there, so build first if you run `npx playwright test` directly). One worker: headless Chromium draws the animated map in software, so parallel pages only slow each other down (two workers were slower than one; four timed out). Traces only on a retry: a trace snapshots every DOM change, and the ocean's filter changes ~20×/s, which bogged the browsers down until they failed. The first run on a machine needs `npx playwright install chromium`.
+- **Tab order is source order:** skip link, logbook, settings, map (container, then every island in the story so far), zoom buttons, island panel, timeline, footer. The logbook and settings come before the map in `App.tsx` so the title is read first; they float over the map by z-index wherever they sit in the source.
+- **Map overlays out of the Tab order:** every `SVGOverlay` gets `PICTURE_ATTRIBUTES` (`src/map/overlay.ts`): `aria-hidden` and `tabindex="-1"`. An inline `<svg>` clips its overflow, and Chrome makes clipping elements keyboard-focusable scrollers, so each overlay was an unnamed Tab stop (verified; the explicit tabindex removes it).
+- **Map container:** `MapAccessibility` in `WorldMap.tsx` gives Leaflet's container `role=region`, the name "Voyage map", and a hidden description of its keys, and lets Space press the zoom buttons.
+- **Island names for screen readers:** each marker's visible label is `aria-hidden`, and a visually hidden span carries `islandLabel()` (`src/map/journey.ts`): the name, its story state, and "anime-only". There's no `title` tooltip any more; when zoomed out, an island shows its name on hover or focus instead, and a hovered or focused island comes to the front (Leaflet sets marker z-indexes inline, hence `!important`).
+- **Focused islands pan into view:** `ArcCamera` listens for focus on marker icons and pans them clear of the panels with `panToReveal`. Leaflet's own `autoPanOnFocus` is off for islands, since it only knows the map's edges.
+- **Arc announcements:** a `role=status` region in the timeline (`ArcAnnouncer`) announces each new arc (`spokenArc()` in `src/data/arcs.ts`, also the slider's `aria-valuetext`) and who comes aboard. It stays quiet on load, and says only who comes aboard while the slider has focus, since the slider announces its own value. It writes `textContent` directly so announcing never re-renders anything.
+- **`.visually-hidden`** is a global utility class in `global.css`.
 
 ## Owner decisions
 
@@ -116,6 +130,12 @@ Settled:
 - **Phase 2 review list** (2026-10-01): all items accepted as built. Buggy Side Story and Koby and Helmeppo stay anime-only and off-route; Uta's Past and Elbaph are in; sagas follow the wiki; the eight arcs with no named island have no map stop; the place choices and crew join episodes (Nami 44, Jinbe 980) stand.
 - **Island placement (Phase 3 review)** (2026-10-03): as of now there are no islands the owner wants to place by hand. The automatic positions stand, and `data/overrides/positions.json` stays empty. The dev positioner (Shift+D in `npm run dev`) is still there if that changes.
 - **Summit War side route** (2026-10-03): include it. Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) gets a dashed side route. Built in Phase 7 behind a `sideRoute` flag on those four arcs, since a generic rule for off-route arcs would draw misleading lines for flashbacks and side stories (Uta's Past, Buggy Side Story).
+
+Open (Phase 8):
+
+- **Islands still ahead** used to fade as a whole (50% opacity), which put their names at 2.8–3.5:1 contrast, under AA. Now only the dot fades, and the name dims to a grey-green that passes (4.6:1 on the Grand Line). They read a bit stronger than before. If you'd rather they recede more, the dot can fade further, but the name can't get dimmer and still pass.
+- **The faint region lettering** ("Grand Line" is about 2:1, the Blues about 3:1) is left as is: WCAG exempts text that's part of a picture, and it's meant to sit back like a watermark. Raising it is one opacity number each in `BaseMap.module.css`, if you'd like it easier to read.
+- **Mobile performance** (84 on Lighthouse's mobile preset) is above. Worth doing in Phase 9 or later, or fine as is?
 
 Open (Phase 7):
 
@@ -140,12 +160,12 @@ The files in [data/generated/review/](data/generated/review/) are the accepted b
 
 - **Timeline saga labels can overlap.** The current saga is always named in full over its neighbors, on a paper background as wide as its own text. When the saga is narrow and the next label is longer, the end of the hidden label peeks out past it (on Fish-Man Island, a sliver of "DRESSROSA" shows after the name). A fix needs the labels' measured widths, for example hiding a neighbor's name only when the current one overflows into it.
 - **Phones:** now that every arc has a summary, the logbook always shows on phones (it used to fold away without one). With an island sheet open as well, the map is a fairly narrow band between them. The camera still keeps the island clear of both.
-- The island panel and settings don't trap focus on phones yet (Phase 8 per PLAN.md); the spoiler gate already does, via `inert`.
 - Locked timeline stops still show their episode range in the hover tooltip (no name, no anime-only tag). Episode numbers aren't story content, and the range says when an arc unlocks.
 - **Dev server in the Claude Code sandbox:** Vite's file watcher misses edits there, so `npm run dev` serves stale code. Run it with polling instead, from a config outside the repo, e.g. `{ ...base, server: { watch: { usePolling: true } } }` importing `vite.config.ts`.
-- The prev/next buttons don't announce the new arc to screen readers (the slider does, via `aria-valuetext`). Phase 8 should add a polite live region, worded so it doesn't double up with the slider.
 - The timeline strip is 7.5rem tall (8.5rem under 640px, where the details wrap). Long arc names truncate with an ellipsis on phones.
 - No favicon yet (Phase 9); headed Chrome logs its 404.
 - Usopp leaves the crew during Water 7 and rejoins in episode 323; the crew data keeps him aboard throughout.
-- Initial JS is 200.3 KB gzipped (Phase 8 target: under ~250 KB). GSAP and Framer Motion added ~60 KB and the summaries ~6 KB; tsParticles is in a lazy chunk.
-- A step to a new arc costs one long frame on slow CPUs (53 ms at 4× throttle, production build) while React re-renders the page; everything after it is smooth. Phase 8 could trim what re-renders on an arc change (the 42 island markers and the slider are the bulk).
+- Initial JS is 201.2 KB gzipped (budget: ~250 KB). By package: React DOM about a third, Leaflet a quarter, app code and data 16%, Motion 13%, GSAP 11%. tsParticles is in a lazy chunk.
+- Re-measured at 4× CPU throttle (production build): most arc steps have no frame over 50 ms; steps that start a camera flight sometimes have one of ~60 ms. Not worth restructuring rendering for.
+- **Mobile Lighthouse** (not a PLAN target, which is desktop): Performance 84, Accessibility 100. On its simulated slow 4G phone, nothing paints until the 201 KB bundle has downloaded and run (FCP 3.1 s). Prerendering a static first paint (the title and the chart's background) would be the fix if it matters.
+- Best Practices is 96 only because of the favicon 404 (Phase 9).
