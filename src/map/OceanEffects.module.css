@@ -1,0 +1,8 @@
+/* Wave marks, in map pixels: they scale with the map, fading to texture when zoomed out. */
+.wave {
+  fill: none;
+  stroke: var(--color-on-ocean);
+  stroke-opacity: 0.16;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+}

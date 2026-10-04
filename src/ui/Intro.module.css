@@ -1,0 +1,68 @@
+/* Over everything, the spoiler prompt included (it waits for the intro to end). */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2100;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+/* Parchment fog: chart paper, mottled like old stock and browned toward its edges, that
+   clears to show the sea. The mottling is SVG noise, drawn once as a background image. */
+.fog {
+  position: absolute;
+  inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='640' height='640'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.006' numOctaves='4' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.45 0 0 0 0 0.3 0 0 0 0.7 -0.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E")
+      center / cover,
+    radial-gradient(ellipse at 50% 45%, rgb(232 220 188 / 0) 30%, rgb(140 118 80 / 0.6) 100%),
+    var(--color-paper);
+}
+
+.title {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  text-align: center;
+  color: var(--color-on-ocean);
+  /* A halo of deep water keeps the lettering clear of the coastlines drawing in behind it. */
+  text-shadow:
+    0 0 12px var(--color-ocean-deep),
+    0 0 28px var(--color-ocean-deep);
+  opacity: 0;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: var(--text-display);
+  line-height: var(--leading-tight);
+}
+
+.tagline {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--color-on-ocean-muted);
+}
+
+.skip {
+  position: absolute;
+  bottom: var(--space-6);
+  left: 50%;
+  translate: -50% 0;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  background: rgb(14 38 51 / 0.55);
+  color: var(--color-on-ocean);
+  font-size: var(--text-sm);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.skip:hover {
+  background: rgb(14 38 51 / 0.8);
+}

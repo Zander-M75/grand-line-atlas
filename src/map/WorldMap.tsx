@@ -2,10 +2,11 @@ import 'leaflet/dist/leaflet.css';
 import { CRS, latLngBounds, setOptions } from 'leaflet';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { MapContainer, useMap, ZoomControl } from 'react-leaflet';
-import { ZOOM } from '@/config';
+import { FEATURES, ZOOM } from '@/config';
 import { locations } from '@/data';
 import { useDevToggle } from '@/hooks/useDevToggle';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { useAtlasStore } from '@/store';
 import { BaseMap } from './BaseMap';
 import { MAP_BOUNDS } from './coords';
 import { DevCoordinateLogger } from './DevCoordinateLogger';
@@ -20,6 +21,9 @@ const PANNABLE_BOUNDS = latLngBounds(MAP_BOUNDS).pad(ZOOM.panPadding);
 // Dev builds only, and loaded on first use: production never ships it.
 const DevPositioner = import.meta.env.DEV ? lazy(() => import('./DevPositioner')) : null;
 
+// Loaded (with tsParticles) only once weather is on.
+const Weather = lazy(() => import('./Weather'));
+
 /**
  * The Leaflet map, in CRS.Simple pixel space. Leaflet's default attribution is off;
  * credits live in the app footer.
@@ -27,6 +31,7 @@ const DevPositioner = import.meta.env.DEV ? lazy(() => import('./DevPositioner')
 export function WorldMap() {
   const positioning = useDevToggle();
   const reducedMotion = useReducedMotion();
+  const weather = useAtlasStore((state) => state.settings.weather);
   // Leaflet reads its animation options once, when the map is made (see LeafletMotion).
   const [reducedAtStart] = useState(reducedMotion);
 
@@ -61,6 +66,11 @@ export function WorldMap() {
         <>
           <Voyage />
           <IslandLayer />
+          {FEATURES.weather && weather && !reducedMotion && (
+            <Suspense fallback={null}>
+              <Weather />
+            </Suspense>
+          )}
         </>
       )}
       <ZoomControl position="bottomright" />

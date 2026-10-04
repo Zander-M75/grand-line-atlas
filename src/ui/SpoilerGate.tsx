@@ -8,19 +8,31 @@
  *
  * The answer is saved on this device; Settings can change it later.
  */
+import { AnimatePresence, m } from 'framer-motion';
 import { useId, type KeyboardEvent } from 'react';
-import { APP_TITLE } from '@/config';
-import { chooseSpoilerLimit, dismissGate, useAtlasStore } from '@/store';
+import { MOTION_EASE } from '@/animation/easing';
+import { APP_TITLE, TIMING } from '@/config';
+import { useMotionTransition } from '@/hooks/useMotionTransition';
+import { chooseSpoilerLimit, dismissGate, useAtlasStore, type Gate } from '@/store';
 import { SpoilerForm } from './SpoilerForm';
 import styles from './SpoilerGate.module.css';
 
 export function SpoilerGate() {
   const gate = useAtlasStore((state) => state.gate);
   const limit = useAtlasStore((state) => state.spoilerLimitEpisode);
+  const introPlaying = useAtlasStore((state) => state.introPlaying);
+  return (
+    <AnimatePresence>
+      {/* On a first visit, the question waits for the intro to finish. */}
+      {gate && !introPlaying && <GateDialog key="gate" gate={gate} limit={limit} />}
+    </AnimatePresence>
+  );
+}
+
+function GateDialog({ gate, limit }: { gate: Gate; limit: number | null }) {
   const headingId = useId();
   const textId = useId();
-  if (!gate) return null;
-
+  const transition = useMotionTransition({ duration: TIMING.panel, ease: MOTION_EASE.enter });
   const welcome = gate.reason === 'welcome';
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key !== 'Escape') return;
@@ -29,9 +41,19 @@ export function SpoilerGate() {
   };
 
   return (
-    <div className={styles.backdrop}>
-      <div
+    <m.div
+      className={styles.backdrop}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={transition}
+    >
+      <m.div
         className={styles.dialog}
+        initial={{ y: 16, scale: 0.98 }}
+        animate={{ y: 0, scale: 1 }}
+        exit={{ y: 8, scale: 0.98 }}
+        transition={transition}
         role="dialog"
         aria-modal="true"
         aria-labelledby={headingId}
@@ -75,7 +97,7 @@ export function SpoilerGate() {
           </button>
         )}
         <p className={styles.footnote}>Saved on this device. Change it any time in Settings.</p>
-      </div>
-    </div>
+      </m.div>
+    </m.div>
   );
 }

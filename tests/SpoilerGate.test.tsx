@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { openLinkedArc, restoreSaved, setSpoilerLimit, useAtlasStore } from '@/store';
-import { loadSpoilerLimit } from '@/store/persist';
+import { loadSpoilerLimit, saveIntroSeen } from '@/store/persist';
 import { SpoilerGate } from '@/ui/SpoilerGate';
 
 const state = () => useAtlasStore.getState();
@@ -10,9 +10,19 @@ const episodeField = () => screen.getByLabelText('Last episode you’ve watched'
 
 beforeEach(() => {
   useAtlasStore.setState(useAtlasStore.getInitialState(), true);
+  // A first visit plays the intro before asking; these tests start once it has played.
+  saveIntroSeen();
 });
 
 describe('SpoilerGate', () => {
+  it('waits for the intro on the very first visit', () => {
+    localStorage.clear();
+    restoreSaved();
+    const { container } = render(<SpoilerGate />);
+    expect(state().introPlaying).toBe(true);
+    expect(container).toBeEmptyDOMElement();
+  });
+
   it('shows nothing once the viewer has answered', () => {
     const { container } = render(<SpoilerGate />);
     expect(container).toBeEmptyDOMElement();

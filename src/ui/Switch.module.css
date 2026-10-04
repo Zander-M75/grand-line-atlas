@@ -48,3 +48,13 @@
   transform: translateX(1rem);
   background: var(--color-paper);
 }
+
+.switch:has(input:disabled) {
+  color: var(--color-ink-muted);
+  cursor: not-allowed;
+}
+
+.switch input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

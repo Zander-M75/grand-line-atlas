@@ -50,7 +50,8 @@ export function Ship({ ref }: { ref: Ref<ShipHandle> }) {
       icon: SHIP_ICON,
       interactive: false,
       keyboard: false,
-      zIndexOffset: 1000,
+      // Under the islands: a moored ship sits right by its island's name, which stays on top.
+      zIndexOffset: -1000,
     });
     return () => {
       markerRef.current?.remove();

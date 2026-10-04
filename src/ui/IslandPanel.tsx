@@ -7,14 +7,19 @@
  * limit. An island they can't see on the map can't be open here either.
  *
  * Opening it moves focus to its heading. Escape or the close button hands focus back to the
- * island that opened it.
+ * island that opened it. It slides in from the edge it's docked to, and back out on close.
  */
-import { useEffect, useId, useRef, type MouseEvent } from 'react';
+import { AnimatePresence, m } from 'framer-motion';
+import { useEffect, useId, useRef, type MouseEvent, type Ref } from 'react';
+import { MOTION_EASE } from '@/animation/easing';
+import { MEDIA, TIMING } from '@/config';
 import { episodeLabel } from '@/data/arcs';
 import { REGION_NAMES, wikiUrl } from '@/data/places';
 import { useJourney } from '@/hooks/useJourney';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { useMotionTransition } from '@/hooks/useMotionTransition';
 import { goToArc, selectKnownArcs, selectLocation, useAtlasStore } from '@/store';
-import type { Arc } from '@/types';
+import type { Arc, Location } from '@/types';
 import { CloseIcon, ExternalIcon } from './icons';
 import { Tag } from './Tag';
 import styles from './IslandPanel.module.css';
@@ -30,6 +35,10 @@ export function IslandPanel() {
   const headingRef = useRef<HTMLHeadingElement>(null);
   const openerRef = useRef<Element | null>(null);
   const headingId = useId();
+  const narrow = useMediaQuery(MEDIA.narrow);
+  const transition = useMotionTransition({ duration: TIMING.panel, ease: MOTION_EASE.enter });
+  // Off the edge it's docked to: the right side, or the bottom on phones.
+  const away = narrow ? { opacity: 0, y: 48 } : { opacity: 0, x: 32 };
 
   const open = Boolean(island);
 
@@ -52,13 +61,55 @@ export function IslandPanel() {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [open]);
 
-  if (!island) return null;
-  const { location } = island;
-  const arcsHere = known.filter((arc) => arc.locationIds.includes(location.id));
-  const region = REGION_NAMES[location.region];
-
   return (
-    <aside ref={panelRef} className={styles.panel} aria-labelledby={headingId} data-covers-map>
+    <AnimatePresence>
+      {island && (
+        <m.aside
+          key="island-panel"
+          ref={panelRef}
+          className={styles.panel}
+          aria-labelledby={headingId}
+          data-covers-map
+          initial={away}
+          animate={{ opacity: 1, x: 0, y: 0 }}
+          exit={away}
+          transition={transition}
+        >
+          <IslandDetails
+            location={island.location}
+            arcsHere={known.filter((arc) => arc.locationIds.includes(island.location.id))}
+            currentArcId={currentArc.id}
+            showSpoilerNote={limit !== null}
+            headingId={headingId}
+            headingRef={headingRef}
+            onClose={() => close(openerRef.current)}
+          />
+        </m.aside>
+      )}
+    </AnimatePresence>
+  );
+}
+
+function IslandDetails({
+  location,
+  arcsHere,
+  currentArcId,
+  showSpoilerNote,
+  headingId,
+  headingRef,
+  onClose,
+}: {
+  location: Location;
+  arcsHere: Arc[];
+  currentArcId: string;
+  showSpoilerNote: boolean;
+  headingId: string;
+  headingRef: Ref<HTMLHeadingElement>;
+  onClose: () => void;
+}) {
+  const region = REGION_NAMES[location.region];
+  return (
+    <>
       <header className={styles.header}>
         <div>
           {region && <p className={styles.eyebrow}>{region}</p>}
@@ -70,7 +121,7 @@ export function IslandPanel() {
           type="button"
           className={styles.close}
           aria-label="Close island details"
-          onClick={() => close(openerRef.current)}
+          onClick={onClose}
         >
           <CloseIcon />
         </button>
@@ -87,7 +138,7 @@ export function IslandPanel() {
       <ul className={styles.arcs}>
         {arcsHere.map((arc) => (
           <li key={arc.id}>
-            <ArcLink arc={arc} current={arc.id === currentArc.id} />
+            <ArcLink arc={arc} current={arc.id === currentArcId} />
           </li>
         ))}
       </ul>
@@ -103,13 +154,13 @@ export function IslandPanel() {
           <ExternalIcon />
           <span className={styles.visuallyHidden}> (opens in a new tab)</span>
         </a>
-        {limit !== null && (
+        {showSpoilerNote && (
           <span className={styles.wikiNote}>
             Wiki pages cover the whole story, spoilers included.
           </span>
         )}
       </p>
-    </aside>
+    </>
   );
 }
 

@@ -5,9 +5,15 @@
  *
  * It's inline (an SVGOverlay) rather than an <img> so it stays vector-sharp at every
  * zoom and its labels can use the app's web fonts, which SVG images can't load.
+ *
+ * During the first-visit intro, the Red Line and the Grand Line (with their labels) sit
+ * behind clip rectangles that grow to draw them in (src/animation/intro.ts).
  */
+import { useLayoutEffect, useRef } from 'react';
 import { SVGOverlay } from 'react-leaflet';
+import { revealTimeline } from '@/animation/intro';
 import { BANDS, BLUE_QUADRANTS, MAP_HEIGHT, MAP_WIDTH, ZONES, type Quadrant } from '@/config';
+import { useAtlasStore } from '@/store';
 import { compassRose, graticule, neatlineBars, redLineBand } from './baseMapShapes';
 import { MAP_BOUNDS } from './coords';
 import styles from './BaseMap.module.css';
@@ -48,20 +54,58 @@ const NEATLINE = neatlineBars(GRID_SPACING, NEATLINE_DEPTH);
 const COMPASS = { x: QUADRANT_CENTERS.se.x + 620, y: QUADRANT_CENTERS.se.y + 40, radius: 150 };
 const COMPASS_SHAPES = compassRose(COMPASS.x, COMPASS.y, COMPASS.radius);
 
+const CLIP = { redLine: 'intro-clip-red-line', grandLine: 'intro-clip-grand-line' } as const;
+
 export function BaseMap() {
+  const introPlaying = useAtlasStore((state) => state.introPlaying);
+  const redLineClip = useRef<SVGRectElement>(null);
+  const grandLineClip = useRef<SVGRectElement>(null);
+
+  useLayoutEffect(() => {
+    const [redLine, grandLine] = [redLineClip.current, grandLineClip.current];
+    if (!introPlaying || !redLine || !grandLine) return;
+    const timeline = revealTimeline({ redLine, grandLine });
+    return () => {
+      timeline.kill();
+    };
+  }, [introPlaying]);
+
+  // While the intro plays, these groups are clipped to rectangles that start empty.
+  const clip = (id: string) => (introPlaying ? `url(#${id})` : undefined);
+
   return (
     <SVGOverlay
       bounds={MAP_BOUNDS}
       attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`, 'aria-hidden': 'true' }}
     >
       <Gradients />
+      {introPlaying && (
+        <defs>
+          <clipPath id={CLIP.redLine}>
+            <rect ref={redLineClip} width={MAP_WIDTH} height={0} />
+          </clipPath>
+          <clipPath id={CLIP.grandLine}>
+            <rect ref={grandLineClip} width={0} height={MAP_HEIGHT} />
+          </clipPath>
+        </defs>
+      )}
       <rect width={MAP_WIDTH} height={MAP_HEIGHT} fill="url(#basemap-ocean)" />
-      <CalmBelts />
-      <GrandLine />
+      <g clipPath={clip(CLIP.grandLine)}>
+        <CalmBelts />
+        <GrandLine />
+      </g>
       <path className={styles.graticule} d={GRATICULE} />
-      <RedLine />
+      <g clipPath={clip(CLIP.redLine)}>
+        <RedLine />
+      </g>
       <CompassRose />
-      <RegionLabels />
+      <BlueLabels />
+      <g clipPath={clip(CLIP.grandLine)}>
+        <BandLabels />
+      </g>
+      <g clipPath={clip(CLIP.redLine)}>
+        <RedLineLabel />
+      </g>
       <Neatline />
     </SVGOverlay>
   );
@@ -171,11 +215,8 @@ function CompassRose() {
   );
 }
 
-function RegionLabels() {
-  const grandLineBaseline = ZONES.grandLine.centerY + 18;
-  const calmBeltBaseline = (belt: { top: number; bottom: number }) =>
-    (belt.top + belt.bottom) / 2 + 9;
-
+/** The four Blues, lettered across their quadrants. */
+function BlueLabels() {
   return (
     <g>
       {Object.entries(BLUE_QUADRANTS).map(([blue, quadrant]) => (
@@ -189,7 +230,18 @@ function RegionLabels() {
           {BLUE_NAMES[blue as keyof typeof BLUE_NAMES]}
         </text>
       ))}
+    </g>
+  );
+}
 
+/** Paradise and the New World along the Grand Line, and the two Calm Belts. */
+function BandLabels() {
+  const grandLineBaseline = ZONES.grandLine.centerY + 18;
+  const calmBeltBaseline = (belt: { top: number; bottom: number }) =>
+    (belt.top + belt.bottom) / 2 + 9;
+
+  return (
+    <g>
       <text
         className={`${styles.label} ${styles.grandLineLabel}`}
         x={(BANDS.paradise.left + BANDS.paradise.right) / 2}
@@ -223,19 +275,23 @@ function RegionLabels() {
       >
         Calm Belt
       </text>
-
-      {/* Reads bottom to top, lettered up the rock like a mountain range. */}
-      <text
-        className={`${styles.label} ${styles.redLineLabel}`}
-        x={ZONES.redLine.centerX}
-        y={BANDS.northCalmBelt.top / 2}
-        textAnchor="middle"
-        dominantBaseline="central"
-        transform={`rotate(-90 ${ZONES.redLine.centerX} ${BANDS.northCalmBelt.top / 2})`}
-      >
-        Red Line
-      </text>
     </g>
+  );
+}
+
+/** Reads bottom to top, lettered up the rock like a mountain range. */
+function RedLineLabel() {
+  return (
+    <text
+      className={`${styles.label} ${styles.redLineLabel}`}
+      x={ZONES.redLine.centerX}
+      y={BANDS.northCalmBelt.top / 2}
+      textAnchor="middle"
+      dominantBaseline="central"
+      transform={`rotate(-90 ${ZONES.redLine.centerX} ${BANDS.northCalmBelt.top / 2})`}
+    >
+      Red Line
+    </text>
   );
 }
 

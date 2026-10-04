@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   chooseSpoilerLimit,
   dismissGate,
+  finishIntro,
   goToArc,
   goToIndex,
   openLinkedArc,
@@ -102,6 +103,23 @@ describe('the viewer’s place in the story', () => {
     const known = selectKnownArcs(state());
     expect(known.at(-1)?.id).toBe('enies-lobby');
     expect(selectKnownArcs(state())).toBe(known);
+  });
+});
+
+describe('intro', () => {
+  it('plays on a first visit, once', () => {
+    restoreSaved();
+    expect(state().introPlaying).toBe(true);
+    finishIntro();
+    expect(state().introPlaying).toBe(false);
+    restoreSaved();
+    expect(state().introPlaying).toBe(false);
+  });
+
+  it('never plays with reduced motion', () => {
+    localStorage.setItem('gla:settings', JSON.stringify({ reducedMotion: true }));
+    restoreSaved();
+    expect(state().introPlaying).toBe(false);
   });
 });
 

@@ -1,4 +1,6 @@
+import { domAnimation, LazyMotion } from 'framer-motion';
 import { APP_TITLE } from '@/config';
+import { useCrewChime } from '@/hooks/useCrewChime';
 import { useKeyboardNav } from '@/hooks/useKeyboardNav';
 import { useMotionAttribute } from '@/hooks/useReducedMotion';
 import { useUrlSync } from '@/hooks/useUrlSync';
@@ -7,6 +9,7 @@ import { useAtlasStore } from '@/store';
 import { ArcCard } from '@/ui/ArcCard';
 import { CrewPanel } from '@/ui/CrewPanel';
 import { Footer } from '@/ui/Footer';
+import { Intro } from '@/ui/Intro';
 import { IslandPanel } from '@/ui/IslandPanel';
 import { SettingsMenu } from '@/ui/SettingsMenu';
 import { SpoilerGate } from '@/ui/SpoilerGate';
@@ -15,18 +18,25 @@ import styles from './App.module.css';
 
 /**
  * The page: the map with its floating panels (the logbook top-left, settings and the island
- * panel on the right), the timeline under it, and the footer. While the spoiler prompt is
- * open, everything behind it is inert.
+ * panel on the right), the timeline under it, and the footer. While the first-visit intro
+ * plays, only the map shows; while it or the spoiler prompt is open, the page is inert.
  */
 export function App() {
   useUrlSync();
   useKeyboardNav();
   useMotionAttribute();
+  useCrewChime();
   const gateOpen = useAtlasStore((state) => state.gate !== null);
+  const introPlaying = useAtlasStore((state) => state.introPlaying);
 
   return (
-    <>
-      <div className={styles.app} inert={gateOpen}>
+    // Framer Motion's lighter build: `m` components with just the animation features used.
+    <LazyMotion features={domAnimation} strict>
+      <div
+        className={styles.app}
+        inert={gateOpen || introPlaying}
+        data-intro={introPlaying ? 'playing' : undefined}
+      >
         <main className={styles.mapArea}>
           <WorldMap />
           {/* The chart's cartouche: the atlas title, the current arc, and who's aboard. The
@@ -48,6 +58,7 @@ export function App() {
         <Footer />
       </div>
       <SpoilerGate />
-    </>
+      <Intro />
+    </LazyMotion>
   );
 }

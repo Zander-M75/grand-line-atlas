@@ -112,6 +112,22 @@ export const CAMERA = {
   panelGap: 64,
 } as const;
 
+/** Weather around a few islands (src/map/Weather.tsx). */
+export const WEATHER = {
+  /** Which islands have weather, and what kind. */
+  spots: {
+    'drum-island': 'snow',
+    'thriller-bark': 'fog',
+    skypiea: 'sparkle',
+  },
+  /** How far around its island a patch of weather reaches, in map pixels. */
+  radius: 120,
+  /** Weather runs from this zoom in; farther out, it would be too small to see. */
+  minZoom: -1,
+} as const satisfies { spots: Record<string, WeatherKind>; radius: number; minZoom: number };
+
+export type WeatherKind = 'snow' | 'fog' | 'sparkle';
+
 /** Media queries the layout and the scripts that follow it share. */
 export const MEDIA = {
   /** Phones: panels become sheets, the logbook spans the top. Matches the CSS breakpoint. */

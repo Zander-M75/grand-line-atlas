@@ -1,4 +1,9 @@
+/* Holds the slides: the outgoing one is positioned over the incoming one while it fades. */
 .card {
+  position: relative;
+}
+
+.slide {
   display: grid;
   gap: var(--space-1);
 }

@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
+import { legDuration } from '@/animation/sail';
 import { planVoyage } from '@/animation/voyagePlan';
+import { TIMING } from '@/config';
 import { arcById } from '@/data';
 import { knownArcs } from '@/data/spoilers';
 import { journeyAt } from '@/map/journey';
@@ -85,5 +87,13 @@ describe('planVoyage', () => {
       planVoyage(at('orange-town'), at('syrup-village'), { animate: false }).motion,
     ).toBeNull();
     expect(planVoyage(null, at('syrup-village'), animate).motion).toBeNull();
+  });
+});
+
+describe('legDuration', () => {
+  it('scales with length, within its limits', () => {
+    expect(legDuration(TIMING.routeDrawPxPerSecond * 1.5)).toBeCloseTo(1.5);
+    expect(legDuration(1)).toBe(TIMING.routeDrawMin);
+    expect(legDuration(1e6)).toBe(TIMING.routeDrawMax);
   });
 });

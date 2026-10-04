@@ -15,6 +15,9 @@ export const GSAP_EASE = {
 export const MOTION_EASE = {
   /** Panels arriving: fast out of the gate, settling gently. */
   enter: [0.22, 1, 0.36, 1],
-  /** Panels leaving: quick and unfussy. */
-  exit: [0.4, 0, 1, 1],
+  /** Cross-fades between one arc and the next. */
+  fade: [0.4, 0, 0.2, 1],
 } as const satisfies Record<string, [number, number, number, number]>;
+
+/** A crew card popping in: a quick spring with a little overshoot. */
+export const POP_SPRING = { type: 'spring', stiffness: 520, damping: 22, mass: 0.8 } as const;

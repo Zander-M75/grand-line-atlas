@@ -6,6 +6,21 @@
   height: 100dvh; /* mobile: excludes the browser's own toolbars */
 }
 
+/* While the intro plays, only the chart shows: the panels, timeline, route, islands, and
+   map controls wait, then fade in as it hands over. */
+.app > :not(.mapArea),
+.mapArea > :not(:first-child),
+.app :global(:is(.leaflet-route-pane, .leaflet-marker-pane, .leaflet-control-container)) {
+  transition: opacity var(--timing-intro-handover) ease-out;
+}
+
+.app[data-intro] > :not(.mapArea),
+.app[data-intro] .mapArea > :not(:first-child),
+.app[data-intro]
+  :global(:is(.leaflet-route-pane, .leaflet-marker-pane, .leaflet-control-container)) {
+  opacity: 0;
+}
+
 /* Panels float over the map. The map is its own stacking context (see WorldMap.module.css),
    so these small z-indexes clear all of Leaflet's panes and controls. */
 .mapArea {
