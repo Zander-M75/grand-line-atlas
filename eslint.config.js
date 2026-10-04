@@ -7,7 +7,7 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default defineConfig([
-  globalIgnores(['dist', 'coverage', 'data/raw']),
+  globalIgnores(['dist', 'coverage', 'data/raw', 'playwright-report', 'test-results']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
@@ -19,8 +19,9 @@ export default defineConfig([
     languageOptions: { globals: globals.browser },
   },
   {
-    // Node-side code: data scripts and tool config.
-    files: ['scripts/**/*.ts', '*.config.{js,ts}'],
+    // Node-side code: data scripts, browser tests (Playwright drives them from Node), and
+    // tool config.
+    files: ['scripts/**/*.ts', 'e2e/**/*.ts', '*.config.{js,ts}'],
     languageOptions: { globals: globals.node },
   },
   // Must stay last: turns off stylistic rules that Prettier owns.
