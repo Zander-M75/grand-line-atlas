@@ -1,8 +1,39 @@
 # Grand Line Atlas
 
-An interactive, animated map of the One Piece world that follows the Straw Hat Pirates' voyage through the anime, arc by arc. A timeline steps through every anime arc in episode order (anime-only arcs included and marked). As it moves, the route draws itself across the sea, the ship sails to the next island, and panels show the arc, the island, and who's aboard. A spoiler gate lets viewers set the episode they're on, so nothing past it is shown.
+**Live: [grandlineatlas.vercel.app](https://grandlineatlas.vercel.app)**
 
-> **Status:** in development. The base map, the story data pipeline, island placement, the timeline with the crew's route, the arc, island, and crew panels with the spoiler gate, the animation, the writing pass, and the accessibility, performance, and testing pass (Phases 1–8) are in; deployment comes next. See [PLAN.md](PLAN.md) for the full roadmap.
+![The timeline sailing the crew from their home village across East Blue to the Grand Line: the route draws itself, the ship sails, and the logbook and crew update at each arc.](docs/voyage.gif)
+
+_One Piece_ is a Japanese anime that has run since 1999, more than 1,100 episodes following a crew of pirates across an invented ocean world. Grand Line Atlas maps that voyage. Pick a point on the timeline and the route draws itself across a hand-drawn chart, the ship sails to the next island, the camera follows, and a logbook shows what happens there and who's aboard. Viewers who watch the show set the episode they're on, and nothing past it ever appears. Viewers who don't can take a guided tour.
+
+It's a portfolio project and an unofficial fan project. All art and writing are original.
+
+## Highlights
+
+- **A real data pipeline.** Node scripts pull the story from the One Piece Fandom wiki's API (throttled and cached), check it against curated sources, and write validated JSON: 51 arcs, 42 places, the crew, and the route between them. A weekly GitHub Action re-runs it and opens a pull request when new episodes air.
+- **An original map, drawn in code.** The chart is inline SVG generated from a config file, shown in Leaflet with a flat pixel coordinate system instead of a globe. Moving a zone in config moves the art.
+- **Animation with rules.** The route draws itself by cutting its Bezier curves frame by frame, and the ship sails at a steady speed along an arc-length table. Rapid scrubbing never queues animations, the camera only moves when it has to, and reduced motion turns all of it off.
+- **Spoilers handled in one place.** Everything on the map is drawn from a single "known arcs" list, so nothing past the viewer's episode can render: not islands, route, crew, or link targets.
+- **Accessible.** It works by keyboard and screen reader, from the timeline slider (whose value reads as the arc) to announcements of who comes aboard. axe finds no violations, and Lighthouse scores Accessibility 100.
+- **Fast and checked.** Lighthouse (desktop, live site) scores 99 for Performance and 100 for Accessibility, Best Practices, and SEO. CI enforces a 250 kB budget on the initial JavaScript (it's 200 kB), and runs 187 unit and component tests plus browser tests at desktop and phone sizes.
+
+## How it fits together
+
+```
+One Piece Fandom wiki (API)
+   │  scripts/fetch-wiki.ts: text only, 1 request/second, every response cached
+   ▼
+data/raw/  ──  scripts/build-*.ts + scripts/sources/ (curated arcs, places, crew, bends, summaries)
+   │  parse, cross-check, lay out islands, write the route; anything ambiguous goes on a review list
+   ▼
+data/generated/*.json  (committed; scripts/validate-data.ts checks it on every build)
+   │  imported by the app at build time
+   ▼
+React app: one Zustand store (current arc, spoiler limit, settings)
+   │  selectors derive the visible and known arcs, then the journey: legs, ship, island states
+   ▼
+Leaflet map (base SVG, route, ship, islands, weather)  +  panels (logbook, island, timeline)
+```
 
 ## Running it
 
@@ -16,9 +47,11 @@ npm run test:e2e   # build, then browser tests (Playwright, desktop and phone)
 npm run lint       # ESLint
 npm run typecheck  # TypeScript, app, Node, and browser-test configs
 npm run build      # validate the data, type-check, then production build
+npm run size       # check the build's initial JavaScript against the 250 kB budget
+npm run capture    # build, then remake the link preview, README GIF, and favicon bitmaps
 ```
 
-The first `test:e2e` run needs a browser for Playwright: `npx playwright install chromium`.
+The first `test:e2e` run needs a browser for Playwright: `npx playwright install chromium`. To run the browser tests against a deployed site instead, set `BASE_URL`: `BASE_URL=https://grandlineatlas.vercel.app npx playwright test`.
 
 Data scripts:
 
@@ -37,7 +70,7 @@ npm run data:layout    # re-run just the island auto-layout
 | UI                 | React 19 + TypeScript (strict)       | React 19 because react-leaflet 5 requires it                                                 |
 | Map                | Leaflet + react-leaflet              | `CRS.Simple` lets us pan and zoom an original pixel-space map instead of a real-world globe |
 | UI animation       | Framer Motion (`LazyMotion`)         | Panel and card transitions, loading only the animation features used                        |
-| Sequence animation | GSAP                                 | Route drawing, ship movement, intro                                                          |
+| Sequence animation | GSAP                                 | Route drawing, ship movement, intro, and the guided tour's timing                            |
 | Particles          | tsParticles (basic bundle + star)    | Weather around three islands; loaded only when weather shows                                 |
 | Sound              | Web Audio API (no library, no files) | The sea and a chime are synthesized as they play                                             |
 | State              | Zustand                              | One small store for the current arc, spoiler limit, and settings                            |
@@ -48,18 +81,23 @@ npm run data:layout    # re-run just the island auto-layout
 | Lint/format        | ESLint (typescript-eslint) + Prettier |                                                                                              |
 | Wikitext parsing   | wtf_wikipedia (scripts only)         | Parses the wiki's templates, including nested ones, so scripts don't hand-roll regexes       |
 | Data validation    | zod (scripts only)                   | Schemas checked against `src/types.ts` at compile time with `satisfies`                      |
+| Captures           | Playwright + gifenc + pngjs (scripts only) | Screenshots and the README GIF from the real build; small pure-JS encoders, no ffmpeg |
+| Hosting and CI     | Vercel + GitHub Actions              | A static build with security headers; checks on every push and a weekly data refresh        |
 
 ## Project layout
 
 ```
 src/        the app (map/, ui/, store/, hooks/, animation/, styles/, config.ts, types.ts)
-scripts/    Node data pipeline, run with tsx, never shipped to the client
+scripts/    Node data pipeline and captures, run with tsx, never shipped to the client
 data/       raw/ (cached wiki responses, gitignored), generated/ (committed), overrides/
 tests/      Vitest unit and component tests
 e2e/        Playwright browser tests, run against the production build
+public/     the favicon, its bitmaps, and the link preview image
+docs/       the README's GIF
+.github/    CI and the weekly data refresh
 ```
 
-`src/config.ts` holds the title, map dimensions, zone boundaries, and animation timings, so layout and timing tweaks never touch component code. The data scripts import it too.
+`src/config.ts` holds the title, site address, map dimensions, zone boundaries, and animation timings, so layout and timing tweaks never touch component code. The data scripts import it too.
 
 ## The map
 
@@ -86,6 +124,7 @@ The strip under the map is the timeline: one stop per anime arc in airing order,
 - **Bends are hand-drawn, everything else is a curve.** The whole voyage is one centripetal Catmull-Rom spline through the islands, converted to SVG Bezier curves ([src/utils/spline.ts](src/utils/spline.ts)), so the route flows through islands instead of zigzagging. A few legs need a bend: East Blue ships climb Reverse Mountain along the Red Line instead of crossing the Calm Belt. Those bends live in [scripts/sources/waypoints.ts](scripts/sources/waypoints.ts), with a reason for each, and `build-route` writes them into `data/generated/route.json` for every leg sailed with anime-only arcs shown or hidden. `data:validate` fails if either set of legs is missing an entry.
 - **Drawn in map space.** The route is inline SVG in the base map's own pixel space, so each leg is a single `<path>` that keeps its shape at every zoom. The ship is a small original sailing ship, moored a little way back along the leg it arrived on so it never hides the island.
 - **Every view has a link.** The URL tracks the current arc (`?arc=enies-lobby`, updated with `history.replaceState`). Links can also name an episode, `?ep=300`, which opens the arc it belongs to; where an anime-only arc airs inside a canon one, the canon arc wins. A link to an anime-only arc turns them on.
+- **The guided tour sails it for you.** "Play voyage" on the timeline steps through the arcs by itself, staying on each for its voyage plus time to read the logbook (about 4.5 words a second, [src/animation/tour.ts](src/animation/tour.ts)). It stops at the viewer's spoiler limit, and the moment they take the helm: moving the timeline any other way, or touching the map. Its timer runs on GSAP's clock, the one the voyage plays on, so a hidden tab pauses it instead of letting it sail on unseen.
 - **The camera follows only when it has to.** On load the map opens on the current arc. After that it flies only when the arc's islands aren't comfortably in view, and it never zooms in on its own (milestones aside; see Animation). It frames everything clear of the floating panels: each panel that covers the map is marked `data-covers-map`, and the camera keeps what it frames out from under them, even showing a little past the map's edge where a panel hides it anyway.
 
 State lives in one small Zustand store ([src/store/index.ts](src/store/index.ts)): the current arc, the spoiler limit, the open island, and settings. The list of visible arcs is a selector over the filler setting, never a second copy.
@@ -95,7 +134,7 @@ State lives in one small Zustand store ([src/store/index.ts](src/store/index.ts)
 - **The logbook** (top-left) is one sheet of chart paper: the atlas title, the current arc (saga, episodes, anime-only and other tags, summary), and the crew. Crew are typographic cards, name over role, with no character art; whoever joins in the current arc is inked and briefly washed in brass. On phones the timeline right under the map names the arc, so the logbook keeps only the title, the arc's summary, and a folded crew line.
 - **Islands open a panel** (a card on the right, a bottom sheet on phones): region, summary, the arcs set there as links that jump the timeline, and the island's wiki page. Clicking open sea or pressing Escape closes it, and focus goes back to the island.
 - **Settings** (top-right) hold the spoiler limit, the anime-only switch, a reduce-motion override, and the About notes. Settings and the spoiler limit are remembered in `localStorage` (namespaced `gla:`, every access wrapped so a blocked store just means being asked again).
-- **The spoiler gate.** A first visit asks for the last episode watched (or an arc, or "I'm caught up") before showing anything past episode 1. The answer becomes a limit, and the rules live in one place, [src/data/spoilers.ts](src/data/spoilers.ts):
+- **The spoiler gate.** A first visit asks for the last episode watched (or an arc, or "I'm caught up") before showing anything past episode 1. Someone who doesn't watch the show can't answer that, so the gate also offers "New to One Piece? Take the tour": no limit, and the guided tour starts from the first arc. The answer becomes a limit, and the rules live in one place, [src/data/spoilers.ts](src/data/spoilers.ts):
   - Arcs that start after the limit are locked: timeline stops with no name, and their sagas go unnamed too. They contribute nothing else: the map is drawn from a "known arcs" list that leaves them out, so their islands, route legs, and crew simply don't exist yet. The chart fills in as you watch.
   - The arc the limit falls inside shows its name and setup only: the map stops at its first island, and crew who join later in it stay hidden.
   - A shared link past the limit opens the gate instead of the arc, and the URL is rewritten to where the viewer actually is, so the address bar doesn't name it either. Raising the limit opens the linked arc.
@@ -134,12 +173,19 @@ Checked automatically: axe finds no violations on any screen (the spoiler prompt
 
 ## Performance and testing
 
-- **Lighthouse** (desktop, production build, first visit with the intro): Performance 97, Accessibility 100, Best Practices 96 (the missing favicon, coming in Phase 9). First and largest contentful paint come in under a second.
-- **Bundle.** The initial JavaScript is 201 KB gzipped, under the 250 KB budget: React DOM about a third, Leaflet a quarter, then the app and its data, GSAP, and Framer Motion. tsParticles loads only when weather shows (28 KB gzipped), and the dev positioner never ships. The sound code is about 1 KB and isn't split out, because Safari only lets audio start inside the click that turns it on. Source maps are published, so the production build can be read in devtools.
+- **Lighthouse** (the live site, first visit with the intro): on desktop, Performance 99, Accessibility 100, Best Practices 100, SEO 100, with first and largest contentful paint at 0.6 s. On the mobile preset (a throttled phone on slow 4G), Performance is 90: nothing paints until the bundle has downloaded and run (first paint 2.7 s).
+- **Bundle.** The initial JavaScript is 200 kB gzipped, under the 250 kB budget that CI enforces (`npm run size`): React DOM about a third, Leaflet a quarter, then the app and its data, GSAP, and Framer Motion. tsParticles loads only when weather shows (28 KB gzipped), and the dev positioner never ships. The sound code is about 1 KB and isn't split out, because Safari only lets audio start inside the click that turns it on. Source maps are published, so the production build can be read in devtools.
 - **The base map** is generated as inline SVG from `config.ts` with every number rounded: 73 elements, about 29 KB of markup. With no hand-drawn file there's nothing for SVGO to do.
-- **Unit and component tests** (Vitest, 177): the coordinate helper, route derivation with and without anime-only arcs, episode-to-arc lookup with interleaved arcs, spoiler filtering, URL parsing, merging hand-placed positions, the voyage animation plan, and components (timeline keyboard use and announcements, the spoiler gate, island panel links, phone dialogs). Arc and journey tests use the real generated data, since early arcs never change.
-- **Browser tests** (Playwright, at desktop and phone sizes, against the production build): a first visit end to end (skip the intro, answer the spoiler prompt, sail three arcs, open an island, check the URL), the same by keyboard alone inside a spoiler limit, and the axe scans. They run one at a time: headless Chromium draws the animated map in software, so parallel pages only slow each other down.
+- **Unit and component tests** (Vitest, 187): the coordinate helper, route derivation with and without anime-only arcs, episode-to-arc lookup with interleaved arcs, spoiler filtering, URL parsing, merging hand-placed positions, the voyage animation plan, the tour's pace, and components (timeline keyboard use, announcements, and the tour button, the spoiler gate, island panel links, phone dialogs). Arc and journey tests use the real generated data, since early arcs never change.
+- **Browser tests** (Playwright, at desktop and phone sizes, against the production build or, with `BASE_URL`, the live site): a first visit end to end (skip the intro, answer the spoiler prompt, sail three arcs, open an island, check the URL), the same by keyboard alone inside a spoiler limit, a newcomer taking the tour and then stopping it, and the axe scans. They run one at a time: headless Chromium draws the animated map in software, so parallel pages only slow each other down.
 - **The data is validated on every build**: `npm run build` runs `data:validate` first, so CI and deploys can't ship data that fails its checks.
+
+## Deployment and CI
+
+- **Hosting.** Vercel builds and serves the static site, deploying every push to `main`. Deep links like `/?arc=water-7` need no server rewrites: the app is one page, and the arc lives in the query string. [vercel.json](vercel.json) caches the hashed assets for a year and sets security headers, including a Content Security Policy that allows scripts only from the site itself.
+- **CI** ([.github/workflows/ci.yml](.github/workflows/ci.yml)), on every push and pull request: lint, formatting, unit tests, the build (data validation and type-checks included), the JavaScript budget, and the browser tests.
+- **A weekly data refresh** ([.github/workflows/data-refresh.yml](.github/workflows/data-refresh.yml)). Each Monday it re-fetches the wiki, rebuilds the data, runs the checks, and opens a pull request if anything changed, with the results in its description. New episodes extend the latest arc by themselves. An arc the wiki adds goes on the review list and stays off the timeline until it's curated in `scripts/sources/journey.ts` with a summary, so a person always reviews what ships.
+- **Images made from the app itself.** `npm run capture` ([scripts/capture.ts](scripts/capture.ts)) drives the production build in headless Chromium to make the link preview, the GIF above, and the favicon's bitmaps, so they can be remade after any change. Both the preview and the GIF stop at Reverse Mountain, with the spoiler limit set there, so a shared link never gives the route away. The GIF runs on virtual time: Playwright's clock drives the app's timers and animation frames, CSS animations are stepped to match, and each frame stores only the pixels that changed.
 
 ## The data
 
@@ -157,14 +203,23 @@ wiki API ──fetch-wiki──▶ data/raw/ (cached) ──build-arcs / build-l
 - **Summaries are written, not scraped.** Every arc and island has one or two original sentences in [scripts/sources/summaries.ts](scripts/sources/summaries.ts). They're spoiler-light by rule: an arc's summary shows from its first episode (even to a viewer partway through it), so it sets the scene and never gives away the outcome. `check-summaries` compares each one with every cached wiki page and flags any run of six or more shared words, and `data:validate` fails on a missing summary or one longer than two sentences.
 - **Judgment calls aren't silent.** Anything ambiguous goes on a TODO-REVIEW list, printed by the build and saved to [data/generated/review/](data/generated/review/).
 
-The data currently runs through episode 1180 (as of 2026-10-04): 51 arcs, 42 places, and the ten Straw Hats.
+The data currently runs through episode 1180 (as of 2026-10-04): 51 arcs, 42 places, and the ten Straw Hats. The weekly refresh (see Deployment and CI) keeps it current.
+
+## Known limitations
+
+- **Positions are approximate.** The series' own geography isn't consistent, so islands sit in plausible regions rather than at canon coordinates. Anime-only islands, which have little source material, are placed by best guess from the arcs around them.
+- **The data is as current as the last refresh.** It runs through episode 1180 (2026-10-04). A new arc appears only once it's curated, and an arc still airing shows its episodes so far.
+- **The arc is the smallest unit.** There's no episode-by-episode detail, and movies and TV specials aren't covered.
+- **Crew changes mid-arc aren't modeled.** Usopp leaves the crew during Water 7 and rejoins at episode 323; the crew list keeps him aboard throughout.
+- **The spoiler gate's arc picker lists every arc name**, which can hint at what's ahead (it says so under the picker). The episode field and "I'm caught up" don't.
+- **Phones paint late on slow connections.** On Lighthouse's slow-4G phone, the first paint waits for the whole bundle (2.7 s). Prerendering the title and chart into the HTML would fix it.
 
 ## Credits and licenses
 
 - Story data comes from the [One Piece Fandom wiki](https://onepiece.fandom.com/), used under [CC-BY-SA](https://creativecommons.org/licenses/by-sa/3.0/). Arc and island summaries are written originally for this project, and checked against the wiki's text so none repeats it.
 - Fonts: [IM Fell English](https://fonts.google.com/specimen/IM+Fell+English) (Igino Marini) and [Atkinson Hyperlegible Next](https://www.brailleinstitute.org/freefont/) (Braille Institute), both under the SIL Open Font License.
-- All map art is original, hand-coded SVG. Island positions are approximate; the series' own geography isn't consistent.
+- All map art and the favicon are original, hand-coded SVG. Island positions are approximate; the series' own geography isn't consistent.
 - Sounds are synthesized in the browser; there are no recordings or audio files.
-- Libraries: Leaflet (BSD-2-Clause), react-leaflet, Zustand, Framer Motion, and tsParticles (MIT), and GSAP (GreenSock's standard no-charge license). Development only: Playwright (Apache-2.0) and axe-core (MPL-2.0).
+- Libraries: Leaflet (BSD-2-Clause), react-leaflet, Zustand, Framer Motion, and tsParticles (MIT), and GSAP (GreenSock's standard no-charge license). Development only: Playwright (Apache-2.0), axe-core (MPL-2.0), and gifenc and pngjs (MIT).
 
 Unofficial fan project, not affiliated with Eiichiro Oda, Shueisha, or Toei Animation.

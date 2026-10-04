@@ -3,7 +3,12 @@ import { defineConfig, devices } from '@playwright/test';
 /**
  * The browser smoke tests in e2e/, run against the production build that `vite preview`
  * serves. `npm run test:e2e` builds first. Each test runs at a desktop size and on a phone.
+ * Set BASE_URL to run them against a deployed site instead, e.g. the live one:
+ *
+ *   BASE_URL=https://grandlineatlas.vercel.app npx playwright test
  */
+const baseURL = process.env.BASE_URL ?? 'http://localhost:4173';
+
 export default defineConfig({
   testDir: 'e2e',
   // One at a time: headless Chromium draws the animated map in software, so pages running in
@@ -13,7 +18,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
   use: {
-    baseURL: 'http://localhost:4173',
+    baseURL,
     // Only on a retry: a trace snapshots every DOM change, and the ocean's swell changes its
     // filter many times a second, so tracing every test bogs the browsers down until they fail.
     trace: 'on-first-retry',
@@ -26,9 +31,11 @@ export default defineConfig({
     },
     { name: 'phone', use: { ...devices['Pixel 7'] } },
   ],
-  webServer: {
-    command: 'npm run preview -- --port 4173 --strictPort',
-    url: 'http://localhost:4173',
-    reuseExistingServer: !process.env.CI,
-  },
+  webServer: process.env.BASE_URL
+    ? undefined
+    : {
+        command: 'npm run preview -- --port 4173 --strictPort',
+        url: baseURL,
+        reuseExistingServer: !process.env.CI,
+      },
 });

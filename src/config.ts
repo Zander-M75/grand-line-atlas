@@ -17,7 +17,7 @@ export const APP_DESCRIPTION =
 /** Where credits and "read more" links point. */
 export const LINKS = {
   /** The live site, for link previews (they need absolute URLs). */
-  site: 'https://grand-line-atlas.vercel.app',
+  site: 'https://grandlineatlas.vercel.app',
   wiki: 'https://onepiece.fandom.com/',
   /** The license of the wiki's text (Fandom wikis use CC-BY-SA 3.0). */
   wikiLicense: 'https://creativecommons.org/licenses/by-sa/3.0/',

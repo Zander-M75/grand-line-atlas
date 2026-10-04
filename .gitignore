@@ -11,8 +11,8 @@ data/raw/
 playwright-report/
 test-results/
 
-# Env and local overrides
-.env
+# Env and local overrides (the Vercel CLI keeps a token in .env.local)
+.env*
 *.local
 .vercel
 

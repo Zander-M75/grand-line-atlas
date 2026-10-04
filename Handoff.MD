@@ -1,6 +1,6 @@
 # Grand Line Atlas — Handoff
 
-Where the project stands and what to know before picking it up. Last updated 2026-10-03, at the end of Phase 8.
+Where the project stands and what to know before picking it up. Last updated 2026-10-04, at the end of Phase 9.
 
 ---
 
@@ -8,10 +8,11 @@ Where the project stands and what to know before picking it up. Last updated 202
 
 | | |
 |---|---|
-| Phase | **Phase 8 (accessibility, performance, testing) is done** and waiting for the owner's review. Next is Phase 9 (deploy and portfolio packaging). Lighthouse desktop: Performance 97, Accessibility 100. axe finds nothing on any screen, and the Playwright smoke tests pass at desktop and phone sizes. Phase 8 has a few small decisions; the Phase 5–7 ones are still open too (see Owner decisions). |
+| Phase | **Phase 9 (deploy and portfolio packaging) is done** and waiting for the owner's review. Next is Phase 10 (uncharted waters, island symbols, crew wanted posters, search). The site is live; CI runs on every push; Lighthouse on the live site (desktop): Performance 99, Accessibility 100, Best Practices 100, SEO 100. Phase 9 needs one decision from the owner (letting Actions open pull requests); earlier phases' decisions are still open too (see Owner decisions). |
 | Data | Through episode 1180, re-fetched 2026-10-04 (UTC): 51 arcs, 42 places, 10 crew, 46 route connections (42 the ship sails, 4 on Luffy's side route). `npm run data:fetch -- --refresh && npm run data:build` updates it. |
 | Repo | https://github.com/Zander-M75/grand-line-atlas (public), branch `main` |
-| Hosting | None yet (Vercel in Phase 9). |
+| Hosting | **https://grandlineatlas.vercel.app** (Vercel project `grand-line-atlas` in the owner's team, connected to the repo: every push to `main` deploys, other branches get preview deploys). `grand-line-atlas.vercel.app` was taken by someone else's project. |
+| CI | GitHub Actions: `ci.yml` on every push and PR; `data-refresh.yml` weekly (Mondays 06:17 UTC) and by hand. |
 
 ## Read first
 
@@ -24,6 +25,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 7. [src/animation/voyagePlan.ts](src/animation/voyagePlan.ts), [src/animation/sail.ts](src/animation/sail.ts), and [src/map/Voyage.tsx](src/map/Voyage.tsx): what a timeline move animates and how it plays. [src/map/ArcCamera.tsx](src/map/ArcCamera.tsx) and [src/map/camera.ts](src/map/camera.ts): the camera. The README's Animation section is the overview.
 8. [data/generated/review/](data/generated/review/): the TODO-REVIEW items from the last data build (the Phase 2 ones are accepted; Phase 7 added one, see Owner decisions).
 9. [e2e/smoke.spec.ts](e2e/smoke.spec.ts) and [playwright.config.ts](playwright.config.ts): the browser tests, and why they run one at a time with traces only on retry. The README's Accessibility and Performance sections are the overview.
+10. [src/map/TourPacer.tsx](src/map/TourPacer.tsx) and [src/animation/tour.ts](src/animation/tour.ts): the guided tour. [scripts/capture.ts](scripts/capture.ts): how the preview image and GIF are made. [.github/workflows/](.github/workflows/) and [vercel.json](vercel.json): CI, the data refresh, and hosting. The README's Deployment and CI section is the overview.
 
 ## Working rules (from PLAN.md §9)
 
@@ -73,6 +75,12 @@ Where the project stands and what to know before picking it up. Last updated 202
 | "Panels trap focus when open on mobile" | On phones (≤640px), the island panel and settings become modal dialogs (`role=dialog`, `aria-modal`, focus moves in, Tab wraps). Wider, they stay a side panel (`complementary`) and a disclosure. | On wide screens neither covers much of the map, and trapping focus would cut the viewer off from the timeline. |
 | One Playwright smoke test | Three tests, each at desktop and phone sizes: the smoke test as written, the same journey by keyboard alone, and axe scans of each screen | The plan's "manual keyboard-only run-through" and AA checks are cheap to automate, so regressions get caught. axe is a dev dependency (`@axe-core/playwright`). |
 | `data:validate` runs in CI before build | `npm run build` runs `data:validate` first | The CI workflow is Phase 9; with validation in the build itself, CI and Vercel both get it. |
+| CI: lint, test, data:validate, build | Also formatting, the JS budget (`npm run size`), and the Playwright suite | PLAN's Phase 9 additions (2026-10-04). The budget counts the entry script and its modulepreloads from `dist/index.html`, gzipped, in kB of 1,000 bytes as Vite reports them. |
+| Deploy to `grand-line-atlas` | Live at `grandlineatlas.vercel.app` | The hyphenated `.vercel.app` name belongs to another project. The address lives in `LINKS.site` in `config.ts` (canonical and link-preview URLs need it absolute). |
+| OG image: "a screenshot of our own map" | Made by `npm run capture`: the Loguetown arc, laid out at 1600×840 and saved at 2400×1260 (JPEG) | At 1200×630 the panels covered most of the chart. The viewer's limit is set to the end of Reverse Mountain, so the preview (and the GIF) never shows the route past the start. |
+| Favicon | `public/favicon.svg` (a compass star in the chart's colors), plus `favicon.ico` (16/32/48 PNGs in an ICO) and `apple-touch-icon.png`, all from the SVG | The bitmaps come from the same capture script, so the SVG is the only source. |
+| Record a 20–30 s GIF | Scripted (`npm run capture -- gif`): 33 s at 12.5 fps, 960×540, 6.6 MB, intro included | Recorded on virtual time (Playwright's clock plus stepping every Web Animation), so it's smooth however slowly the software renderer draws. The ocean swell is held still for it: it barely shows at 12.5 fps but redrew wave marks all over the sea every frame. Pixels are compared with the previous real frame, exactly: a tolerance left ghosts of earlier frames. |
+| Tour: "any navigation stops it" | The timeline moving by any other means, or a pointer, wheel, or key (other than Tab and modifiers) on the map | Changing a setting mid-tour (sound, weather) doesn't stop it. |
 
 Smaller choices:
 
@@ -120,6 +128,10 @@ Smaller choices:
 - **Focused islands pan into view:** `ArcCamera` listens for focus on marker icons and pans them clear of the panels with `panToReveal`. Leaflet's own `autoPanOnFocus` is off for islands, since it only knows the map's edges.
 - **Arc announcements:** a `role=status` region in the timeline (`ArcAnnouncer`) announces each new arc (`spokenArc()` in `src/data/arcs.ts`, also the slider's `aria-valuetext`) and who comes aboard. It stays quiet on load, and says only who comes aboard while the slider has focus, since the slider announces its own value. It writes `textContent` directly so announcing never re-renders anything.
 - **`.visually-hidden`** is a global utility class in `global.css`.
+- **Tour:** `touring` in the store; `startTour` (restarts from the first arc at the end of what's open), `stopTour`, and `takeTour` (the gate's newcomer option: `chooseSpoilerLimit(null)` then `startTour`). `TourPacer` is mounted by `Voyage` and gets its `plan`, like `ArcCamera`: it remembers the arc it sailed to, so a plan for any other arc means the viewer moved the timeline. Waits are `gsap.delayedCall`s (GSAP's ticker runs on requestAnimationFrame, so they pause in a hidden tab). The hold is the voyage's duration (`voyageDuration`, the moving legs back to back) + `TIMING.tourPause` + the summary's words at `TIMING.tourWordsPerSecond`; a tour started past the first arc moves after `TIMING.tourLead`. The Play button is disabled when nothing past the first arc is open.
+- **Capture script:** `scripts/capture.ts` is type-checked with the browser tests (`tsconfig.e2e.json`, which has DOM types for code run in the page), not with the other scripts. It reaches the app's storage keys through `src/store/storageKeys.ts`, which has no imports so Node can load it. gifenc ships no types (`scripts/types/gifenc.d.ts`) and its Node entry is CommonJS, so it's imported as a default.
+- **CSP:** `style-src` needs `'unsafe-inline'`: the ship's `divIcon` HTML has a `style` attribute. Scripts are `'self'` only. Checked against the built app with the headers injected (intro, tour, weather's lazy chunk, sound, panels): no violations.
+- **Vercel CLI:** the project is linked (`.vercel/`, gitignored). The link also wrote a `VERCEL_OIDC_TOKEN` to `.env.local` (gitignored by `.env*`).
 
 ## Owner decisions
 
@@ -132,11 +144,18 @@ Settled:
 - **Phase 9 and 10 scope** (2026-10-04): Phase 9 adds a guided tour (with a "New to One Piece?" choice in the gate), scripted captures for the preview image and GIF (spoiler-safe: start of the voyage only), a weekly data-refresh workflow, and CI that also runs the browser tests and a bundle budget. Phase 10 is new: uncharted waters, island symbols, crew wanted posters with bios and bounties, and search. Character images were reconsidered and stay out (§2). The other ideas are in PLAN.md §10.
 - **Summit War side route** (2026-10-03): include it. Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) gets a dashed side route. Built in Phase 7 behind a `sideRoute` flag on those four arcs, since a generic rule for off-route arcs would draw misleading lines for flashbacks and side stories (Uta's Past, Buggy Side Story).
 
+Open (Phase 9):
+
+- **Let Actions open pull requests.** The weekly data refresh opens a PR when the wiki changes, but the repo setting "Allow GitHub Actions to create and approve pull requests" (Settings → Actions → General) is off, so that step would fail. Turning it on lets the workflow's `GITHUB_TOKEN` open PRs (it could also approve them, though nothing here does). Until then the refresh still runs and fails visibly when there's something new. Its by-hand run on 2026-10-04 found nothing new, so it didn't need the setting.
+- **A custom domain?** It's on `grandlineatlas.vercel.app`. A subdomain of your site (e.g. `atlas.zander-m.com`) is a few minutes in Vercel if you'd like one; `LINKS.site` in `config.ts` would change with it.
+- **Tour pace.** About 8–11 seconds an arc (the voyage, a 1 s pause, then the summary at 4.5 words a second), so the whole timeline takes about 8 minutes. One number each in `TIMING`.
+- **The GIF** is 6.6 MB (33 s, intro included). Leaving out the intro would cut it to about 4 MB, at the cost of the opening.
+
 Open (Phase 8):
 
 - **Islands still ahead** used to fade as a whole (50% opacity), which put their names at 2.8–3.5:1 contrast, under AA. Now only the dot fades, and the name dims to a grey-green that passes (4.6:1 on the Grand Line). They read a bit stronger than before. If you'd rather they recede more, the dot can fade further, but the name can't get dimmer and still pass.
 - **The faint region lettering** ("Grand Line" is about 2:1, the Blues about 3:1) is left as is: WCAG exempts text that's part of a picture, and it's meant to sit back like a watermark. Raising it is one opacity number each in `BaseMap.module.css`, if you'd like it easier to read.
-- **Mobile performance** (84 on Lighthouse's mobile preset) is above. Worth doing in Phase 9 or later, or fine as is?
+- **Mobile performance** was 84 on Lighthouse's mobile preset locally; the live site scores 90 (Vercel's CDN and compression). Prerendering a first paint is in PLAN.md §10 if it's still worth doing.
 
 Open (Phase 7):
 
@@ -164,9 +183,9 @@ The files in [data/generated/review/](data/generated/review/) are the accepted b
 - Locked timeline stops still show their episode range in the hover tooltip (no name, no anime-only tag). Episode numbers aren't story content, and the range says when an arc unlocks.
 - **Dev server in the Claude Code sandbox:** Vite's file watcher misses edits there, so `npm run dev` serves stale code. Run it with polling instead, from a config outside the repo, e.g. `{ ...base, server: { watch: { usePolling: true } } }` importing `vite.config.ts`.
 - The timeline strip is 7.5rem tall (8.5rem under 640px, where the details wrap). Long arc names truncate with an ellipsis on phones.
-- No favicon yet (Phase 9); headed Chrome logs its 404.
 - Usopp leaves the crew during Water 7 and rejoins in episode 323; the crew data keeps him aboard throughout.
-- Initial JS is 201.2 KB gzipped (budget: ~250 KB). By package: React DOM about a third, Leaflet a quarter, app code and data 16%, Motion 13%, GSAP 11%. tsParticles is in a lazy chunk.
+- Initial JS is 201.2 KB gzipped by Vite's count, 200.1 kB by `npm run size` (budget: 250, enforced in CI). By package: React DOM about a third, Leaflet a quarter, app code and data 16%, Motion 13%, GSAP 11%. tsParticles is in a lazy chunk.
 - Re-measured at 4× CPU throttle (production build): most arc steps have no frame over 50 ms; steps that start a camera flight sometimes have one of ~60 ms. Not worth restructuring rendering for.
-- **Mobile Lighthouse** (not a PLAN target, which is desktop): Performance 84, Accessibility 100. On its simulated slow 4G phone, nothing paints until the 201 KB bundle has downloaded and run (FCP 3.1 s). Prerendering a static first paint (the title and the chart's background) would be the fix if it matters.
-- Best Practices is 96 only because of the favicon 404 (Phase 9).
+- **Mobile Lighthouse** (not a PLAN target, which is desktop), on the live site: Performance 90, Accessibility 100, Best Practices 100, SEO 100. On its simulated slow 4G phone, nothing paints until the bundle has downloaded and run (FCP 2.7 s). Prerendering a static first paint (the title and the chart's background) would be the fix if it matters.
+- **Running Lighthouse here:** `CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" npx lighthouse <url> --preset=desktop` (Lighthouse 13 wants Node ≥ 22.19 and warns on 22.13, but runs).
+- **The data refresh and CI:** PRs opened with `GITHUB_TOKEN` don't trigger other workflows, so CI won't run on the refresh's PRs; the refresh runs `data:validate` and the unit tests itself and puts the results in the PR. Pushing any commit to the PR branch runs CI too.
