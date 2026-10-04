@@ -5,12 +5,9 @@
  * quietly: the app then just asks again (or plays the intro again) next time.
  */
 import type { Settings } from './index';
+import { STORAGE_KEYS } from './storageKeys';
 
-const KEYS = {
-  spoilerLimit: 'gla:spoiler-limit',
-  settings: 'gla:settings',
-  introSeen: 'gla:intro-seen',
-} as const;
+const KEYS = STORAGE_KEYS;
 
 /**
  * The settings remembered between visits. Sound isn't one of them: it only ever starts

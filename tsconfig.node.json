@@ -22,5 +22,7 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["vite.config.ts", "scripts"]
+  "include": ["vite.config.ts", "scripts"],
+  /* Drives a browser and runs code in its pages, so it's checked with the browser tests (DOM types) */
+  "exclude": ["scripts/capture.ts"]
 }

@@ -6,7 +6,8 @@
     "types": ["node"],
     "skipLibCheck": true,
 
-    /* Playwright runs these in Node; DOM types are for code evaluated in the page */
+    /* Playwright runs these in Node; DOM types are for code evaluated in the page.
+       scripts/capture.ts drives the browser the same way. */
     "module": "preserve",
     "moduleResolution": "bundler",
     "verbatimModuleSyntax": true,
@@ -21,5 +22,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["e2e", "playwright.config.ts"]
+  "include": ["e2e", "playwright.config.ts", "scripts/capture.ts", "scripts/types"]
 }

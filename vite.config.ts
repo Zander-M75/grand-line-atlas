@@ -3,22 +3,37 @@ import react from '@vitejs/plugin-react';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vitest/config';
 import { devPositionsPlugin } from './scripts/lib/devPositionsPlugin.ts';
-import { APP_TITLE } from './src/config.ts';
+import { APP_DESCRIPTION, APP_TITLE, LINKS } from './src/config.ts';
 
-/** Fills `%APP_TITLE%` in index.html so the title is set in exactly one place (src/config.ts). */
-function appTitle(): Plugin {
+/**
+ * Fills `%APP_TITLE%`, `%APP_DESCRIPTION%`, and `%SITE_URL%` in index.html, so the title,
+ * description, and address are each set in exactly one place (src/config.ts).
+ */
+function siteMeta(): Plugin {
+  const values: Record<string, string> = {
+    APP_TITLE,
+    APP_DESCRIPTION,
+    SITE_URL: LINKS.site,
+  };
   return {
-    name: 'app-title',
+    name: 'site-meta',
     transformIndexHtml: {
       order: 'pre',
-      handler: (html) => html.replaceAll('%APP_TITLE%', APP_TITLE),
+      handler: (html) =>
+        html.replaceAll(/%(APP_TITLE|APP_DESCRIPTION|SITE_URL)%/g, (_, key: string) =>
+          escapeHtml(values[key] ?? ''),
+        ),
     },
   };
 }
 
+function escapeHtml(text: string): string {
+  return text.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;');
+}
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), appTitle(), devPositionsPlugin()],
+  plugins: [react(), siteMeta(), devPositionsPlugin()],
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },

@@ -10,8 +10,14 @@ import type { Region } from './types.ts';
 
 export const APP_TITLE = 'Grand Line Atlas';
 
+/** For search results and link previews (index.html's meta tags). */
+export const APP_DESCRIPTION =
+  "An interactive map of the Straw Hat Pirates' voyage through the One Piece anime, arc by arc, spoiler-aware. Unofficial fan project.";
+
 /** Where credits and "read more" links point. */
 export const LINKS = {
+  /** The live site, for link previews (they need absolute URLs). */
+  site: 'https://grand-line-atlas.vercel.app',
   wiki: 'https://onepiece.fandom.com/',
   /** The license of the wiki's text (Fandom wikis use CC-BY-SA 3.0). */
   wikiLicense: 'https://creativecommons.org/licenses/by-sa/3.0/',

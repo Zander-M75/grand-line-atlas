@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-const ROOT = path.resolve(import.meta.dirname, '../..');
+export const ROOT = path.resolve(import.meta.dirname, '../..');
 
 /** Cached wiki API responses (gitignored). */
 export const RAW_DIR = path.join(ROOT, 'data/raw');

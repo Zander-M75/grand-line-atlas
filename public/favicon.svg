@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Grand Line Atlas: a compass star on the night sea, in the chart's own colors. -->
+  <rect width="64" height="64" rx="14" fill="#0e2633"/>
+  <circle cx="32" cy="32" r="21" fill="none" stroke="#d8a94e" stroke-width="2.5" stroke-opacity="0.6"/>
+  <path fill="#e8dcbc" d="M32 5 37 27 32 32zM59 32 37 37 32 32zM32 59 27 37 32 32zM5 32 27 27 32 32z"/>
+  <path fill="#d8a94e" d="M32 5 27 27 32 32zM59 32 37 27 32 32zM32 59 37 37 32 32zM5 32 27 37 32 32z"/>
+</svg>
