@@ -55,7 +55,7 @@ describe('crewAboard', () => {
   });
 
   it('hides anyone who joins after the viewer’s limit, even in the current arc', () => {
-    // Nami officially joins in episode 44, inside Arlong Park (31–45).
+    // Nami officially joins in episode 44, inside Arlong Park (31–44).
     expect(aboardIds('arlong-park', 40)).not.toContain('nami');
     expect(aboardIds('arlong-park', 44)).toContain('nami');
   });

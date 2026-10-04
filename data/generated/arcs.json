@@ -68,7 +68,7 @@
     "order": 5,
     "episodes": [
       31,
-      45
+      44
     ],
     "filler": false,
     "locationIds": [
@@ -77,10 +77,25 @@
     "summary": ""
   },
   {
+    "id": "loguetown",
+    "name": "Loguetown Arc",
+    "saga": "East Blue Saga",
+    "order": 6,
+    "episodes": [
+      45,
+      53
+    ],
+    "filler": false,
+    "locationIds": [
+      "loguetown"
+    ],
+    "summary": ""
+  },
+  {
     "id": "buggy-side-story",
     "name": "Buggy Side Story Arc",
     "saga": "East Blue Saga",
-    "order": 6,
+    "order": 7,
     "episodes": [
       46,
       47
@@ -89,21 +104,6 @@
     "offRoute": true,
     "locationIds": [
       "orange-town"
-    ],
-    "summary": ""
-  },
-  {
-    "id": "loguetown",
-    "name": "Loguetown Arc",
-    "saga": "East Blue Saga",
-    "order": 7,
-    "episodes": [
-      48,
-      53
-    ],
-    "filler": false,
-    "locationIds": [
-      "loguetown"
     ],
     "summary": ""
   },

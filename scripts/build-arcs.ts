@@ -13,6 +13,8 @@
  *     ===[[Impel Down Arc]] (Cont.)===                          resumes after interleaved filler
  *     ===Elbaph Arc===                                          newest arcs may not be linked yet
  *     {{Episode|1|title|romaji|kanji|October 20|1999|summary}}  one row per episode
+ *     {{Episode|935|…|Aug 2|2020|…}}                            some dates use 3-letter months
+ *     {{Filler|497|…}}                                          an anime-only episode in a canon arc
  *     {{Special|590|link=Episode 590|…}}                        a numbered episode filed as special
  *     {{Special|RC15|…}}, {{Special|1=01|…}}                    recaps, movies, remasters: skipped
  *     The guide also lists announced episodes with future air dates; those don't count yet.
@@ -21,7 +23,11 @@
  *     `episode = auto` means the template computes the range, so ranges come from the guide.
  *     `type = Filler` marks anime-only arcs (as does Category:Filler Arcs).
  *
- *   Category:<Arc> Episodes: "Episode N" pages, used to double-check each arc's range.
+ *   Category:<Arc> Episodes: "Episode N" pages, used to double-check which arc each episode is
+ *     in. Membership follows the navigation box on each episode page ({{Loguetown Arc}}).
+ *     Specials and recaps sit in other categories ("Specials"), so they're never compared.
+ *
+ * Where these sources disagree, sources/journey.ts (EPISODE_ARCS) says which arc wins and why.
  */
 import { writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -30,12 +36,9 @@ import { GENERATED_DIR } from './lib/paths';
 import { createReviewList } from './lib/review';
 import { getCategoryMembers, getPage } from './lib/wikiClient';
 import { linkTargets, named, param, parseLinkText, sections, templatesNamed } from './lib/wikitext';
-import { ARCS, LOCATIONS, type ArcSeed } from './sources/journey';
+import { ARCS, EPISODE_ARCS, LOCATIONS, type ArcSeed } from './sources/journey';
 
 const review = createReviewList('arcs');
-
-/** Arcs whose episode category disagrees with the guide; reported together at the end. */
-const rangeDisagreements: string[] = [];
 const asOf = parseAsOf(process.argv);
 
 // ---------------------------------------------------------------------------
@@ -70,9 +73,10 @@ const MONTHS = [
 ];
 
 function parseAirDate(monthDay = '', year = ''): Date | null {
-  const day = monthDay.match(/([A-Z][a-z]+)\s+(\d{1,2})/);
+  const day = monthDay.match(/([A-Z][a-z]+)\.?\s+(\d{1,2})/);
   const yearMatch = year.match(/\d{4}/);
-  const month = MONTHS.indexOf(day?.[1] ?? '');
+  const name = day?.[1] ?? '';
+  const month = MONTHS.findIndex((m) => m === name || m.slice(0, 3) === name);
   if (!day || !yearMatch || month < 0) return null;
   return new Date(Date.UTC(Number(yearMatch[0]), month, Number(day[2])));
 }
@@ -80,6 +84,7 @@ function parseAirDate(monthDay = '', year = ''): Date | null {
 function guideEpisodes(sectionBody: string): GuideEpisode[] {
   const rows = [
     ...templatesNamed(sectionBody, 'Episode'),
+    ...templatesNamed(sectionBody, 'Filler'),
     // A few numbered episodes are filed as specials; those link to their own "Episode N" page.
     ...templatesNamed(sectionBody, 'Special').filter(
       (t) => named(t, 'link') === `Episode ${param(t, 1)}`,
@@ -129,6 +134,38 @@ async function readGuides(): Promise<Map<string, GuideArc>> {
 // 2. Combine the guide with the curated arc list and each arc's own page.
 
 const guide = await readGuides();
+moveSettledEpisodes(guide);
+
+/** Applies EPISODE_ARCS: an episode the guide files under another arc moves to the settled one. */
+function moveSettledEpisodes(guideArcs: Map<string, GuideArc>) {
+  for (const { episodes, arc, reason } of EPISODE_ARCS) {
+    const target = guideArcs.get(ARCS.find((seed) => seed.id === arc)?.wikiTitle ?? '');
+    if (!target) {
+      review.add(arc, 'named in EPISODE_ARCS, but not an arc in the episode guide');
+      continue;
+    }
+    const moved = new Map<GuideArc, number[]>();
+    for (const number of range(...episodes)) {
+      const holds = (g: GuideArc) => g.episodes.some((e) => e.number === number);
+      const holder = [...guideArcs.values()].find(holds);
+      if (!holder) {
+        review.add(arc, `EPISODE_ARCS names episode ${number}, which isn't in the guide`);
+        continue;
+      }
+      if (holder === target) continue;
+      const index = holder.episodes.findIndex((e) => e.number === number);
+      target.episodes.push(...holder.episodes.splice(index, 1));
+      moved.set(holder, [...(moved.get(holder) ?? []), number]);
+    }
+    for (const [from, numbers] of moved) {
+      review.add(
+        arc,
+        `includes ${episodeList(numbers)}, which the guide files under ${from.label}. ${reason}`,
+      );
+    }
+  }
+}
+
 const fillerCategory = new Set(
   (await getCategoryMembers('Filler Arcs')).members.map((m) => m.title),
 );
@@ -140,6 +177,9 @@ const latestAired = Math.max(
 interface BuiltArc {
   seed: ArcSeed;
   arc: Omit<Arc, 'order'>;
+  /** Aired episodes, by the guide (after EPISODE_ARCS) and by the arc's episode category. */
+  guideEpisodes: number[];
+  categoryEpisodes: number[];
   hasUnairedEpisodes: boolean;
   hasNextArc: boolean;
 }
@@ -175,7 +215,6 @@ for (const seed of ARCS) {
   }
 
   await checkLocationsAreLinked(seed, page.wikitext);
-  await crossCheckEpisodeCategory(seed, entry.label, airedNumbers);
   if (seed.review) review.add(seed.id, seed.review);
 
   built.push({
@@ -190,6 +229,10 @@ for (const seed of ARCS) {
       locationIds: seed.locations,
       summary: '',
     },
+    guideEpisodes: airedNumbers,
+    categoryEpisodes: (await getCategoryMembers(`${seed.wikiTitle} Episodes`)).members
+      .map((m) => Number(m.title.match(/^Episode (\d+)$/)?.[1]))
+      .filter((n) => Number.isInteger(n) && n <= latestAired),
     hasUnairedEpisodes: entry.episodes.some((e) => !aired(e)),
     hasNextArc: Boolean(arcBox && (named(arcBox, 'next') || named(arcBox, 'next anime'))),
   });
@@ -236,16 +279,29 @@ async function checkLocationsAreLinked(seed: ArcSeed, arcWikitext: string) {
   }
 }
 
-async function crossCheckEpisodeCategory(seed: ArcSeed, label: string, guideNumbers: number[]) {
-  const category = await getCategoryMembers(`${seed.wikiTitle} Episodes`);
-  const numbers = category.members
-    .map((m) => Number(m.title.match(/^Episode (\d+)$/)?.[1]))
-    .filter((n) => Number.isInteger(n) && n <= latestAired);
-  if (numbers.length === 0) return; // no category to compare against
-  const fromGuide = `${Math.min(...guideNumbers)}–${Math.max(...guideNumbers)}`;
-  const fromCategory = `${Math.min(...numbers)}–${Math.max(...numbers)}`;
-  if (fromGuide !== fromCategory) {
-    rangeDisagreements.push(`${label} (guide ${fromGuide}, category ${fromCategory})`);
+/**
+ * Episodes an arc's category claims but the guide puts in another arc (or in none we show),
+ * unless EPISODE_ARCS settles them. Grouped by the pair of arcs, for one line each.
+ */
+function reportCategoryDisagreements(arcsBuilt: BuiltArc[]) {
+  const settled = new Set(EPISODE_ARCS.flatMap(({ episodes }) => range(...episodes)));
+  const guideArcOf = new Map(arcsBuilt.flatMap((b) => b.guideEpisodes.map((n) => [n, b.arc])));
+  const byPair = new Map<string, number[]>();
+  for (const { arc, categoryEpisodes } of arcsBuilt) {
+    for (const number of categoryEpisodes) {
+      const inGuide = guideArcOf.get(number);
+      if (inGuide === arc || settled.has(number)) continue;
+      const pair = `${arc.name} by its category, ${inGuide?.name ?? 'no arc shown here'} by the guide`;
+      byPair.set(pair, [...(byPair.get(pair) ?? []), number]);
+    }
+  }
+  if (byPair.size) {
+    review.add(
+      'Episode ranges',
+      `follow the wiki's episode guide, but these episodes are filed elsewhere too: ${[...byPair]
+        .map(([pair, numbers]) => `${episodeList(numbers)} (${pair})`)
+        .join('; ')}. Check the episodes' own pages and settle them in EPISODE_ARCS.`,
+    );
   }
 }
 
@@ -269,13 +325,7 @@ if (last && lastArc && (last.hasUnairedEpisodes || !last.hasNextArc)) {
   lastArc.ongoing = true;
 }
 
-if (rangeDisagreements.length) {
-  review.add(
-    'Episode ranges',
-    `come from the wiki's episode guide. Its per-arc episode categories disagree by a few episodes at the edges for: ${rangeDisagreements.join('; ')}. Spot checks favor the guide (episode 45 is Luffy's first bounty, the end of Arlong Park; 227–228 are canon Long Ring Long Land after Foxy's Return).`,
-  );
-}
-
+reportCategoryDisagreements(built);
 reportInterleaving(arcs);
 reportPlanDifferences(
   built.map((b) => b.seed),
@@ -375,6 +425,23 @@ function parseAsOf(argv: string[]): Date {
 
 function isoDate(date: Date): string {
   return date.toISOString().slice(0, 10);
+}
+
+function range(first: number, last: number): number[] {
+  return Array.from({ length: last - first + 1 }, (_, i) => first + i);
+}
+
+/** [45] → "episode 45"; [227, 228] → "episodes 227–228"; [4, 9] → "episodes 4, 9" */
+function episodeList(numbers: number[]): string {
+  const sorted = [...numbers].sort((a, b) => a - b);
+  const runs: [number, number][] = [];
+  for (const n of sorted) {
+    const last = runs.at(-1);
+    if (last && n === last[1] + 1) last[1] = n;
+    else runs.push([n, n]);
+  }
+  const text = runs.map(([a, b]) => (a === b ? `${a}` : `${a}–${b}`)).join(', ');
+  return sorted.length === 1 ? `episode ${text}` : `episodes ${text}`;
 }
 
 async function writeJson(file: string, value: unknown) {

@@ -402,6 +402,38 @@ export const ARCS: ArcSeed[] = [
   },
 ];
 
+/**
+ * Episodes the wiki's own sources put in different arcs: the episode guide (the main source),
+ * each arc's episode category (which follows the navigation box on every episode page), and
+ * the arc pages' story summaries. Each entry settles where the episodes belong. build-arcs
+ * moves any the guide files elsewhere, and reports every disagreement not settled here.
+ * Checked against each episode's own page, 2026-10-03.
+ *
+ * Not listed: specials the guide files at the end of an arc and no arc's category claims
+ * (Chopper Man, 336; Boss Luffy, 406–407; the crewmates' whereabouts, 453–456). They stay with
+ * the arc before them, so every episode belongs somewhere.
+ */
+export const EPISODE_ARCS: { episodes: [number, number]; arc: string; reason: string }[] = [
+  {
+    episodes: [4, 4],
+    arc: 'orange-town',
+    reason:
+      "The Shanks flashback. It adapts Romance Dawn's first chapter, so its category is Romance Dawn's, but its own page and the guide both open Orange Town with it.",
+  },
+  {
+    episodes: [45, 45],
+    arc: 'loguetown',
+    reason:
+      "Luffy's first bounty. Its own page opens the Loguetown Arc with it, episode 44's page closes Arlong Park, and the Loguetown Arc page's story starts with the bounty.",
+  },
+  {
+    episodes: [227, 228],
+    arc: 'long-ring-long-land',
+    reason:
+      "Aokiji's visit. These episode pages navigate as Foxy's Return, but both arc pages tell it as the end of Long Ring Long Land, as the guide does.",
+  },
+];
+
 export interface LocationSeed {
   /** The location's page on the wiki. */
   wikiTitle: string;
