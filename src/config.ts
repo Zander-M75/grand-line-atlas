@@ -180,6 +180,14 @@ export const TIMING = {
   introHandover: 0.6,
   /** Timeline changes closer together than this count as scrubbing (see ArcCamera). */
   scrubThreshold: 0.25,
+  /**
+   * The guided tour (see TourPacer) stays on each arc for its voyage, then this pause, then
+   * long enough to read the logbook's summary at this pace.
+   */
+  tourPause: 1,
+  tourWordsPerSecond: 4.5,
+  /** A tour started partway along the timeline sails on after this beat. */
+  tourLead: 0.6,
 } as const;
 
 // ---------------------------------------------------------------------------

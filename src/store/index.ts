@@ -51,6 +51,8 @@ export interface AtlasState {
   gate: Gate | null;
   /** The first-visit intro is playing (see Intro.tsx). Everything else waits behind it. */
   introPlaying: boolean;
+  /** The guided tour is sailing the timeline by itself (see TourPacer). */
+  touring: boolean;
 }
 
 export const useAtlasStore = create<AtlasState>()(() => ({
@@ -60,6 +62,7 @@ export const useAtlasStore = create<AtlasState>()(() => ({
   settings: { showFiller: true, reducedMotion: false, sound: false, weather: true },
   gate: null,
   introPlaying: false,
+  touring: false,
 }));
 
 // ---------------------------------------------------------------------------
@@ -237,6 +240,33 @@ export function restoreSaved() {
 export function finishIntro() {
   saveIntroSeen();
   useAtlasStore.setState({ introPlaying: false });
+}
+
+// ---------------------------------------------------------------------------
+// The guided tour
+
+/**
+ * Starts the tour: the timeline sails on by itself, an arc at a time (TourPacer sets the pace),
+ * until the last arc the viewer may open. From there, it starts over at the first arc.
+ */
+export function startTour() {
+  const state = useAtlasStore.getState();
+  const index = selectVisibleArcs(state).findIndex((arc) => arc.id === state.currentArcId);
+  if (index >= selectLastOpenIndex(state)) goToIndex(0);
+  useAtlasStore.setState({ touring: true });
+}
+
+export function stopTour() {
+  useAtlasStore.setState({ touring: false });
+}
+
+/**
+ * "New to One Piece?" in the spoiler prompt: someone who isn't watching has nothing to spoil,
+ * so there's no limit (saved, like "I'm caught up"), and the tour starts.
+ */
+export function takeTour() {
+  chooseSpoilerLimit(null);
+  startTour();
 }
 
 // ---------------------------------------------------------------------------

@@ -45,6 +45,16 @@ describe('SpoilerGate', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 
+  it('offers a newcomer the tour instead, with nothing to spoil', async () => {
+    const user = userEvent.setup();
+    restoreSaved();
+    render(<SpoilerGate />);
+    await user.click(screen.getByRole('button', { name: 'Take the tour' }));
+    expect(state().spoilerLimitEpisode).toBeNull();
+    expect(state().touring).toBe(true);
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
   it('refuses anything that isn’t an episode number', async () => {
     const user = userEvent.setup();
     restoreSaved();
@@ -92,6 +102,8 @@ describe('SpoilerGate', () => {
     expect(dialog).toHaveAccessibleDescription(/starts after episode 300/);
     expect(dialog).not.toHaveAccessibleDescription(/wano/i);
     expect(episodeField()).toHaveValue('300');
+    // Someone who has a limit is watching: the tour for newcomers isn't offered.
+    expect(screen.queryByRole('button', { name: 'Take the tour' })).not.toBeInTheDocument();
 
     await user.keyboard('{Escape}');
     expect(state().gate).toBeNull();

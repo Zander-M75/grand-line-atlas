@@ -1,7 +1,7 @@
 /**
- * The timeline strip under the map: the current arc's name and episodes, the arc slider
- * (grouped by saga) with previous/next buttons, and the switch for anime-only arcs. It also
- * announces each new arc to screen readers.
+ * The timeline strip under the map: the current arc's name and episodes, the button that plays
+ * the guided tour, the switch for anime-only arcs, and the arc slider (grouped by saga) with
+ * previous/next buttons. It also announces each new arc to screen readers.
  */
 import { useEffect, useRef } from 'react';
 import { crew } from '@/data';
@@ -13,12 +13,16 @@ import {
   selectLastOpenIndex,
   selectVisibleArcs,
   setShowFiller,
+  startTour,
   stepArc,
+  stopTour,
   useAtlasStore,
 } from '@/store';
 import type { Arc } from '@/types';
+import { cx } from '@/utils/cx';
 import { ARC_SLIDER_ID, ArcSlider } from './ArcSlider';
 import { ArcTags } from './ArcTags';
+import { PauseIcon, PlayIcon } from './icons';
 import { Switch } from './Switch';
 import styles from './Timeline.module.css';
 
@@ -38,6 +42,7 @@ export function Timeline() {
           <span className={styles.saga}>{arc.saga}</span>
           <ArcTags arc={arc} />
         </p>
+        <TourButton disabled={lastOpen === 0} />
         <Switch
           className={styles.fillerSwitch}
           filler
@@ -85,6 +90,25 @@ function ArcAnnouncer({ arc }: { arc: Arc }) {
 
   // A status region: polite, and read as a whole each time it changes.
   return <p ref={regionRef} className="visually-hidden" role="status" />;
+}
+
+/**
+ * Plays the voyage by itself, an arc at a time, or pauses it. With nothing past the first arc
+ * to sail to (a spoiler limit inside it), there's nothing to play.
+ */
+function TourButton({ disabled }: { disabled: boolean }) {
+  const touring = useAtlasStore((state) => state.touring);
+  return (
+    <button
+      type="button"
+      className={cx(styles.tour, touring && styles.touring)}
+      disabled={disabled}
+      onClick={() => (touring ? stopTour() : startTour())}
+    >
+      {touring ? <PauseIcon /> : <PlayIcon />}
+      {touring ? 'Pause' : 'Play voyage'}
+    </button>
+  );
 }
 
 function StepButton({

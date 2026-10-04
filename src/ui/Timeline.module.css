@@ -15,8 +15,8 @@
 
 .header {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  grid-template-areas: 'name details switch';
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: 'name details tour switch';
   align-items: center;
   column-gap: var(--space-3);
 }
@@ -49,6 +49,42 @@
 
 .fillerSwitch {
   grid-area: switch;
+}
+
+/* Play voyage / Pause: a small pill, filled in while the tour plays. */
+.tour {
+  grid-area: tour;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 2rem;
+  padding: 0 var(--space-3) 0 var(--space-2);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-round);
+  background: transparent;
+  color: var(--color-ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.tour:hover:not(:disabled) {
+  background: var(--color-paper-shade);
+}
+
+.touring,
+.touring:hover:not(:disabled) {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.tour:disabled {
+  border-color: var(--color-rule);
+  color: var(--color-locked);
+  opacity: 0.45;
+  cursor: default;
 }
 
 /* Slider row */
@@ -102,7 +138,8 @@
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       'name switch'
-      'details details';
+      'details tour';
+    row-gap: var(--space-1);
   }
 
   .arcName {

@@ -3,9 +3,9 @@ import { expect, test, type Page } from '@playwright/test';
 
 /**
  * A first visit, end to end, in a real browser: the intro, the spoiler prompt, sailing the
- * timeline, and an island's panel. Then the same by keyboard alone, and an automated
- * accessibility scan (axe) of each screen. Early arcs are used throughout, since new episodes
- * never change them.
+ * timeline, and an island's panel. Then the same by keyboard alone, the guided tour, and an
+ * automated accessibility scan (axe) of each screen. Early arcs are used throughout, since new
+ * episodes never change them.
  */
 
 /** Opens the app as a first-time viewer, skips the intro, and returns the spoiler prompt. */
@@ -90,6 +90,21 @@ test('by keyboard alone, inside a spoiler limit', async ({ page }) => {
   await page.keyboard.press('Escape');
   await expect(page.getByRole('heading', { name: 'Baratie', exact: true })).toBeHidden();
   await expect(island).toBeFocused();
+});
+
+test('a newcomer takes the tour, then takes the helm', async ({ page }) => {
+  const gate = await arriveAsNewViewer(page);
+  await gate.getByRole('button', { name: 'Take the tour' }).click();
+  await expect(gate).toBeHidden();
+
+  // The first arc gets its reading time, then the voyage sails on by itself.
+  await expect(page.getByRole('button', { name: 'Pause' })).toBeVisible();
+  await expect(page).toHaveURL(/\?arc=orange-town$/, { timeout: 20_000 });
+
+  // Moving the timeline by hand stops the tour where the viewer put it.
+  await page.getByRole('button', { name: 'Next arc' }).click();
+  await expect(page.getByRole('button', { name: 'Play voyage' })).toBeVisible();
+  await expect(page).toHaveURL(/\?arc=syrup-village$/);
 });
 
 test('no accessibility problems axe can detect, on any screen', async ({ page }) => {

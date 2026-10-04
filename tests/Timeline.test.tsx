@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { arcById, arcs } from '@/data';
 import { spokenArc } from '@/data/arcs';
-import { goToArc, useAtlasStore } from '@/store';
+import { goToArc, setSpoilerLimit, useAtlasStore } from '@/store';
 import { Timeline } from '@/ui/Timeline';
 
 const current = () => useAtlasStore.getState().currentArcId;
@@ -49,6 +49,21 @@ describe('Timeline', () => {
     expect(current()).toBe('ice-hunter'); // first arc of the next saga
     await user.keyboard('{PageDown}{PageDown}');
     expect(current()).toBe('goat-island'); // back two saga starts
+  });
+
+  it('plays and pauses the guided tour', async () => {
+    const user = userEvent.setup();
+    render(<Timeline />);
+    await user.click(screen.getByRole('button', { name: 'Play voyage' }));
+    expect(useAtlasStore.getState().touring).toBe(true);
+    await user.click(screen.getByRole('button', { name: 'Pause' }));
+    expect(useAtlasStore.getState().touring).toBe(false);
+  });
+
+  it('has no tour to play when the spoiler limit is inside the first arc', () => {
+    setSpoilerLimit(1);
+    render(<Timeline />);
+    expect(screen.getByRole('button', { name: 'Play voyage' })).toBeDisabled();
   });
 
   it('steps with the previous and next buttons, disabled at the ends', async () => {

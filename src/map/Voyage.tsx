@@ -5,6 +5,7 @@
  * (src/animation/sail.ts): the newest legs draw themselves while the ship sails along them,
  * or un-draw as the ship backs up when the timeline goes back. A change that arrives while
  * another is still playing cuts it short (it finishes at once), so changes never queue up.
+ * The guided tour takes its pace from the same plan.
  */
 import { useLayoutEffect, useRef, useState } from 'react';
 import { useMap } from 'react-leaflet';
@@ -16,6 +17,7 @@ import { useAtlasStore } from '@/store';
 import { ArcCamera } from './ArcCamera';
 import { RouteLayer } from './RouteLayer';
 import { Ship } from './Ship';
+import { TourPacer } from './TourPacer';
 
 export function Voyage() {
   const map = useMap();
@@ -49,6 +51,7 @@ export function Voyage() {
       <RouteLayer legs={plan.legs} elements={legElements} wakeRef={wake} />
       <Ship ref={ship} />
       <ArcCamera plan={plan} />
+      <TourPacer plan={plan} />
     </>
   );
 }

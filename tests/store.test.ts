@@ -14,7 +14,9 @@ import {
   setSetting,
   setShowFiller,
   setSpoilerLimit,
+  startTour,
   stepArc,
+  takeTour,
   useAtlasStore,
 } from '@/store';
 import { loadSettings, loadSpoilerLimit, saveSpoilerLimit } from '@/store/persist';
@@ -179,6 +181,32 @@ describe('spoiler gate', () => {
     expect(state().gate).toBeNull();
     expect(state().spoilerLimitEpisode).toBe(300);
     expect(state().currentArcId).toBe('enies-lobby');
+  });
+});
+
+describe('the guided tour', () => {
+  it('starts from where the viewer is', () => {
+    goToArc('baratie');
+    startTour();
+    expect(state().touring).toBe(true);
+    expect(state().currentArcId).toBe('baratie');
+  });
+
+  it('starts over from the first arc at the end of what the viewer may open', () => {
+    setSpoilerLimit(300);
+    goToIndex(Infinity);
+    startTour();
+    expect(state().currentArcId).toBe('romance-dawn');
+  });
+
+  it('is what a newcomer gets instead of a spoiler limit', () => {
+    restoreSaved();
+    takeTour();
+    expect(state().gate).toBeNull();
+    expect(state().spoilerLimitEpisode).toBeNull();
+    expect(loadSpoilerLimit()).toBeNull(); // they won't be asked again
+    expect(state().currentArcId).toBe('romance-dawn');
+    expect(state().touring).toBe(true);
   });
 });
 

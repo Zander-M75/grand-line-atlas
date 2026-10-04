@@ -60,3 +60,21 @@ export function ChevronIcon() {
     </Icon>
   );
 }
+
+/** A triangle pointing on: play the tour. */
+export function PlayIcon() {
+  return (
+    <Icon>
+      <path d="M5 3.2v9.6L12.5 8z" fill="currentColor" />
+    </Icon>
+  );
+}
+
+/** Two bars: pause the tour. */
+export function PauseIcon() {
+  return (
+    <Icon>
+      <path d="M5.5 3.5v9M10.5 3.5v9" strokeWidth="2.4" />
+    </Icon>
+  );
+}

@@ -3,6 +3,7 @@
  *
  * - First visit: asks which episode the viewer is on before showing anything past the first
  *   one. It needs an answer, so Escape doesn't close it; "I'm caught up" is one click away.
+ *   Someone who doesn't watch One Piece can't answer, so it also offers them the guided tour.
  * - A link past their limit: says so without naming what's there, and offers to update the
  *   limit or stay where they are (Escape stays).
  *
@@ -13,7 +14,8 @@ import { useId, type KeyboardEvent } from 'react';
 import { MOTION_EASE } from '@/animation/easing';
 import { APP_TITLE, TIMING } from '@/config';
 import { useMotionTransition } from '@/hooks/useMotionTransition';
-import { chooseSpoilerLimit, dismissGate, useAtlasStore, type Gate } from '@/store';
+import { chooseSpoilerLimit, dismissGate, takeTour, useAtlasStore, type Gate } from '@/store';
+import { PlayIcon } from './icons';
 import { SpoilerForm } from './SpoilerForm';
 import styles from './SpoilerGate.module.css';
 
@@ -91,6 +93,17 @@ function GateDialog({ gate, limit }: { gate: Gate; limit: number | null }) {
           autoFocus
         />
 
+        {welcome && (
+          <div className={styles.newcomer}>
+            <p>
+              <strong>New to One Piece?</strong> Watch the whole voyage play out.
+            </p>
+            <button type="button" className={styles.tour} onClick={takeTour}>
+              <PlayIcon />
+              Take the tour
+            </button>
+          </div>
+        )}
         {!welcome && (
           <button type="button" className={styles.stay} onClick={dismissGate}>
             Stay at episode {limit}
