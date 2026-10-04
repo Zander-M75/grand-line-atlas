@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { routeKey, voyageLegs, voyageStops } from '@/data/voyage';
+import { routeKey, sideLegs, voyageLegs, voyageStops } from '@/data/voyage';
 import type { Arc } from '@/types';
 
 let order = 0;
@@ -57,5 +57,37 @@ describe('voyageLegs', () => {
     const returnTo = arc('return-to-sabaody', ['sabaody']);
     expect(voyageStops([sabaody, returnTo])).toHaveLength(2);
     expect(voyageLegs([sabaody, returnTo])).toEqual([]);
+  });
+});
+
+describe('sideLegs', () => {
+  const sabaody = arc('sabaody', ['sabaody']);
+  const amazonLily = arc('amazon-lily', ['amazon-lily'], { offRoute: true, sideRoute: true });
+  const impelDown = arc('impel-down', ['impel-down'], { offRoute: true, sideRoute: true });
+  const flashback = arc('little-east-blue', ['little-east-blue'], { offRoute: true });
+  const returnTo = arc('return-to-sabaody', ['sabaody']);
+  const later = arc('dressrosa', ['dressrosa']);
+  const levely = arc('levely', ['mary-geoise'], { offRoute: true, sideRoute: true });
+
+  const sideOf = (arcs: Arc[]) =>
+    sideLegs(arcs).map((leg) => `${routeKey(leg.fromLocationId, leg.toLocationId)}@${leg.arcId}`);
+
+  it('sets out from where the ship waits and runs through the side-route arcs', () => {
+    expect(sideOf([sabaody, amazonLily, flashback, impelDown, returnTo])).toEqual([
+      'sabaody>amazon-lily@amazon-lily',
+      'amazon-lily>impel-down@impel-down',
+    ]);
+    expect(sideLegs([sabaody, amazonLily]).every((leg) => leg.side)).toBe(true);
+  });
+
+  it('starts over from the ship once it puts in somewhere again', () => {
+    expect(sideOf([sabaody, amazonLily, returnTo, later, levely])).toEqual([
+      'sabaody>amazon-lily@amazon-lily',
+      'dressrosa>mary-geoise@levely',
+    ]);
+  });
+
+  it('is never part of the ship’s own voyage', () => {
+    expect(legsOf([sabaody, amazonLily, impelDown, returnTo])).toEqual([]);
   });
 });

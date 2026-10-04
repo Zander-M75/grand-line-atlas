@@ -25,6 +25,8 @@ export interface Leg {
   arcOrder: number;
   /** Starts or ends at an anime-only stop, so the canon-only voyage never sails it. */
   filler: boolean;
+  /** Part of a side route (see sideLegs): drawn, but the ship never sails it. */
+  side?: boolean;
 }
 
 /**
@@ -59,6 +61,39 @@ export function voyageLegs(arcs: Arc[]): Leg[] {
       });
     }
     previous = stop;
+  }
+  return legs;
+}
+
+/**
+ * The legs of a side route: Luffy's own path while the story follows him away from the ship
+ * (arcs marked `sideRoute`, the Summit War). It sets out from where the ship waits and runs
+ * through each side-route arc's places, until the ship puts in somewhere again.
+ */
+export function sideLegs(arcs: Arc[]): Leg[] {
+  const legs: Leg[] = [];
+  let shipAt: string | undefined;
+  let luffyAt: string | undefined;
+  for (const arc of arcs) {
+    if (!arc.offRoute && arc.locationIds.length) {
+      shipAt = arc.locationIds.at(-1);
+      luffyAt = undefined;
+    }
+    if (!arc.sideRoute) continue;
+    for (const locationId of arc.locationIds) {
+      const from = luffyAt ?? shipAt;
+      if (from && from !== locationId) {
+        legs.push({
+          fromLocationId: from,
+          toLocationId: locationId,
+          arcId: arc.id,
+          arcOrder: arc.order,
+          filler: arc.filler,
+          side: true,
+        });
+      }
+      luffyAt = locationId;
+    }
   }
   return legs;
 }

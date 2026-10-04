@@ -6,7 +6,7 @@
  * the current arc, so toggling filler or moving the slider is just a new call.
  */
 import { locationById, locations, waypointsByKey } from '@/data';
-import { routeKey, voyageLegs, voyageStops, type Leg } from '@/data/voyage';
+import { routeKey, sideLegs, voyageLegs, voyageStops, type Leg } from '@/data/voyage';
 import type { Arc, Location } from '@/types';
 import { pathData, splineSegments } from '@/utils/spline';
 import { buildTrack, headingAt, type Track } from '@/utils/track';
@@ -43,11 +43,12 @@ export interface ShipPose {
 export interface Journey {
   arc: Arc;
   /**
-   * Every leg of the voyage this journey is part of, ahead or not. It's the same array for
-   * every arc on one timeline, so two journeys share a voyage exactly when it's identical.
+   * Every leg on this timeline, ahead or not: the ship's, then any side route. It's the same
+   * array for every arc on one timeline, so two journeys share a voyage exactly when it's
+   * identical.
    */
   voyage: LegShape[];
-  /** Legs sailed up to and including the current arc. Legs still ahead are left out. */
+  /** Legs drawn up to and including the current arc. Legs still ahead are left out. */
   legs: { shape: LegShape; state: LegState }[];
   ship: ShipPose | null;
   /** Every island some arc on the timeline visits. */
@@ -72,9 +73,10 @@ export function journeyAt(arcs: Arc[], arc: Arc): Journey {
   // sailed anywhere, it faces the way its first leg will take it.
   const lastStop = voyageStops(arcs).findLast((stop) => stop.arcOrder <= arc.order);
   const firstLeg = voyage[0];
+  const lastSailed = legs.findLast(({ shape }) => !shape.leg.side);
   const ship = lastStop && {
     at: positionOf(lastStop.locationId),
-    heading: legs.at(-1)?.shape.arrival ?? (firstLeg ? headingAt(firstLeg.track, 0) : EAST),
+    heading: lastSailed?.shape.arrival ?? (firstLeg ? headingAt(firstLeg.track, 0) : EAST),
   };
 
   const onTimeline = new Set(arcs.flatMap((a) => a.locationIds));
@@ -106,7 +108,8 @@ const shapesByArcs = new WeakMap<Arc[], LegShape[]>();
 export function voyageShapes(arcs: Arc[]): LegShape[] {
   let shapes = shapesByArcs.get(arcs);
   if (!shapes) {
-    shapes = legShapes(voyageLegs(arcs));
+    // A side route is a curve of its own: it shouldn't bend the ship's route, or be bent by it.
+    shapes = [...legShapes(voyageLegs(arcs)), ...legShapes(sideLegs(arcs))];
     shapesByArcs.set(arcs, shapes);
   }
   return shapes;

@@ -33,8 +33,8 @@ export interface VoyagePlan {
   /** How `moving` animates; null when nothing does. */
   motion: LegMotion | null;
   /**
-   * Sailing forward across one of the voyage's thresholds: over Reverse Mountain into the
-   * Grand Line, down to Fish-Man Island, or up into the New World.
+   * The ship sailing forward across one of the voyage's thresholds: over Reverse Mountain
+   * into the Grand Line, down to Fish-Man Island, or up into the New World.
    */
   milestone: boolean;
 }
@@ -66,7 +66,9 @@ export function planVoyage(
       legs: next.legs.map((leg) => (moving.includes(leg.shape) ? { ...leg, motion: 'draw' } : leg)),
       moving,
       motion: 'draw',
-      milestone: moving.some(({ leg }) => crossesThreshold(leg.fromLocationId, leg.toLocationId)),
+      milestone: moving.some(
+        ({ leg }) => !leg.side && crossesThreshold(leg.fromLocationId, leg.toLocationId),
+      ),
     };
   }
 

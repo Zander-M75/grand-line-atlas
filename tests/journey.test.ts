@@ -38,16 +38,37 @@ describe('journeyAt', () => {
   });
 
   it('keeps the ship at Sabaody through the off-route Summit War arcs', () => {
+    const atSabaody = journeyAt(all, arc('sabaody-archipelago')).ship;
     for (const id of ['amazon-lily', 'impel-down', 'marineford', 'post-war']) {
       const journey = journeyAt(all, arc(id));
-      expect(journey.ship?.at).toEqual(at('sabaody-archipelago'));
-      expect(journey.legs.some(({ state }) => state === 'current')).toBe(false);
+      expect(journey.ship).toEqual(atSabaody);
+      const current = journey.legs.filter(({ state }) => state === 'current');
+      expect(current.every(({ shape }) => shape.leg.side)).toBe(true);
     }
     expect(stateOf(journeyAt(all, arc('impel-down')), 'impel-down')).toBe('away');
   });
 
+  it('draws Luffy’s own path through the Summit War as a side route from the ship', () => {
+    const side = (id: string, arcs = all) =>
+      journeyAt(arcs, arc(id))
+        .legs.filter(({ shape }) => shape.leg.side)
+        .map(({ shape, state }) => `${shape.leg.toLocationId}:${state}`);
+    expect(side('marineford')).toEqual([
+      'amazon-lily:traveled',
+      'impel-down:traveled',
+      'marineford:current',
+    ]);
+    // Little East Blue airs inside Impel Down but isn't Luffy's path.
+    expect(side('little-east-blue')).toEqual(['amazon-lily:traveled', 'impel-down:traveled']);
+    expect(side('post-war', canon)).toEqual(side('post-war'));
+    expect(side('sabaody-archipelago')).toEqual([]);
+  });
+
   it('frames where an off-route arc happens, not the waiting ship', () => {
-    expect(journeyAt(all, arc('impel-down')).focus).toEqual([at('impel-down')]);
+    expect(journeyAt(all, arc('utas-past')).focus).toEqual([at('foosha-village')]);
+    const impelDown = journeyAt(all, arc('impel-down')).focus;
+    expect(impelDown).toContainEqual(at('amazon-lily'));
+    expect(impelDown.at(-1)).toEqual(at('impel-down'));
   });
 
   it('leaves the ship where it was for arcs with no island', () => {

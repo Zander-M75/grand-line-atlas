@@ -457,6 +457,7 @@
     ],
     "filler": false,
     "offRoute": true,
+    "sideRoute": true,
     "locationIds": [
       "amazon-lily"
     ],
@@ -473,6 +474,7 @@
     ],
     "filler": false,
     "offRoute": true,
+    "sideRoute": true,
     "locationIds": [
       "impel-down"
     ],
@@ -505,6 +507,7 @@
     ],
     "filler": false,
     "offRoute": true,
+    "sideRoute": true,
     "locationIds": [
       "marineford"
     ],
@@ -521,6 +524,7 @@
     ],
     "filler": false,
     "offRoute": true,
+    "sideRoute": true,
     "locationIds": [
       "rusukaina"
     ],

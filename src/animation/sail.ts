@@ -1,6 +1,7 @@
 /**
  * Playing a voyage plan (see voyagePlan.ts) with GSAP: each moving leg draws itself (or
  * un-draws, rewinding) while the ship rides along its leading edge, dropping a short wake.
+ * A side route (Luffy's own path) draws the same way, but the ship stays where it's moored.
  *
  * The leg's path data is rewritten every frame to the stretch sailed so far, rather than
  * revealed with a stroke-dashoffset: the route's strokes are non-scaling and anime-only legs
@@ -72,13 +73,16 @@ export function sail(plan: VoyagePlan, targets: SailTargets): gsap.core.Timeline
     draw(targets.legs.get(legKey(shape)), shape.track, forward ? 0 : shape.track.length);
   }
   const [first] = legs;
-  if (first) ship?.sail(poseAt(first.track, forward ? 0 : first.track.length));
+  if (first && !first.leg.side) ship?.sail(poseAt(first.track, forward ? 0 : first.track.length));
+  else ship?.moor(rest);
 
   const timeline = gsap.timeline({ onComplete: () => ship?.moor(rest) });
   for (const shape of legs) {
     const { track } = shape;
     const elements = targets.legs.get(legKey(shape));
-    const wake = forward && targets.wake ? wakeTrail(targets.wake, targets.scale) : undefined;
+    const sails = !shape.leg.side;
+    const wake =
+      sails && forward && targets.wake ? wakeTrail(targets.wake, targets.scale) : undefined;
     const position = { along: forward ? 0 : track.length };
     timeline.to(position, {
       along: forward ? track.length : 0,
@@ -86,7 +90,7 @@ export function sail(plan: VoyagePlan, targets: SailTargets): gsap.core.Timeline
       ease: GSAP_EASE.sail,
       onUpdate: () => {
         draw(elements, track, position.along);
-        ship?.sail(poseAt(track, position.along));
+        if (sails) ship?.sail(poseAt(track, position.along));
         wake?.(track, position.along);
       },
     });

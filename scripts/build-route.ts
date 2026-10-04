@@ -1,6 +1,7 @@
 /**
  * Builds data/generated/route.json: every leg the ship sails, both with anime-only arcs shown
- * and with them hidden, plus the hand-drawn bends from scripts/sources/waypoints.ts.
+ * and with them hidden, and every leg of Luffy's side route (see sideLegs), plus the
+ * hand-drawn bends from scripts/sources/waypoints.ts.
  *
  *   npm run data:build   (runs it last)
  *
@@ -11,7 +12,7 @@
  */
 import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { routeKey, voyageLegs, type Leg } from '../src/data/voyage';
+import { routeKey, sideLegs, voyageLegs, type Leg } from '../src/data/voyage';
 import type { Arc, RouteSegment } from '../src/types';
 import { GENERATED_DIR } from './lib/paths';
 import { BENDS } from './sources/waypoints';
@@ -19,7 +20,9 @@ import { BENDS } from './sources/waypoints';
 const arcs = JSON.parse(await readFile(path.join(GENERATED_DIR, 'arcs.json'), 'utf8')) as Arc[];
 
 const legs = new Map<string, Leg>();
-for (const leg of [...voyageLegs(arcs), ...voyageLegs(arcs.filter((arc) => !arc.filler))]) {
+const canon = arcs.filter((arc) => !arc.filler);
+const drawn = [voyageLegs(arcs), voyageLegs(canon), sideLegs(arcs), sideLegs(canon)].flat();
+for (const leg of drawn) {
   const key = routeKey(leg.fromLocationId, leg.toLocationId);
   const seen = legs.get(key);
   if (seen && seen.arcId !== leg.arcId) {

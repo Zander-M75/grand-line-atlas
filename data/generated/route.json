@@ -181,6 +181,26 @@
   },
   {
     "fromLocationId": "sabaody-archipelago",
+    "toLocationId": "amazon-lily",
+    "arcId": "amazon-lily"
+  },
+  {
+    "fromLocationId": "amazon-lily",
+    "toLocationId": "impel-down",
+    "arcId": "impel-down"
+  },
+  {
+    "fromLocationId": "impel-down",
+    "toLocationId": "marineford",
+    "arcId": "marineford"
+  },
+  {
+    "fromLocationId": "marineford",
+    "toLocationId": "rusukaina",
+    "arcId": "post-war"
+  },
+  {
+    "fromLocationId": "sabaody-archipelago",
     "toLocationId": "fish-man-island",
     "arcId": "fish-man-island"
   },

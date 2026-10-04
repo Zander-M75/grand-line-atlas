@@ -22,6 +22,12 @@ export interface ArcSeed {
   locations: string[];
   /** The crew's ship isn't traveling: Luffy alone, flashbacks, or other characters' stories. */
   offRoute?: boolean;
+  /**
+   * Off-route, but the story follows Luffy traveling on his own, so his path is drawn as a
+   * dashed side route from where the ship waits. Not for flashbacks or other characters'
+   * stories: a line from the ship to Foosha Village (Uta's Past) would mislead.
+   */
+  sideRoute?: boolean;
   /** Overrides the wiki's filler classification, with the reason. */
   filler?: { value: boolean; reason: string };
   /** A judgment call for the owner to confirm. Becomes a TODO-REVIEW item. */
@@ -254,6 +260,7 @@ export const ARCS: ArcSeed[] = [
     plan: plan('Amazon Lily', 'Summit War Saga'),
     locations: ['amazon-lily'],
     offRoute: true,
+    sideRoute: true,
   },
   {
     id: 'impel-down',
@@ -261,6 +268,7 @@ export const ARCS: ArcSeed[] = [
     plan: plan('Impel Down', 'Summit War Saga'),
     locations: ['impel-down'],
     offRoute: true,
+    sideRoute: true,
   },
   {
     id: 'little-east-blue',
@@ -275,6 +283,7 @@ export const ARCS: ArcSeed[] = [
     plan: plan('Marineford', 'Summit War Saga'),
     locations: ['marineford'],
     offRoute: true,
+    sideRoute: true,
   },
   {
     id: 'post-war',
@@ -282,6 +291,7 @@ export const ARCS: ArcSeed[] = [
     plan: plan('Post-War', 'Summit War Saga'),
     locations: ['rusukaina'],
     offRoute: true,
+    sideRoute: true,
     review:
       'Shown at Rusukaina, where Luffy trains; the arc also follows the rest of the crew around the world.',
   },

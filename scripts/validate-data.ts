@@ -10,7 +10,7 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { z } from 'zod';
 import { MAP_HEIGHT, MAP_WIDTH } from '../src/config';
-import { routeKey, voyageLegs } from '../src/data/voyage';
+import { routeKey, sideLegs, voyageLegs } from '../src/data/voyage';
 import type { Arc, CrewMember, Location, Region, RouteSegment } from '../src/types';
 import { GENERATED_DIR, OVERRIDES_DIR } from './lib/paths';
 
@@ -55,6 +55,7 @@ const ArcSchema = z.strictObject({
   episodes: z.tuple([episode, episode]),
   filler: z.boolean(),
   offRoute: z.boolean().optional(),
+  sideRoute: z.boolean().optional(),
   locationIds: z.array(slug),
   chapters: z.tuple([episode, episode]).optional(),
   summary: z.string(),
@@ -170,6 +171,10 @@ for (const [i, arc] of byOrder.entries()) {
   }
 }
 
+for (const arc of arcs.filter((a) => a.sideRoute && !a.offRoute)) {
+  errors.push(`${arc.id}: a side-route arc must be off-route (the ship isn't the one traveling)`);
+}
+
 const ongoing = byOrder.filter((a) => a.ongoing);
 if (ongoing.length > 1)
   errors.push(`arcs: ${ongoing.length} arcs are marked ongoing; at most one can be`);
@@ -248,7 +253,8 @@ for (const member of crew) {
 }
 
 // ---------------------------------------------------------------------------
-// Route: an entry for every leg the ship sails, with anime-only arcs shown and hidden
+// Route: an entry for every leg drawn (the ship's and the side route's), with anime-only arcs
+// shown and hidden
 
 const segments = new Map<string, RouteSegment>();
 for (const segment of route) {
@@ -265,23 +271,23 @@ for (const segment of route) {
   }
 }
 
-const sailed = new Set<string>();
+const drawn = new Set<string>();
 for (const [mode, shown] of [
   ['with anime-only arcs', byOrder],
   ['without anime-only arcs', byOrder.filter((a) => !a.filler)],
 ] as const) {
-  for (const leg of voyageLegs(shown)) {
+  for (const leg of [...voyageLegs(shown), ...sideLegs(shown)]) {
     const key = routeKey(leg.fromLocationId, leg.toLocationId);
-    sailed.add(key);
+    drawn.add(key);
     const segment = segments.get(key);
-    if (!segment) errors.push(`route.json: no entry for ${key}, sailed ${mode}`);
+    if (!segment) errors.push(`route.json: no entry for ${key}, drawn ${mode}`);
     else if (segment.arcId !== leg.arcId) {
       errors.push(`route ${key}: leads into ${leg.arcId}, not ${segment.arcId}`);
     }
   }
 }
 for (const key of segments.keys()) {
-  if (!sailed.has(key)) warnings.push(`route ${key}: never sailed; rebuild with data:build`);
+  if (!drawn.has(key)) warnings.push(`route ${key}: never drawn; rebuild with data:build`);
 }
 
 // ---------------------------------------------------------------------------

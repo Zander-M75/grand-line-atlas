@@ -59,9 +59,21 @@ describe('planVoyage', () => {
   });
 
   it('leaves the ship in port for an arc away from it', () => {
-    const plan = planVoyage(at('sabaody-archipelago'), at('amazon-lily'), animate);
+    const plan = planVoyage(at('wano-country'), at('utas-past'), animate);
     expect(plan.motion).toBeNull();
     expect(plan.moving).toEqual([]);
+  });
+
+  it('draws Luffy’s side route without counting it as one of the ship’s milestones', () => {
+    const plan = planVoyage(at('sabaody-archipelago'), at('amazon-lily'), animate);
+    expect(plan.motion).toBe('draw');
+    expect(legNames(plan.moving)).toEqual(['sabaody-archipelago>amazon-lily']);
+    expect(plan.moving.every(({ leg }) => leg.side)).toBe(true);
+    expect(plan.milestone).toBe(false);
+    // Stepping back from the reunion rewinds Luffy's last leg; the ship never moved.
+    expect(legNames(planVoyage(at('return-to-sabaody'), at('marineford'), animate).moving)).toEqual(
+      ['marineford>rusukaina'],
+    );
   });
 
   it('marks the voyage’s thresholds as milestones', () => {

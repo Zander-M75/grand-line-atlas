@@ -39,6 +39,9 @@ export interface Arc {
   episodes: [number, number]; // anime episode range, inclusive; end may equal start for ongoing arcs
   filler: boolean; // true for anime-only arcs
   offRoute?: boolean; // true when the crew's ship isn't traveling
+  // Not in the PLAN.md §5 interface: an off-route arc that follows someone traveling on their
+  // own (Luffy, through the Summit War). Their path is drawn as a side route from the ship.
+  sideRoute?: boolean;
   locationIds: string[]; // in visit order within the arc
   chapters?: [number, number]; // optional manga reference, never used for logic
   summary: string; // 1–2 original sentences, spoiler-light

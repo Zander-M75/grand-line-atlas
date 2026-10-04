@@ -45,6 +45,22 @@
   stroke-opacity: 0.35;
 }
 
+/* A side route (Luffy's own path, away from the ship): dashes, a little lighter than the
+   ship's route, so it reads as a different journey. */
+.side .line {
+  stroke-dasharray: 7 6;
+  stroke-linecap: butt;
+  stroke-width: 2;
+}
+
+.side.current .line {
+  stroke-width: 3;
+}
+
+.side .casing {
+  stroke-opacity: 0.35;
+}
+
 /* The ship's wake: pale foam dots dropped behind the stern, fading as they go (sail.ts). */
 .wake path {
   fill: none;

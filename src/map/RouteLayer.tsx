@@ -1,6 +1,7 @@
 /**
  * The crew's route: legs already sailed in brass, the current arc's legs brighter, legs
- * still ahead not drawn at all. Legs to and from anime-only stops are dotted.
+ * still ahead not drawn at all. Legs to and from anime-only stops are dotted, and Luffy's
+ * own path through the Summit War, away from the ship, is dashed.
  *
  * It's inline SVG in map pixels (the same space as the base map), so each leg is one real
  * <path> that keeps its shape at every zoom. Legs the voyage animation is drawing or
@@ -49,7 +50,11 @@ export function RouteLayer({ legs, elements, wakeRef }: RouteLayerProps) {
             <g
               key={motion ? `${key}:${motion}` : key}
               ref={register}
-              className={cx(styles[state], shape.leg.filler && styles.filler)}
+              className={cx(
+                styles[state],
+                shape.leg.filler && styles.filler,
+                shape.leg.side && styles.side,
+              )}
             >
               <path className={styles.casing} d={d} />
               <path className={styles.line} d={d} />

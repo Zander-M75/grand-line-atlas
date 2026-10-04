@@ -227,6 +227,7 @@ for (const seed of ARCS) {
       episodes: [Math.min(...airedNumbers), Math.max(...airedNumbers)],
       filler,
       ...(seed.offRoute ? { offRoute: true } : {}),
+      ...(seed.sideRoute ? { sideRoute: true } : {}),
       locationIds: seed.locations,
       summary: ARC_SUMMARIES[seed.id] ?? '',
     },
