@@ -5,18 +5,29 @@
  * and never locked.
  */
 import { create } from 'zustand';
+import { FEATURES } from '@/config';
 import { arcById, arcs, firstArc } from '@/data';
 import { arcForEpisode, canonArcFor, isLocked } from '@/data/arcs';
 import { knownArcs } from '@/data/spoilers';
 import type { Arc } from '@/types';
-import { loadSettings, loadSpoilerLimit, saveSettings, saveSpoilerLimit } from './persist';
+import { matchesMedia, REDUCED_MOTION_QUERY } from '@/utils/media';
+import {
+  loadIntroSeen,
+  loadSettings,
+  loadSpoilerLimit,
+  saveIntroSeen,
+  saveSettings,
+  saveSpoilerLimit,
+} from './persist';
 
 export interface Settings {
   /** Anime-only (filler) arcs on the timeline and the map. */
   showFiller: boolean;
   /** Viewer override; the OS setting applies either way (see useReducedMotion). */
   reducedMotion: boolean;
+  /** Ambient sea and a chime when someone joins. Off by default, and not remembered. */
   sound: boolean;
+  /** Snow, fog, and sparkle around a few islands. */
   weather: boolean;
 }
 
@@ -38,6 +49,8 @@ export interface AtlasState {
   settings: Settings;
   /** The spoiler prompt, while it's showing. */
   gate: Gate | null;
+  /** The first-visit intro is playing (see Intro.tsx). Everything else waits behind it. */
+  introPlaying: boolean;
 }
 
 export const useAtlasStore = create<AtlasState>()(() => ({
@@ -46,6 +59,7 @@ export const useAtlasStore = create<AtlasState>()(() => ({
   selectedLocationId: null,
   settings: { showFiller: true, reducedMotion: false, sound: false, weather: true },
   gate: null,
+  introPlaying: false,
 }));
 
 // ---------------------------------------------------------------------------
@@ -198,12 +212,17 @@ export function dismissGate() {
 }
 
 /**
- * Restores the viewer's saved settings and spoiler limit. On a first visit there's no limit
- * yet: nothing past the first episode shows until they answer the welcome prompt.
+ * Restores the viewer's saved settings and spoiler limit, and decides whether the intro plays
+ * (first visits only, and never with reduced motion). On a first visit there's no limit yet:
+ * nothing past the first episode shows until they answer the welcome prompt.
  */
 export function restoreSaved() {
-  const { settings } = useAtlasStore.getState();
-  useAtlasStore.setState({ settings: { ...settings, ...loadSettings() } });
+  const settings = { ...useAtlasStore.getState().settings, ...loadSettings() };
+  const reducedMotion = settings.reducedMotion || matchesMedia(REDUCED_MOTION_QUERY);
+  useAtlasStore.setState({
+    settings,
+    introPlaying: FEATURES.intro && !reducedMotion && !loadIntroSeen(),
+  });
 
   const saved = loadSpoilerLimit();
   if (saved === undefined) {
@@ -212,6 +231,12 @@ export function restoreSaved() {
   } else {
     setSpoilerLimit(saved);
   }
+}
+
+/** The intro has finished or been skipped: it won't play again on this device. */
+export function finishIntro() {
+  saveIntroSeen();
+  useAtlasStore.setState({ introPlaying: false });
 }
 
 // ---------------------------------------------------------------------------

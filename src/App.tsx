@@ -29,8 +29,9 @@ export function App() {
       <div className={styles.app} inert={gateOpen}>
         <main className={styles.mapArea}>
           <WorldMap />
-          {/* The chart's cartouche: the atlas title, the current arc, and who's aboard. */}
-          <div className={styles.logbook}>
+          {/* The chart's cartouche: the atlas title, the current arc, and who's aboard. The
+              camera keeps what it frames clear of it (data-covers-map, see map/camera.ts). */}
+          <div className={styles.logbook} data-covers-map>
             <header className={styles.masthead}>
               <h1 className={styles.title}>{APP_TITLE}</h1>
               <p className={styles.tagline}>The Straw Hat Pirates’ voyage, arc by arc</p>

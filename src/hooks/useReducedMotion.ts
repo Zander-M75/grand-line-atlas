@@ -1,7 +1,7 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect } from 'react';
 import { useAtlasStore } from '@/store';
-
-const QUERY = '(prefers-reduced-motion: reduce)';
+import { REDUCED_MOTION_QUERY } from '@/utils/media';
+import { useMediaQuery } from './useMediaQuery';
 
 /**
  * True when motion should be kept to a minimum: the OS asks for it, or the viewer turned it
@@ -14,7 +14,7 @@ export function useReducedMotion(): boolean {
 
 /** Just the OS setting, for Settings to explain why motion is already reduced. */
 export function useSystemReducedMotion(): boolean {
-  return useSyncExternalStore(subscribe, systemPrefersReduced, () => false);
+  return useMediaQuery(REDUCED_MOTION_QUERY);
 }
 
 /**
@@ -26,14 +26,4 @@ export function useMotionAttribute() {
   useEffect(() => {
     document.documentElement.dataset.motion = reduced ? 'reduced' : 'full';
   }, [reduced]);
-}
-
-function subscribe(onChange: () => void) {
-  const query = window.matchMedia?.(QUERY);
-  query?.addEventListener('change', onChange);
-  return () => query?.removeEventListener('change', onChange);
-}
-
-function systemPrefersReduced(): boolean {
-  return window.matchMedia?.(QUERY).matches ?? false;
 }

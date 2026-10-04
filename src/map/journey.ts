@@ -8,7 +8,8 @@
 import { locationById, locations, waypointsByKey } from '@/data';
 import { routeKey, voyageLegs, voyageStops, type Leg } from '@/data/voyage';
 import type { Arc, Location } from '@/types';
-import { catmullRomControls, direction, splinePath } from '@/utils/spline';
+import { pathData, splineSegments } from '@/utils/spline';
+import { buildTrack, headingAt, type Track } from '@/utils/track';
 import type { MapPoint } from './coords';
 
 /** A leg drawn on the map. */
@@ -18,6 +19,8 @@ export interface LegShape {
   points: MapPoint[];
   /** SVG path data: a smooth curve through `points`, in map pixels. */
   d: string;
+  /** The same curve, measured, for sailing along it (see src/utils/track.ts). */
+  track: Track;
   /** Unit vector of the ship's travel as it arrives at the end of the leg. */
   arrival: MapPoint;
 }
@@ -39,6 +42,11 @@ export interface ShipPose {
 
 export interface Journey {
   arc: Arc;
+  /**
+   * Every leg of the voyage this journey is part of, ahead or not. It's the same array for
+   * every arc on one timeline, so two journeys share a voyage exactly when it's identical.
+   */
+  voyage: LegShape[];
   /** Legs sailed up to and including the current arc. Legs still ahead are left out. */
   legs: { shape: LegShape; state: LegState }[];
   ship: ShipPose | null;
@@ -48,22 +56,25 @@ export interface Journey {
   focus: MapPoint[];
 }
 
-/** Before the first leg, the ship faces east, the way the voyage reads across the map. */
+/** With no legs at all, the ship faces east, the way the voyage reads across the map. */
 const EAST: MapPoint = { x: 1, y: 0 };
 
 export function journeyAt(arcs: Arc[], arc: Arc): Journey {
-  const legs = voyageShapes(arcs)
+  const voyage = voyageShapes(arcs);
+  const legs = voyage
     .filter(({ leg }) => leg.arcOrder <= arc.order)
     .map((shape) => ({
       shape,
       state: shape.leg.arcOrder === arc.order ? ('current' as const) : ('traveled' as const),
     }));
 
-  // Off-route arcs and arcs with no place leave the ship at its last stop.
+  // Off-route arcs and arcs with no place leave the ship at its last stop. Before it has
+  // sailed anywhere, it faces the way its first leg will take it.
   const lastStop = voyageStops(arcs).findLast((stop) => stop.arcOrder <= arc.order);
+  const firstLeg = voyage[0];
   const ship = lastStop && {
     at: positionOf(lastStop.locationId),
-    heading: legs.at(-1)?.shape.arrival ?? EAST,
+    heading: legs.at(-1)?.shape.arrival ?? (firstLeg ? headingAt(firstLeg.track, 0) : EAST),
   };
 
   const onTimeline = new Set(arcs.flatMap((a) => a.locationIds));
@@ -84,7 +95,7 @@ export function journeyAt(arcs: Arc[], arc: Arc): Journey {
   ];
   if (focus.length === 0 && ship) focus.push(ship.at);
 
-  return { arc, legs, ship: ship ?? null, islands, focus };
+  return { arc, voyage, legs, ship: ship ?? null, islands, focus };
 }
 
 // ---------------------------------------------------------------------------
@@ -117,26 +128,21 @@ function legShapes(legs: Leg[]): LegShape[] {
 
   return legs.map((leg, i) => {
     const points = pointsByLeg[i] ?? [];
-    const before = pointsByLeg[i - 1]?.at(-2);
-    const after = pointsByLeg[i + 1]?.[1];
+    const [start = positionOf(leg.fromLocationId)] = points;
+    const segments = splineSegments(points, {
+      before: pointsByLeg[i - 1]?.at(-2),
+      after: pointsByLeg[i + 1]?.[1],
+    });
+    const track = buildTrack(start, segments);
     return {
       leg,
       points,
-      d: splinePath(points, { before, after }),
-      arrival: arrival([before, ...points, after]),
+      d: pathData(start, segments),
+      track,
+      // The same direction the ship has when it sails in, so it moors without turning.
+      arrival: headingAt(track, track.length),
     };
   });
-}
-
-/**
- * The curve's direction where the leg ends (the tangent of its last piece), given the leg's
- * points with its outside neighbors on each end. Falls back to the straight line in.
- */
-function arrival(points: (MapPoint | undefined)[]): MapPoint {
-  const [previous, end, after] = points.slice(-3);
-  if (!previous || !end) return EAST;
-  const [, control] = catmullRomControls(points.at(-4), previous, end, after);
-  return direction(control, end) ?? direction(previous, end) ?? EAST;
 }
 
 function positionOf(locationId: string): MapPoint {

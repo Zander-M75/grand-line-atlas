@@ -58,7 +58,7 @@ export function IslandPanel() {
   const region = REGION_NAMES[location.region];
 
   return (
-    <aside ref={panelRef} className={styles.panel} aria-labelledby={headingId}>
+    <aside ref={panelRef} className={styles.panel} aria-labelledby={headingId} data-covers-map>
       <header className={styles.header}>
         <div>
           {region && <p className={styles.eyebrow}>{region}</p>}

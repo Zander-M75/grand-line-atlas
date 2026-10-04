@@ -98,8 +98,24 @@ export const ZOOM = {
 export const CAMERA = {
   /** On load, the camera opens on the current arc at this zoom (or farther out, to fit it). */
   arcZoom: 0,
-  /** Screen pixels kept clear around whatever the camera frames. */
+  /**
+   * Milestone crossings (see VoyagePlan.milestone) are framed this close, or as close as fits:
+   * the one time the camera zooms in on its own.
+   */
+  milestoneZoom: 0.75,
+  /** Screen pixels kept clear around whatever the camera frames, at the map's edges. */
   padding: 72,
+  /**
+   * Screen pixels kept clear beyond the edge of a panel floating over the map: enough that an
+   * island's name, centered under it, clears the panel too.
+   */
+  panelGap: 64,
+} as const;
+
+/** Media queries the layout and the scripts that follow it share. */
+export const MEDIA = {
+  /** Phones: panels become sheets, the logbook spans the top. Matches the CSS breakpoint. */
+  narrow: '(max-width: 640px)',
 } as const;
 
 export type Quadrant = 'nw' | 'ne' | 'sw' | 'se';
@@ -123,20 +139,30 @@ export const BLUE_QUADRANTS: Record<Blue, Quadrant> = {
 // ---------------------------------------------------------------------------
 
 export const TIMING = {
-  /** Route segments draw at this speed, clamped to the min/max duration below. */
-  routeDrawPxPerSecond: 900,
-  routeDrawMin: 0.6,
+  /** Route legs draw (and the ship sails) at this speed in map pixels, within min and max. */
+  routeDrawPxPerSecond: 320,
+  routeDrawMin: 0.7,
   routeDrawMax: 2.4,
+  /** How long a dot of the ship's wake takes to fade. */
+  wakeFade: 0.9,
   cameraFly: 1.2,
   /** Crossing Reverse Mountain, descending to Fish-Man Island, entering the New World. */
   cameraFlyDramatic: 2.4,
+  /** The flight from the whole-world view down to the first arc, once the intro ends. */
+  cameraAfterIntro: 2,
   shipBobPeriod: 2.6,
   shipBobPx: 2.5,
-  islandPulsePeriod: 2,
+  islandPulsePeriod: 2.4,
+  /** One slow swell of the ocean's waves, there and back. */
+  oceanSwellPeriod: 18,
+  /** The ocean redraws at most this often (it moves too slowly to need every frame). */
+  oceanFps: 20,
   panel: 0.28,
   arcCardFade: 0.22,
   intro: 3.5,
-  /** Timeline changes closer together than this count as scrubbing: snap, don't animate. */
+  /** The page's panels fading in as the intro hands over. */
+  introHandover: 0.6,
+  /** Timeline changes closer together than this count as scrubbing (see ArcCamera). */
   scrubThreshold: 0.25,
 } as const;
 

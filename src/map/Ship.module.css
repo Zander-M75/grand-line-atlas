@@ -8,8 +8,25 @@
   overflow: visible;
 }
 
-.west svg {
-  transform: scaleX(-1);
+/* Moored: rides the swell, a couple of pixels up and down. Not while sailing (data-sailing
+   is set by Ship.tsx), and never with reduced motion. The period and height come from
+   TIMING in config.ts (see src/animation/cssTimings.ts). */
+:global(:root[data-motion='full']) .ship:not([data-sailing='true']) .bob {
+  animation: bob var(--timing-ship-bob) ease-in-out infinite;
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(calc(var(--ship-bob-px) / 2));
+  }
+  50% {
+    transform: translateY(calc(var(--ship-bob-px) / -2));
+  }
+}
+
+.pose {
+  will-change: transform;
 }
 
 .hull {

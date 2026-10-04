@@ -5,6 +5,7 @@ import '@fontsource/im-fell-english/400-italic.css';
 import '@fontsource-variable/atkinson-hyperlegible-next';
 import './styles/tokens.css';
 import './styles/global.css';
+import { applyCssTimings } from './animation/cssTimings';
 import { restoreFromUrl } from './hooks/useUrlSync';
 import { restoreSaved } from './store';
 import { App } from './App';
@@ -13,6 +14,7 @@ import { App } from './App';
 // shared link points to (which may be past that limit).
 restoreSaved();
 restoreFromUrl();
+applyCssTimings();
 
 const root = document.getElementById('root');
 if (!root) throw new Error('Missing #root element in index.html');

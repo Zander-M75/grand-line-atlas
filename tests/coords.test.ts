@@ -59,6 +59,12 @@ describe('keepOnMap', () => {
     expect(keepOnMap({ x: 0, y: 0 }, view, -1)).toEqual({ x: 1000, y: 600 });
   });
 
+  it('runs past an edge by the overscan allowed there, and no further', () => {
+    const overscan = { top: 0, right: 0, bottom: 0, left: 300 };
+    expect(keepOnMap({ x: 100, y: 1000 }, view, 0, overscan)).toEqual({ x: 200, y: 1000 });
+    expect(keepOnMap({ x: MAP_WIDTH, y: 1000 }, view, 0, overscan).x).toBe(MAP_WIDTH - 500);
+  });
+
   it('centers the map along any axis the view is bigger than', () => {
     expect(keepOnMap({ x: 100, y: 100 }, { x: 8000, y: 600 }, 0)).toEqual({
       x: MAP_WIDTH / 2,

@@ -1,5 +1,12 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { loadSettings, loadSpoilerLimit, saveSettings, saveSpoilerLimit } from '@/store/persist';
+import {
+  loadIntroSeen,
+  loadSettings,
+  loadSpoilerLimit,
+  saveIntroSeen,
+  saveSettings,
+  saveSpoilerLimit,
+} from '@/store/persist';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -46,12 +53,20 @@ describe('settings storage', () => {
       'gla:settings',
       JSON.stringify({ showFiller: false, reducedMotion: 'yes', sound: true, extra: 1 }),
     );
-    expect(loadSettings()).toEqual({ showFiller: false, sound: true });
+    expect(loadSettings()).toEqual({ showFiller: false });
   });
 
-  it('round-trips settings', () => {
-    const settings = { showFiller: false, reducedMotion: true, sound: false, weather: true };
-    saveSettings(settings);
-    expect(loadSettings()).toEqual(settings);
+  it('round-trips settings, except sound', () => {
+    saveSettings({ showFiller: false, reducedMotion: true, sound: true, weather: false });
+    // Sound only ever starts because the viewer turned it on this visit.
+    expect(loadSettings()).toEqual({ showFiller: false, reducedMotion: true, weather: false });
+  });
+});
+
+describe('intro storage', () => {
+  it('remembers that the intro has played', () => {
+    expect(loadIntroSeen()).toBe(false);
+    saveIntroSeen();
+    expect(loadIntroSeen()).toBe(true);
   });
 });

@@ -53,28 +53,43 @@ export function catmullRomControls(
   return [c1, c2];
 }
 
+/** One piece of a curve: a cubic Bezier from `start` to `end`, shaped by two control points. */
+export type CubicSegment = [start: Point, control1: Point, control2: Point, end: Point];
+
 /**
- * SVG path commands for a smooth curve through `points`, starting with a move to the first.
+ * The cubic Bezier pieces of a smooth curve through `points`, one per pair of neighbors.
  * `before` and `after` are the points just outside this stretch when it's one part of a
  * longer curve; passing them makes neighboring parts join without a kink.
  */
-export function splinePath(
+export function splineSegments(
   points: Point[],
   { before, after }: { before?: Point; after?: Point } = {},
-): string {
-  const [start] = points;
-  if (!start) return '';
-  const commands = [`M${fmt(start)}`];
+): CubicSegment[] {
+  const segments: CubicSegment[] = [];
   for (let i = 1; i < points.length; i++) {
     const p1 = points[i - 1];
     const p2 = points[i];
     if (!p1 || !p2) continue;
     const p0 = i >= 2 ? points[i - 2] : before;
     const p3 = i + 1 < points.length ? points[i + 1] : after;
-    const [c1, c2] = catmullRomControls(p0, p1, p2, p3);
-    commands.push(`C${fmt(c1)} ${fmt(c2)} ${fmt(p2)}`);
+    segments.push([p1, ...catmullRomControls(p0, p1, p2, p3), p2]);
   }
-  return commands.join(' ');
+  return segments;
+}
+
+/** SVG path commands for a smooth curve through `points` (see splineSegments). */
+export function splinePath(points: Point[], neighbors?: { before?: Point; after?: Point }): string {
+  const [start] = points;
+  if (!start) return '';
+  return pathData(start, splineSegments(points, neighbors));
+}
+
+/** SVG path commands for Bezier pieces laid end to end, starting with a move to `start`. */
+export function pathData(start: Point, segments: CubicSegment[]): string {
+  return [
+    `M${fmt(start)}`,
+    ...segments.map(([, c1, c2, end]) => `C${fmt(c1)} ${fmt(c2)} ${fmt(end)}`),
+  ].join(' ');
 }
 
 export function distance(a: Point, b: Point): number {
