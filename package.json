@@ -18,6 +18,7 @@
     "data:build": "tsx scripts/build-arcs.ts && tsx scripts/build-locations.ts && tsx scripts/auto-layout.ts && tsx scripts/build-crew.ts && tsx scripts/build-route.ts && tsx scripts/check-summaries.ts",
     "data:layout": "tsx scripts/auto-layout.ts",
     "data:validate": "tsx scripts/validate-data.ts",
+    "size": "tsx scripts/check-size.ts",
     "capture": "npm run build && tsx scripts/capture.ts"
   },
   "dependencies": {

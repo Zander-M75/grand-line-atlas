@@ -1,0 +1,90 @@
+# Once a week, checks the wiki for newly aired episodes: re-fetches every page (throttled to one
+# request a second, as every fetch is), rebuilds the data, and opens a pull request if anything
+# changed, for a person to review and merge. New episodes extend the latest arc by themselves;
+# an arc the wiki adds goes on the review list (data/generated/review/) and stays off the
+# timeline until it's curated in scripts/sources/journey.ts, with a summary.
+name: Data refresh
+
+on:
+  schedule:
+    # Mondays at 06:17 UTC, after the weekend's episode has aired in Japan and reached the wiki.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: data-refresh
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Fetch the wiki
+        run: npm run data:fetch -- --refresh
+      - name: Rebuild the data
+        run: npm run data:build
+
+      # Pull requests opened by Actions don't trigger CI, so the checks run here and their
+      # results go in the pull request. A failure still opens it: that's what needs a person.
+      - name: Check the data and run the tests
+        id: checks
+        run: |
+          npm run data:validate > validate.log 2>&1 && echo "validate=passed" >> "$GITHUB_OUTPUT" || echo "validate=failed" >> "$GITHUB_OUTPUT"
+          npm test > test.log 2>&1 && echo "test=passed" >> "$GITHUB_OUTPUT" || echo "test=failed" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VALIDATE: ${{ steps.checks.outputs.validate }}
+          TEST: ${{ steps.checks.outputs.test }}
+        run: |
+          # meta.json's date changes on every run; anything else changing is news.
+          if git diff --quiet -- data/generated ':!data/generated/meta.json' && \
+             [ -z "$(git ls-files --others --exclude-standard data/generated)" ]; then
+            echo "Nothing new on the wiki."
+            exit 0
+          fi
+
+          episode=$(node -p "require('./data/generated/meta.json').latestAiredEpisode")
+          title="data: refresh from the wiki, through episode $episode"
+          branch=data/refresh
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch --create "$branch"
+          git add data/generated
+          git commit --message "$title"
+          git push --force origin "$branch"
+
+          {
+            echo "The weekly refresh from the One Piece Fandom wiki, through episode $episode."
+            echo
+            echo "- \`data:validate\`: **$VALIDATE**"
+            echo "- Unit tests: **$TEST**"
+            echo
+            echo "New episodes extend the latest arc by themselves. Anything that needs a decision shows in the diff of \`data/generated/review/\`: an arc the wiki adds stays off the timeline until it's in \`scripts/sources/journey.ts\` with a summary."
+            echo
+            echo "CI doesn't run on pull requests opened by GitHub Actions; the checks above ran in the refresh."
+            echo
+            echo "<details><summary>data:validate output</summary>"
+            echo
+            echo '```'
+            tail -n 40 validate.log
+            echo '```'
+            echo "</details>"
+          } > body.md
+
+          if [ "$(gh pr view "$branch" --json state --jq .state 2>/dev/null)" = "OPEN" ]; then
+            gh pr edit "$branch" --title "$title" --body-file body.md
+          else
+            gh pr create --base main --head "$branch" --title "$title" --body-file body.md
+          fi
