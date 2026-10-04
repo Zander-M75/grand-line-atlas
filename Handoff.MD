@@ -8,7 +8,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 
 | | |
 |---|---|
-| Phase | **Phase 6 (animation + polish) is done** and waiting for the owner's review. Next is Phase 7 (content pass: summaries, proofreading, the review list). The Phase 3 placement review and the Phase 5 decisions are still open, and Phase 6 adds a few (see Owner decisions). |
+| Phase | **Phase 6 (animation + polish) is done** and waiting for the owner's review. Next is Phase 7 (content pass: summaries, proofreading, the review list). The Phase 3 placement review is settled (no hand placement for now), the Summit War side route is approved but not built yet, and the Phase 5 and Phase 6 decisions are still open (see Owner decisions). |
 | Data | Through episode 1180, as of 2026-10-01: 51 arcs, 42 places, 10 crew, 42 route connections. `npm run data:fetch -- --refresh && npm run data:build` updates it. |
 | Repo | https://github.com/Zander-M75/grand-line-atlas (public), branch `main` |
 | Hosting | None yet (Vercel in Phase 9). |
@@ -47,7 +47,7 @@ Where the project stands and what to know before picking it up. Last updated 202
 | DevPositioner "Export" downloads or copies positions.json | **Save** writes `data/overrides/positions.json` directly (a dev-server-only endpoint, `scripts/lib/devPositionsPlugin.ts`), plus **Copy JSON** | Placing islands becomes drag, Save, commit. The endpoint exists only under `vite dev`, rejects cross-site requests, and validates the payload. |
 | `data:layout` as its own step | Also chained into `data:build` (after build-locations) | build-locations writes placeholder positions, so the build output is only complete once layout runs. |
 | Hand-coded `public/map/world.svg` loaded with `ImageOverlay` | Inline SVG drawn by `src/map/BaseMap.tsx`, mounted with react-leaflet's `SVGOverlay` | A static file would duplicate every zone boundary in `config.ts`, so a config change wouldn't move the art (§6 wants config-only layout tweaks). An SVG loaded as an image also can't use the app's web fonts, so labels would fall back to a system serif. Still original, hand-written SVG; it just lives in a component. |
-| Off-route arcs: "a dashed side-route or a highlighted location with a short note" | Highlighted location (dashed brass ring, "Away from the ship" under its name and as a timeline tag); no side-route line | A side route from the ship's last stop misleads for most off-route arcs: Uta's Past would draw a line from Wano across the Red Line to Foosha, and Buggy Side Story one back to Orange Town. A Luffy-only path for the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) is possible; see Open in Owner decisions. |
+| Off-route arcs: "a dashed side-route or a highlighted location with a short note" | Highlighted location (dashed brass ring, "Away from the ship" under its name and as a timeline tag); no side-route line | A side route from the ship's last stop misleads for most off-route arcs: Uta's Past would draw a line from Wano across the Red Line to Foosha, and Buggy Side Story one back to Orange Town. The owner wants a Luffy-only path for the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) added; see Owner decisions. |
 | `route.json` waypoints "added by hand" | Bends live in `scripts/sources/waypoints.ts` (with a reason each); `build-route` (last step of `data:build`) writes `route.json` for every leg in both filler modes | Matches the other curated sources: comments explain each bend, and every generated file stays reproducible. `data:validate` fails if a leg in either mode has no entry. |
 | "Show anime-only arcs" toggle in Settings (Phase 5) | In Settings, and also a switch on the timeline itself | Phase 4's acceptance needs a way to toggle filler. It's also where the effect shows. Both bind the same store value. |
 | Episode range "on hover/focus" for each stop | Tooltip on hover and while dragging; on keyboard focus, the header right above shows the current arc's range | A focus tooltip only repeated the header and covered its tags. Screen readers get the full arc, episodes, and saga from `aria-valuetext`. |
@@ -110,6 +110,8 @@ Settled:
 - **World layout** (2026-10-01): the default in `config.ts` stands. Red Line down the middle at Mary Geoise, Reverse Mountain on the far-west edge, Paradise west, New World east, East Blue north-west.
 - **Wiki User-Agent contact** (2026-10-01): use the repo URL, not an email.
 - **Phase 2 review list** (2026-10-01): all items accepted as built. Buggy Side Story and Koby and Helmeppo stay anime-only and off-route; Uta's Past and Elbaph are in; sagas follow the wiki; the eight arcs with no named island have no map stop; the place choices and crew join episodes (Nami 44, Jinbe 980) stand.
+- **Island placement (Phase 3 review)** (2026-10-03): as of now there are no islands the owner wants to place by hand. The automatic positions stand, and `data/overrides/positions.json` stays empty. The dev positioner (Shift+D in `npm run dev`) is still there if that changes.
+- **Summit War side route** (2026-10-03): include it. Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) gets a dashed side route. Not built yet. It needs a small data flag on those arcs, since a generic rule for off-route arcs would draw misleading lines for flashbacks and side stories (Uta's Past, Buggy Side Story).
 
 Open (Phase 6):
 
@@ -121,11 +123,6 @@ Open (Phase 5):
 
 - **Arc picker spoilers.** The gate's "or the arc you're on" picker lists every arc name, which can hint at what's ahead (a note under it says so). Alternatives: only list arcs up to the current limit in Settings, or drop the picker and keep the episode field. Kept as PLAN.md asks for now.
 - **Where a first visit lands.** After answering the gate, a viewer stays on the first arc (unless they followed a link). Landing on their own arc (or the latest for "caught up", with the whole route drawn) is a one-line change if you'd prefer it.
-
-Open (earlier):
-
-- **Island placement review (Phase 3 stop).** Every island has an automatic position; `data/overrides/positions.json` is empty. The owner can drag islands with Shift+D in `npm run dev`, Save, and commit. Notable auto choices: Sabaody and Marineford sit against the Red Line; Amazon Lily and Rusukaina in the north Calm Belt near Sabaody; Impel Down in the south Calm Belt between Enies Lobby and Marineford; Skypiea floats above Jaya. With the route drawn, it's easier to judge: the Grand Line route zigzags because auto-layout alternates islands above and below the centerline. Moving an island far may mean updating the two Reverse Mountain bends in `scripts/sources/waypoints.ts`.
-- **Summit War side route (Phase 4).** Off-route arcs only highlight their island. Should Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) get a dashed side route? It would need a small data flag on those arcs, since a generic rule draws misleading lines for flashbacks and side stories.
 
 The files in [data/generated/review/](data/generated/review/) are now the accepted baseline. Every data build rewrites them, so a new or changed item in their git diff is what needs the owner's eye.
 
