@@ -1,7 +1,7 @@
 /**
  * Builds data/generated/locations.json: every place an arc in arcs.json visits, with its
- * display name and region. Positions are placeholders (0, 0) until auto-layout runs (Phase 3);
- * summaries are written in Phase 7.
+ * display name, region, and summary (from sources/summaries.ts). Positions are placeholders
+ * (0, 0) until auto-layout runs next.
  *
  *   npm run data:build   (runs build-arcs first, then this, then build-crew)
  *
@@ -25,6 +25,7 @@ import { createReviewList } from './lib/review';
 import { getCategoriesFor, getPage } from './lib/wikiClient';
 import { named, templatesNamed } from './lib/wikitext';
 import { LOCATIONS } from './sources/journey';
+import { LOCATION_SUMMARIES } from './sources/summaries';
 
 const review = createReviewList('locations');
 
@@ -121,7 +122,7 @@ for (const id of visitedIds) {
     region,
     x: 0,
     y: 0,
-    summary: '',
+    summary: LOCATION_SUMMARIES[id] ?? '',
     wikiTitle: page.title ?? seed.wikiTitle,
     arcIds: visitingArcs.map((arc) => arc.id),
     positionSource: 'auto',

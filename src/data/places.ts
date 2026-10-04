@@ -11,7 +11,7 @@ export const REGION_NAMES: Record<Region, string> = {
   'new-world': 'New World, Grand Line',
   'calm-belt': 'Calm Belt',
   'red-line': 'Red Line',
-  sky: 'Sky island',
+  sky: 'Sky Island',
   undersea: 'Undersea',
   other: '',
 };

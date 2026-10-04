@@ -8,7 +8,7 @@
  * - Text only: nothing here asks for images or file info.
  */
 import { createHash } from 'node:crypto';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { RAW_DIR } from './paths';
 
@@ -173,6 +173,15 @@ export async function getPage(title: string): Promise<CachedPage> {
       wikitext: response.parse?.wikitext ?? '',
     };
   });
+}
+
+/** Every page in the cache, whatever fetched it. Never touches the network. */
+export async function cachedPages(): Promise<CachedPage[]> {
+  const dir = path.join(RAW_DIR, 'pages');
+  const files = await readdir(dir).catch(() => []);
+  return Promise.all(
+    files.map(async (file) => JSON.parse(await readFile(path.join(dir, file), 'utf8'))),
+  );
 }
 
 export interface CachedPageCategories {

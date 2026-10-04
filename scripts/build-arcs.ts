@@ -37,6 +37,7 @@ import { createReviewList } from './lib/review';
 import { getCategoryMembers, getPage } from './lib/wikiClient';
 import { linkTargets, named, param, parseLinkText, sections, templatesNamed } from './lib/wikitext';
 import { ARCS, EPISODE_ARCS, LOCATIONS, type ArcSeed } from './sources/journey';
+import { ARC_SUMMARIES } from './sources/summaries';
 
 const review = createReviewList('arcs');
 const asOf = parseAsOf(process.argv);
@@ -227,7 +228,7 @@ for (const seed of ARCS) {
       filler,
       ...(seed.offRoute ? { offRoute: true } : {}),
       locationIds: seed.locations,
-      summary: '',
+      summary: ARC_SUMMARIES[seed.id] ?? '',
     },
     guideEpisodes: airedNumbers,
     categoryEpisodes: (await getCategoryMembers(`${seed.wikiTitle} Episodes`)).members

@@ -5,7 +5,7 @@
     "region": "east-blue",
     "x": 1760,
     "y": 239,
-    "summary": "",
+    "summary": "A quiet windmill village on Dawn Island in East Blue, where Luffy grew up.",
     "wikiTitle": "Foosha Village",
     "arcIds": [
       "romance-dawn",
@@ -19,7 +19,7 @@
     "region": "east-blue",
     "x": 1590,
     "y": 293,
-    "summary": "",
+    "summary": "An East Blue port town with a Marine base, run with an iron fist by its captain.",
     "wikiTitle": "Shells Town",
     "arcIds": [
       "romance-dawn"
@@ -32,7 +32,7 @@
     "region": "east-blue",
     "x": 1380,
     "y": 437,
-    "summary": "",
+    "summary": "A small harbor town in East Blue. When Luffy turns up, Buggy the Clown’s pirates have taken it over and its people have fled.",
     "wikiTitle": "Orange Town",
     "arcIds": [
       "orange-town",
@@ -46,7 +46,7 @@
     "region": "east-blue",
     "x": 1199,
     "y": 490,
-    "summary": "",
+    "summary": "A peaceful village on the Gecko Islands in East Blue, and Usopp’s hometown.",
     "wikiTitle": "Syrup Village",
     "arcIds": [
       "syrup-village"
@@ -59,7 +59,7 @@
     "region": "east-blue",
     "x": 1046,
     "y": 542,
-    "summary": "",
+    "summary": "A small East Blue island full of strange hybrid animals, guarded by a man stuck in a treasure chest.",
     "wikiTitle": "Island of Rare Animals",
     "arcIds": [
       "syrup-village"
@@ -72,7 +72,7 @@
     "region": "east-blue",
     "x": 817,
     "y": 634,
-    "summary": "",
+    "summary": "A restaurant ship out on the sea near the Grand Line, run by Chef Zeff, whose cooks are as rough as their customers.",
     "wikiTitle": "Baratie",
     "arcIds": [
       "baratie"
@@ -85,7 +85,7 @@
     "region": "east-blue",
     "x": 703,
     "y": 599,
-    "summary": "",
+    "summary": "The seaside fortress of Arlong’s Fish-Man pirates, built to rule the Conomi Islands.",
     "wikiTitle": "Arlong Park",
     "arcIds": [
       "arlong-park"
@@ -98,7 +98,7 @@
     "region": "east-blue",
     "x": 529,
     "y": 637,
-    "summary": "",
+    "summary": "The town where the Pirate King was born and executed, and the last big port before the Grand Line.",
     "wikiTitle": "Loguetown",
     "arcIds": [
       "loguetown"
@@ -111,7 +111,7 @@
     "region": "east-blue",
     "x": 338,
     "y": 649,
-    "summary": "",
+    "summary": "An island shaped like a battleship, and Apis’s home.",
     "wikiTitle": "Warship Island",
     "arcIds": [
       "warship-island"
@@ -125,7 +125,7 @@
     "region": "red-line",
     "x": 60,
     "y": 1000,
-    "summary": "",
+    "summary": "A mountain on the Red Line whose currents run uphill from the four Blues and spill down into the Grand Line. It’s the usual way in for ships from the Blues.",
     "wikiTitle": "Reverse Mountain",
     "arcIds": [
       "reverse-mountain"
@@ -138,7 +138,7 @@
     "region": "red-line",
     "x": 150,
     "y": 1050,
-    "summary": "",
+    "summary": "The cape at the foot of Reverse Mountain, where the Grand Line begins. An old doctor keeps the lighthouse.",
     "wikiTitle": "Twin Cape",
     "arcIds": [
       "reverse-mountain"
@@ -151,7 +151,7 @@
     "region": "paradise",
     "x": 254,
     "y": 945,
-    "summary": "",
+    "summary": "A town on Cactus Island, the first stop for many ships on the Grand Line, known for welcoming pirates with open arms.",
     "wikiTitle": "Whisky Peak",
     "arcIds": [
       "whisky-peak"
@@ -164,7 +164,7 @@
     "region": "paradise",
     "x": 366,
     "y": 1044,
-    "summary": "",
+    "summary": "A jungle island in Paradise whose ancient climate has kept dinosaurs alive.",
     "wikiTitle": "Little Garden",
     "arcIds": [
       "little-garden"
@@ -177,7 +177,7 @@
     "region": "paradise",
     "x": 457,
     "y": 919,
-    "summary": "",
+    "summary": "A snow-covered winter island in Paradise, home to the Drum Kingdom and the castle on its highest mountain.",
     "wikiTitle": "Drum Island",
     "arcIds": [
       "drum-island"
@@ -190,7 +190,7 @@
     "region": "paradise",
     "x": 544,
     "y": 1081,
-    "summary": "",
+    "summary": "A vast desert kingdom in Paradise and Princess Vivi’s home, where the rain has stopped falling.",
     "wikiTitle": "Arabasta Kingdom",
     "arcIds": [
       "arabasta"
@@ -203,7 +203,7 @@
     "region": "paradise",
     "x": 639,
     "y": 939,
-    "summary": "",
+    "summary": "An uncharted island hidden in fog and reefs, home to an old man and his goats.",
     "wikiTitle": "Goat Island (Non-Canon)",
     "arcIds": [
       "goat-island"
@@ -217,7 +217,7 @@
     "region": "paradise",
     "x": 756,
     "y": 1050,
-    "summary": "",
+    "summary": "An island in Paradise whose waters hide a strange phenomenon, the Rainbow Mist.",
     "wikiTitle": "Ruluka",
     "arcIds": [
       "ruluka-island"
@@ -231,7 +231,7 @@
     "region": "paradise",
     "x": 852,
     "y": 925,
-    "summary": "",
+    "summary": "An island in Paradise with no law at all, whose harbor, Mock Town, is crowded with rowdy pirates.",
     "wikiTitle": "Jaya",
     "arcIds": [
       "jaya"
@@ -244,7 +244,7 @@
     "region": "sky",
     "x": 852,
     "y": 775,
-    "summary": "",
+    "summary": "A country high in the sky above Paradise, where the islands are made of cloud and the sea is white.",
     "wikiTitle": "Skypiea",
     "arcIds": [
       "skypiea"
@@ -257,7 +257,7 @@
     "region": "paradise",
     "x": 935,
     "y": 1057,
-    "summary": "",
+    "summary": "An island fortress in Paradise, home to Marine Base G-8 and walled in by sheer cliffs.",
     "wikiTitle": "Navarone Island",
     "arcIds": [
       "g-8"
@@ -271,7 +271,7 @@
     "region": "paradise",
     "x": 1036,
     "y": 953,
-    "summary": "",
+    "summary": "A chain of islands in Paradise where everything, from trees to horses to people, grows extra long.",
     "wikiTitle": "Long Ring Long Land",
     "arcIds": [
       "long-ring-long-land"
@@ -284,7 +284,7 @@
     "region": "paradise",
     "x": 1122,
     "y": 1076,
-    "summary": "",
+    "summary": "A city of canals and fountains in Paradise, famous for its shipwrights and home to the shipbuilding company Galley-La.",
     "wikiTitle": "Water 7",
     "arcIds": [
       "water-7",
@@ -298,7 +298,7 @@
     "region": "paradise",
     "x": 1234,
     "y": 911,
-    "summary": "",
+    "summary": "The World Government’s judicial island, where the sun never sets and prisoners are sent on through the Gates of Justice.",
     "wikiTitle": "Enies Lobby",
     "arcIds": [
       "enies-lobby"
@@ -311,7 +311,7 @@
     "region": "paradise",
     "x": 1307,
     "y": 1083,
-    "summary": "",
+    "summary": "The icy headquarters of the Accino Family, a band of bounty hunters, hidden in a sea of icebergs.",
     "wikiTitle": "Lovely Land",
     "arcIds": [
       "ice-hunter"
@@ -325,7 +325,7 @@
     "region": "paradise",
     "x": 1429,
     "y": 913,
-    "summary": "",
+    "summary": "A ship the size of an island, lurking in the fog of the Florian Triangle, a stretch of sea where ships disappear.",
     "wikiTitle": "Thriller Bark",
     "arcIds": [
       "thriller-bark"
@@ -338,7 +338,7 @@
     "region": "paradise",
     "x": 1524,
     "y": 1086,
-    "summary": "",
+    "summary": "A floating resort of hot springs, pools, and slides, a place to rest after the Florian Triangle.",
     "wikiTitle": "Spa Island",
     "arcIds": [
       "spa-island"
@@ -352,7 +352,7 @@
     "region": "paradise",
     "x": 1830,
     "y": 1050,
-    "summary": "",
+    "summary": "A forest of giant mangrove trees near the Red Line, the last stop in Paradise, where ships are coated to sail down to Fish-Man Island.",
     "wikiTitle": "Sabaody Archipelago",
     "arcIds": [
       "sabaody-archipelago",
@@ -366,7 +366,7 @@
     "region": "calm-belt",
     "x": 1770,
     "y": 835,
-    "summary": "",
+    "summary": "A Calm Belt island ruled by the Kuja, a tribe of warrior women, where men are forbidden.",
     "wikiTitle": "Amazon Lily",
     "arcIds": [
       "amazon-lily"
@@ -379,7 +379,7 @@
     "region": "calm-belt",
     "x": 1492,
     "y": 1165,
-    "summary": "",
+    "summary": "The World Government’s undersea prison for its most dangerous criminals, sunk deep beneath the Calm Belt.",
     "wikiTitle": "Impel Down",
     "arcIds": [
       "impel-down"
@@ -392,7 +392,7 @@
     "region": "paradise",
     "x": 1614,
     "y": 919,
-    "summary": "",
+    "summary": "An island settled by people from East Blue, far from their home sea.",
     "wikiTitle": "Little East Blue",
     "arcIds": [
       "little-east-blue"
@@ -406,7 +406,7 @@
     "region": "paradise",
     "x": 1750,
     "y": 930,
-    "summary": "",
+    "summary": "The home of Marine Headquarters: a fortress town on the Grand Line, close to Mary Geoise and Sabaody, reached through the Gates of Justice.",
     "wikiTitle": "Marineford",
     "arcIds": [
       "marineford"
@@ -419,7 +419,7 @@
     "region": "calm-belt",
     "x": 1570,
     "y": 835,
-    "summary": "",
+    "summary": "A harsh Calm Belt island near Amazon Lily, where the weather cycles through a new season every week or so.",
     "wikiTitle": "Rusukaina",
     "arcIds": [
       "post-war"
@@ -432,7 +432,7 @@
     "region": "undersea",
     "x": 2000,
     "y": 1070,
-    "summary": "",
+    "summary": "An undersea kingdom ten thousand meters down, home to Fish-Men and merfolk, and a way into the New World beneath the Red Line.",
     "wikiTitle": "Fish-Man Island",
     "arcIds": [
       "fish-man-island"
@@ -445,7 +445,7 @@
     "region": "new-world",
     "x": 2198,
     "y": 953,
-    "summary": "",
+    "summary": "A forbidden New World island, scorching on one side and frozen solid on the other.",
     "wikiTitle": "Punk Hazard",
     "arcIds": [
       "punk-hazard"
@@ -458,7 +458,7 @@
     "region": "new-world",
     "x": 2393,
     "y": 1066,
-    "summary": "",
+    "summary": "A New World kingdom of flowers, passion, and toys, ruled by the Warlord Donquixote Doflamingo.",
     "wikiTitle": "Dressrosa",
     "arcIds": [
       "dressrosa"
@@ -471,7 +471,7 @@
     "region": "new-world",
     "x": 2634,
     "y": 945,
-    "summary": "",
+    "summary": "A deserted New World island near Dressrosa, honeycombed by a silver mine and the fortress built over it.",
     "wikiTitle": "Silver Mine",
     "arcIds": [
       "silver-mine"
@@ -485,7 +485,7 @@
     "region": "new-world",
     "x": 2864,
     "y": 1077,
-    "summary": "",
+    "summary": "An island that rides on a thousand-year-old elephant as it wades through the New World, home to the Mink Tribe.",
     "wikiTitle": "Zou",
     "arcIds": [
       "zou"
@@ -498,7 +498,7 @@
     "region": "new-world",
     "x": 3142,
     "y": 941,
-    "summary": "",
+    "summary": "The heart of Totto Land, the island nation ruled by Big Mom, one of the Four Emperors, where much of the land is good enough to eat.",
     "wikiTitle": "Whole Cake Island",
     "arcIds": [
       "whole-cake-island"
@@ -511,7 +511,7 @@
     "region": "red-line",
     "x": 2000,
     "y": 930,
-    "summary": "",
+    "summary": "The World Government’s capital, perched high on the Red Line, where the world’s highest nobles live.",
     "wikiTitle": "Mary Geoise",
     "arcIds": [
       "levely"
@@ -524,7 +524,7 @@
     "region": "new-world",
     "x": 3383,
     "y": 1050,
-    "summary": "",
+    "summary": "An island nation of samurai in the New World, closed off from the rest of the world behind towering cliffs and waterfalls.",
     "wikiTitle": "Wano Country",
     "arcIds": [
       "wano-country"
@@ -537,7 +537,7 @@
     "region": "new-world",
     "x": 3579,
     "y": 953,
-    "summary": "",
+    "summary": "A New World winter island that the scientist Dr. Vegapunk turned into a laboratory city, built to be five hundred years ahead of its time.",
     "wikiTitle": "Egghead",
     "arcIds": [
       "egghead"
@@ -550,7 +550,7 @@
     "region": "new-world",
     "x": 3827,
     "y": 1046,
-    "summary": "",
+    "summary": "The homeland of the giants, a fiercely independent nation in the New World famed for its warriors.",
     "wikiTitle": "Elbaph",
     "arcIds": [
       "elbaph"

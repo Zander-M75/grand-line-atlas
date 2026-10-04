@@ -215,9 +215,23 @@ for (const id of Object.keys(positions ?? {})) {
   if (!locationById.has(id)) warnings.push(`positions.json: "${id}" isn't a location`);
 }
 
-const emptySummaries = [...arcs, ...locations].filter((item) => !item.summary).length;
-if (emptySummaries)
-  warnings.push(`${emptySummaries} arcs and locations have no summary yet (Phase 7)`);
+// ---------------------------------------------------------------------------
+// Summaries: one or two short sentences each (PLAN.md §2.4), written in sources/summaries.ts
+
+/** About five lines in the logbook. */
+const MAX_SUMMARY_LENGTH = 240;
+
+for (const item of [...arcs, ...locations]) {
+  const { summary } = item;
+  if (!summary.trim()) errors.push(`${item.id}: no summary (add one to sources/summaries.ts)`);
+  else if (summary.length > MAX_SUMMARY_LENGTH) {
+    errors.push(
+      `${item.id}: summary is ${summary.length} characters; keep it to ${MAX_SUMMARY_LENGTH}`,
+    );
+  } else if (sentences(summary).length > 2) {
+    errors.push(`${item.id}: summary has ${sentences(summary).length} sentences; keep it to two`);
+  }
+}
 
 // ---------------------------------------------------------------------------
 // Crew
@@ -286,6 +300,20 @@ console.log('Data is valid.');
 
 function range(start: number, end: number): number[] {
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+}
+
+/** Splits at sentence ends, but not after an abbreviation or initial ("Dr. Vegapunk"). */
+function sentences(text: string): string[] {
+  const result: string[] = [];
+  for (const piece of text.split(/(?<=[.!?])\s+(?=[A-Z‘“"])/)) {
+    const previous = result.at(-1);
+    if (previous && /\b(?:Dr|Mr|Mrs|Ms|St|[A-Z])\.$/.test(previous)) {
+      result[result.length - 1] = `${previous} ${piece}`;
+    } else {
+      result.push(piece);
+    }
+  }
+  return result;
 }
 
 /** [3, 4, 5, 9] → ["3–5", "9"] */

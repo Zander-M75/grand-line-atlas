@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "data:fetch": "tsx scripts/fetch-wiki.ts",
-    "data:build": "tsx scripts/build-arcs.ts && tsx scripts/build-locations.ts && tsx scripts/auto-layout.ts && tsx scripts/build-crew.ts && tsx scripts/build-route.ts",
+    "data:build": "tsx scripts/build-arcs.ts && tsx scripts/build-locations.ts && tsx scripts/auto-layout.ts && tsx scripts/build-crew.ts && tsx scripts/build-route.ts && tsx scripts/check-summaries.ts",
     "data:layout": "tsx scripts/auto-layout.ts",
     "data:validate": "tsx scripts/validate-data.ts"
   },

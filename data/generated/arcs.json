@@ -13,7 +13,7 @@
       "foosha-village",
       "shells-town"
     ],
-    "summary": ""
+    "summary": "Luffy, a boy whose body stretches like rubber, puts out to sea alone, set on becoming the Pirate King. First he needs a crew, and he has heard of a swordsman tied up at a Marine base."
   },
   {
     "id": "orange-town",
@@ -28,7 +28,7 @@
     "locationIds": [
       "orange-town"
     ],
-    "summary": ""
+    "summary": "A flashback shows how the pirate Shanks inspired Luffy’s dream. Back in the present, a giant bird drops Luffy in a harbor town held by Buggy the Clown, where a thief named Nami is working an angle of her own."
   },
   {
     "id": "syrup-village",
@@ -44,7 +44,7 @@
       "syrup-village",
       "island-of-rare-animals"
     ],
-    "summary": ""
+    "summary": "In search of a real ship, the crew lands at a quiet village and meets Usopp, a teenage liar whose tall tales keep a sickly rich girl smiling."
   },
   {
     "id": "baratie",
@@ -59,7 +59,7 @@
     "locationIds": [
       "baratie"
     ],
-    "summary": ""
+    "summary": "Wanting a cook before the Grand Line, the crew visits the Baratie, a floating restaurant whose chefs fight as hard as they cook. Luffy wrecks part of it on arrival and has to work off the damage."
   },
   {
     "id": "arlong-park",
@@ -74,7 +74,7 @@
     "locationIds": [
       "arlong-park"
     ],
-    "summary": ""
+    "summary": "Nami makes off with the ship, and the crew follows her home to the Conomi Islands, where the Fish-Man pirate Arlong has ruled the villages for years and takes tribute from all of them."
   },
   {
     "id": "loguetown",
@@ -89,7 +89,7 @@
     "locationIds": [
       "loguetown"
     ],
-    "summary": ""
+    "summary": "With a bounty on Luffy’s head for the first time, the crew stops at Loguetown, where the Pirate King was born and executed. It’s their last port before the Grand Line, and the Marines there are on watch."
   },
   {
     "id": "buggy-side-story",
@@ -105,7 +105,7 @@
     "locationIds": [
       "orange-town"
     ],
-    "summary": ""
+    "summary": "A side story without the Straw Hats: Buggy the Clown, left with little more than his head, hands, and feet after Orange Town, goes looking for the rest of himself and his crew."
   },
   {
     "id": "warship-island",
@@ -120,7 +120,7 @@
     "locationIds": [
       "warship-island"
     ],
-    "summary": ""
+    "summary": "The crew fishes a runaway girl named Apis out of the sea. She has escaped a Marine warship and wants to go home to Warship Island, but the Marines want her back."
   },
   {
     "id": "reverse-mountain",
@@ -136,7 +136,7 @@
       "reverse-mountain",
       "twin-cape"
     ],
-    "summary": ""
+    "summary": "The crew rides an ocean current up the Red Line and over Reverse Mountain, the gateway to the Grand Line. Waiting at the bottom is a whale the size of an island."
   },
   {
     "id": "whisky-peak",
@@ -151,7 +151,7 @@
     "locationIds": [
       "whisky-peak"
     ],
-    "summary": ""
+    "summary": "At Whisky Peak, their first stop on the Grand Line, the whole town turns out to throw the crew a feast that lasts all night. A welcome this warm seems almost too good to be true."
   },
   {
     "id": "koby-and-helmeppo",
@@ -165,7 +165,7 @@
     "filler": true,
     "offRoute": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "A side story without the Straw Hats: Koby, the boy Luffy befriended in the first episodes, and the spoiled Helmeppo are now lowly Marine recruits, both hoping to make something of themselves."
   },
   {
     "id": "little-garden",
@@ -180,7 +180,7 @@
     "locationIds": [
       "little-garden"
     ],
-    "summary": ""
+    "summary": "With Princess Vivi aboard and her kingdom in danger, the crew lands on Little Garden, a jungle island where dinosaurs still roam. Two giants have been fighting a duel there for a hundred years."
   },
   {
     "id": "drum-island",
@@ -195,7 +195,7 @@
     "locationIds": [
       "drum-island"
     ],
-    "summary": ""
+    "summary": "When Nami falls dangerously ill, the crew turns aside to Drum Island, a snowbound kingdom with almost no doctors left, to find one before it’s too late."
   },
   {
     "id": "arabasta",
@@ -210,7 +210,7 @@
     "locationIds": [
       "arabasta"
     ],
-    "summary": ""
+    "summary": "The crew finally reaches Arabasta, Vivi’s desert kingdom, where drought and rebellion are pushing the country toward civil war. Behind it all is Crocodile, a Warlord of the Sea the people see as a hero."
   },
   {
     "id": "post-arabasta",
@@ -223,7 +223,7 @@
     ],
     "filler": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "Five standalone episodes aboard the ship after Arabasta, each one looking back at a crewmate’s past or chasing a crewmate’s dream."
   },
   {
     "id": "goat-island",
@@ -238,7 +238,7 @@
     "locationIds": [
       "goat-island"
     ],
-    "summary": ""
+    "summary": "Fleeing Marine warships through fog and reefs, the crew finds an uncharted island where an old man lives with his goats and a half-built ship."
   },
   {
     "id": "ruluka-island",
@@ -253,7 +253,7 @@
     "locationIds": [
       "ruluka-island"
     ],
-    "summary": ""
+    "summary": "The crew lands on Ruluka, an island taxed into poverty to pay for a giant tower, where a scientist studies the Rainbow Mist, a fog said to swallow ships whole."
   },
   {
     "id": "jaya",
@@ -268,7 +268,7 @@
     "locationIds": [
       "jaya"
     ],
-    "summary": ""
+    "summary": "A galleon crashes down out of the sky and the crew’s compass points straight up, so they put in at Jaya, a lawless pirate island, to find a way up there."
   },
   {
     "id": "skypiea",
@@ -283,7 +283,7 @@
     "locationIds": [
       "skypiea"
     ],
-    "summary": ""
+    "summary": "Launched into the sky by a giant ocean current, the crew reaches Skypiea, a land of islands made of cloud. Its people live in fear of a god who punishes anyone who trespasses."
   },
   {
     "id": "g-8",
@@ -298,7 +298,7 @@
     "locationIds": [
       "navarone"
     ],
-    "summary": ""
+    "summary": "Coming down from the sky, the ship splashes into the middle of a Marine fortress. The crew scatters in disguise, hoping to get their ship back and escape."
   },
   {
     "id": "long-ring-long-land",
@@ -313,7 +313,7 @@
     "locationIds": [
       "long-ring-long-land"
     ],
-    "summary": ""
+    "summary": "On an island where everything grows long and thin, the Foxy Pirates challenge the crew to a Davy Back Fight: a series of games in which the winning side takes crewmates from the losers."
   },
   {
     "id": "oceans-dream",
@@ -326,7 +326,7 @@
     ],
     "filler": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "The crew wakes up with no memory of their time together. Only Robin remembers, and someone took the others’ memories on purpose."
   },
   {
     "id": "foxys-return",
@@ -339,7 +339,7 @@
     ],
     "filler": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "In a storm, the crew pulls Foxy and two of his crewmates out of a sinking boat. Before long, they’re up to their old tricks."
   },
   {
     "id": "water-7",
@@ -354,7 +354,7 @@
     "locationIds": [
       "water-7"
     ],
-    "summary": ""
+    "summary": "With the Going Merry badly worn, the crew sails to Water 7, a city of canals and master shipwrights, to have her repaired and find a shipwright of their own."
   },
   {
     "id": "enies-lobby",
@@ -369,7 +369,7 @@
     "locationIds": [
       "enies-lobby"
     ],
-    "summary": ""
+    "summary": "The crew storms Enies Lobby, the World Government’s island of justice, to rescue Robin before she is taken through the Gates of Justice for good."
   },
   {
     "id": "post-enies-lobby",
@@ -384,7 +384,7 @@
     "locationIds": [
       "water-7"
     ],
-    "summary": ""
+    "summary": "Back at Water 7, the crew rests up from the battle while Franky builds them a new ship. Meanwhile, news of what they did spreads around the world."
   },
   {
     "id": "ice-hunter",
@@ -399,7 +399,7 @@
     "locationIds": [
       "lovely-land"
     ],
-    "summary": ""
+    "summary": "On the new ship’s first voyage, the crew stops to help a battered pirate ship and ends up herded into a field of icebergs."
   },
   {
     "id": "thriller-bark",
@@ -414,7 +414,7 @@
     "locationIds": [
       "thriller-bark"
     ],
-    "summary": ""
+    "summary": "Drifting into the Florian Triangle, a foggy sea where ships vanish, the crew meets a talking skeleton and comes upon a ship as big as an island."
   },
   {
     "id": "spa-island",
@@ -429,7 +429,7 @@
     "locationIds": [
       "spa-island"
     ],
-    "summary": ""
+    "summary": "The crew takes a break at a floating resort of hot springs and water slides, until Foxy shows up there too."
   },
   {
     "id": "sabaody-archipelago",
@@ -444,7 +444,7 @@
     "locationIds": [
       "sabaody-archipelago"
     ],
-    "summary": ""
+    "summary": "Halfway along the Grand Line, the crew needs their ship coated so it can sail underwater, beneath the Red Line. Sabaody, where that’s done, is crowded with pirates, slave traders, and the world’s nobility."
   },
   {
     "id": "amazon-lily",
@@ -460,7 +460,7 @@
     "locationIds": [
       "amazon-lily"
     ],
-    "summary": ""
+    "summary": "Separated from his crew, Luffy falls out of the sky onto Amazon Lily, home to a tribe of warrior women who allow no men. All he wants is to get back to his friends."
   },
   {
     "id": "impel-down",
@@ -476,7 +476,7 @@
     "locationIds": [
       "impel-down"
     ],
-    "summary": ""
+    "summary": "Luffy breaks into Impel Down, the World Government’s underwater prison, to rescue his brother Ace before his execution."
   },
   {
     "id": "little-east-blue",
@@ -492,7 +492,7 @@
     "locationIds": [
       "little-east-blue"
     ],
-    "summary": ""
+    "summary": "Outside the main story: a giant beetle carries half the crew off to an island settled by people from East Blue, who want nothing to do with pirates."
   },
   {
     "id": "marineford",
@@ -508,7 +508,7 @@
     "locationIds": [
       "marineford"
     ],
-    "summary": ""
+    "summary": "Marine Headquarters braces for war as Ace’s execution nears. Whitebeard’s fleet is on its way to save him, and Luffy is racing to get there too."
   },
   {
     "id": "post-war",
@@ -524,7 +524,7 @@
     "locationIds": [
       "rusukaina"
     ],
-    "summary": ""
+    "summary": "In the war’s aftermath, a grieving Luffy recovers on a Calm Belt island and memories of his childhood with Ace come back to him."
   },
   {
     "id": "return-to-sabaody",
@@ -539,7 +539,7 @@
     "locationIds": [
       "sabaody-archipelago"
     ],
-    "summary": ""
+    "summary": "Two years later, the crew makes its way back to Sabaody to meet up again, though a gang of impostors is already using their names."
   },
   {
     "id": "fish-man-island",
@@ -554,7 +554,7 @@
     "locationIds": [
       "fish-man-island"
     ],
-    "summary": ""
+    "summary": "Diving under the sea, the crew reaches Fish-Man Island, a kingdom of Fish-Men and merfolk ten thousand meters down, where a pirate gang is stirring up hatred of humans."
   },
   {
     "id": "zs-ambition",
@@ -567,7 +567,7 @@
     ],
     "filler": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "In a stretch of the New World with impossible weather, the crew crosses paths with the Neo Marines, former Marines sworn to wipe out every pirate."
   },
   {
     "id": "punk-hazard",
@@ -582,7 +582,7 @@
     "locationIds": [
       "punk-hazard"
     ],
-    "summary": ""
+    "summary": "Answering a distress call, Luffy lands on Punk Hazard, a forbidden island burning on one side and frozen on the other, with the Marines not far behind."
   },
   {
     "id": "caesar-retrieval",
@@ -595,7 +595,7 @@
     ],
     "filler": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "On the way to Dressrosa, an intruder slips aboard and kidnaps Caesar, the scientist the alliance is holding as a hostage."
   },
   {
     "id": "dressrosa",
@@ -610,7 +610,7 @@
     "locationIds": [
       "dressrosa"
     ],
-    "summary": ""
+    "summary": "The crew and their new ally, Law, sail to Dressrosa to bring down its king, the Warlord Doflamingo, in a country of flowers, gladiators, and living toys."
   },
   {
     "id": "silver-mine",
@@ -625,7 +625,7 @@
     "locationIds": [
       "silver-mine"
     ],
-    "summary": ""
+    "summary": "Luffy and Bartolomeo are kidnapped in their sleep and taken to a fortress built on a silver mine."
   },
   {
     "id": "zou",
@@ -640,7 +640,7 @@
     "locationIds": [
       "zou"
     ],
-    "summary": ""
+    "summary": "Luffy’s group climbs onto Zou, an island carried on a giant elephant’s back, to meet the crewmates who went on ahead."
   },
   {
     "id": "marine-rookie",
@@ -653,7 +653,7 @@
     ],
     "filler": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "Starving on the way to Big Mom’s territory, Luffy’s group raids a Marine base for food, where an eager young officer has plans of his own."
   },
   {
     "id": "whole-cake-island",
@@ -668,7 +668,7 @@
     "locationIds": [
       "whole-cake-island"
     ],
-    "summary": ""
+    "summary": "Luffy leads a small team into Totto Land, the territory of the Emperor Big Mom, to bring Sanji back before his arranged wedding to one of her daughters."
   },
   {
     "id": "levely",
@@ -684,7 +684,7 @@
     "locationIds": [
       "mary-geoise"
     ],
-    "summary": ""
+    "summary": "Kings and queens from around the world gather at Mary Geoise, home of the World Government’s rulers, for a summit held once every four years."
   },
   {
     "id": "wano-country",
@@ -699,7 +699,7 @@
     "locationIds": [
       "wano-country"
     ],
-    "summary": ""
+    "summary": "The alliance arrives in Wano, a land of samurai sealed off from the world and ruled by a tyrant shogun and the Emperor Kaido, and starts gathering forces for a war to free it."
   },
   {
     "id": "cidre-guild",
@@ -712,7 +712,7 @@
     ],
     "filler": true,
     "locationIds": [],
-    "summary": ""
+    "summary": "When the ship runs out of the cola that powers it, Luffy goes ashore for more and runs into the Cidre Guild, bounty hunters out for the crew."
   },
   {
     "id": "utas-past",
@@ -728,7 +728,7 @@
     "locationIds": [
       "foosha-village"
     ],
-    "summary": ""
+    "summary": "A flashback to years before the story began: Shanks’s crew stops at Foosha Village with a girl named Uta, and young Luffy meets her."
   },
   {
     "id": "egghead",
@@ -743,7 +743,7 @@
     "locationIds": [
       "egghead"
     ],
-    "summary": ""
+    "summary": "Leaving Wano, the crew arrives at Egghead, a futuristic island where the world’s greatest scientist, Dr. Vegapunk, keeps his laboratory."
   },
   {
     "id": "elbaph",
@@ -758,7 +758,7 @@
     "locationIds": [
       "elbaph"
     ],
-    "summary": "",
+    "summary": "Sailing with the giants, the crew sets course at last for Elbaph, the homeland of the giants that Usopp has dreamed of seeing since the voyage began.",
     "ongoing": true
   }
 ]
