@@ -129,6 +129,7 @@ Settled:
 - **Wiki User-Agent contact** (2026-10-01): use the repo URL, not an email.
 - **Phase 2 review list** (2026-10-01): all items accepted as built. Buggy Side Story and Koby and Helmeppo stay anime-only and off-route; Uta's Past and Elbaph are in; sagas follow the wiki; the eight arcs with no named island have no map stop; the place choices and crew join episodes (Nami 44, Jinbe 980) stand.
 - **Island placement (Phase 3 review)** (2026-10-03): as of now there are no islands the owner wants to place by hand. The automatic positions stand, and `data/overrides/positions.json` stays empty. The dev positioner (Shift+D in `npm run dev`) is still there if that changes.
+- **Phase 9 and 10 scope** (2026-10-04): Phase 9 adds a guided tour (with a "New to One Piece?" choice in the gate), scripted captures for the preview image and GIF (spoiler-safe: start of the voyage only), a weekly data-refresh workflow, and CI that also runs the browser tests and a bundle budget. Phase 10 is new: uncharted waters, island symbols, crew wanted posters with bios and bounties, and search. Character images were reconsidered and stay out (§2). The other ideas are in PLAN.md §10.
 - **Summit War side route** (2026-10-03): include it. Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) gets a dashed side route. Built in Phase 7 behind a `sideRoute` flag on those four arcs, since a generic rule for off-route arcs would draw misleading lines for flashbacks and side stories (Uta's Past, Buggy Side Story).
 
 Open (Phase 8):

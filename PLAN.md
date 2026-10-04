@@ -465,11 +465,18 @@ All animation durations and easings live in `config.ts` / `src/animation/`. **Ev
 ### Phase 9 — Deploy + Portfolio Packaging
 
 **Tasks**
-1. GitHub Actions workflow: lint, test, data:validate, build on every push.
+1. GitHub Actions workflow: lint, test, data:validate, build on every push. Also run the Playwright suite and fail if the initial JS passes the ~250KB gzipped budget.
 2. Deploy to Vercel; confirm deep links like `/?arc=water-7` work.
 3. Add Open Graph and Twitter meta tags with an original preview image (a screenshot of our own map, no official art) and a description.
 4. Favicon: original simple icon (e.g., compass or generic ship).
-5. **README.md** should include:
+5. **Guided tour** (added 2026-10-04). A viewer who has never seen One Piece can't answer "What episode are you on?".
+   - The spoiler gate gets a third choice, "New to One Piece? Take the tour": no spoiler limit, and the voyage plays itself from the first arc.
+   - A Play/Pause button on the timeline does the same for anyone, stopping at their spoiler limit.
+   - The tour steps one arc at a time with the existing animations, waiting long enough on each to read the logbook. Any navigation (keys, slider, map drag or zoom) stops it.
+   - Under reduced motion it still steps, without animation.
+6. **Scripted captures** (added 2026-10-04): `npm run capture` drives the built app with Playwright and writes the preview image and the README GIF, so both can be regenerated after a data refresh. **Spoiler-safe:** they show only the start of the voyage (East Blue to Reverse Mountain), never the whole route.
+7. **Weekly data refresh** (added 2026-10-04): a scheduled GitHub Action re-fetches the wiki (politely, as in §2), rebuilds the data, and opens a PR when something changed. A new arc fails `data:validate` until its summary is written, so the PR waits for a human.
+8. **README.md** should include:
    - One-paragraph pitch and a link to the live site.
    - A GIF of the timeline in action.
    - Tech stack and why each piece was chosen.
@@ -479,11 +486,35 @@ All animation durations and easings live in `config.ts` / `src/animation/`. **Ev
    - Known limitations (approximate positions, anime-only islands placed by best guess, data current as of the latest episode at build time).
    - Credits and licenses (wiki CC-BY-SA, icons, audio).
    - "Unofficial fan project, not affiliated with Eiichiro Oda, Shueisha, or Toei Animation."
-6. Record a 20–30s screen capture GIF for the portfolio site.
+9. Record a 20–30s screen capture GIF for the portfolio site.
 
 **Acceptance criteria**
 - Live URL works on desktop and mobile.
 - README is complete and reads well to a recruiter who has never seen One Piece.
+- A first-time viewer who picks the tour sees the voyage play without touching anything, and can stop it.
+- CI is green on `main`, and the data-refresh workflow has run once by hand.
+
+---
+
+### Phase 10 — Crew, Chart, and Search (added 2026-10-04)
+
+Everything stays within §2: no official art, no drawings of characters, original text only.
+
+**Tasks**
+1. **Uncharted waters.** Seas the crew hasn't reached yet start as faded, blank parchment, and the chart inks in around each island as the ship arrives. Respects the spoiler limit (nothing past it inks in), reduced motion (the chart appears at once), and the 60fps target alongside the ocean filter.
+2. **Island symbols.** Replace the plain dots with about ten original cartographic glyphs by terrain (snowy peak, desert, forest, town, fortress, sky, undersea, ruins...). Terrain is a curated field with a comment per island, like the summaries. The anime-only and story-state styling (current, away, visited, ahead) still reads at a glance.
+3. **Crew wanted posters.**
+   - Each crew card becomes a typographic wanted poster: name, role, bounty, and a monogram or generic role icon where a portrait would go. Never a face or a silhouette.
+   - Each member gets an original 1–2 sentence bio, safe at the episode they join (same rules as the arc summaries).
+   - Bounties come from the wiki, each with the anime episode it is revealed in. Ambiguous reveal points go on the review list.
+   - A bounty shows only from its reveal episode, and rolls up to the new figure when one is revealed.
+4. **Search.** ⌘K / Ctrl+K or `/` opens a search over arcs, islands, and crew. Results never include anything past the spoiler limit. Choosing a result jumps the timeline or opens the island panel. Fully keyboard and screen reader operable (combobox pattern), with no new dependency.
+
+**Acceptance criteria**
+- All tests pass; axe finds nothing on any screen, including the new ones.
+- Lighthouse desktop stays 90+ for Performance and Accessibility; initial JS stays under ~250KB gzipped.
+- Nothing past the spoiler limit appears in the chart, posters, or search.
+- The preview image and README GIF are regenerated with `npm run capture`.
 
 ---
 
@@ -516,8 +547,12 @@ Implement a single `useReducedMotion()` hook that returns true if either the OS 
 
 - WebGL ocean shader (PixiJS or Three.js).
 - Movies and TV specials as optional side markers.
-- Scheduled job that checks the wiki for newly aired episodes and opens a PR updating the data.
 - Other crews' routes (e.g., a rival crew) as overlay layers.
-- "Bounty over time" mini chart in the crew panel.
-- Guided auto-play "tour" mode with narration text.
-- Shareable image export of the current map view.
+- "Bounty over time" mini chart in the crew panel (Phase 10 adds the bounties themselves).
+- Shareable image export of the current map view: a "postcard" of the voyage so far, built from the same SVG pieces.
+- Sea monsters in the Calm Belt, surfacing now and then, like an old map's "here be dragons".
+- The ship marker changes when the crew changes ships (still a generic ship, never a recreation).
+- Hoverable route legs ("Loguetown → Reverse Mountain · Ep. 61"), clickable to jump.
+- "Your voyage" stats: episodes watched, hours, islands visited.
+- Ambient sound by region (wind in the sky, muffled undersea).
+- Prerendered first paint (title and base chart in `index.html`) for mobile performance.
