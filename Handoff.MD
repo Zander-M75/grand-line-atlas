@@ -146,7 +146,7 @@ Settled:
 
 Open (Phase 9):
 
-- **Let Actions open pull requests.** The weekly data refresh opens a PR when the wiki changes, but the repo setting "Allow GitHub Actions to create and approve pull requests" (Settings → Actions → General) is off, so that step would fail. Turning it on lets the workflow's `GITHUB_TOKEN` open PRs (it could also approve them, though nothing here does). Until then the refresh still runs and fails visibly when there's something new. Its by-hand run on 2026-10-04 found nothing new, so it didn't need the setting.
+- **Let Actions open pull requests.** The weekly data refresh opens a PR when the wiki changes, but the repo setting "Allow GitHub Actions to create and approve pull requests" (Settings → Actions → General) is off, so that step would fail. Turning it on lets the workflow's `GITHUB_TOKEN` open PRs (it could also approve them, though nothing here does). Until then the refresh still runs and fails visibly when there's something new. Its by-hand run on 2026-10-04 fetched all 169 pages from GitHub's runners in about 3 minutes (not blocked), and the rebuild matched the committed data exactly, so there was nothing to open a PR for.
 - **A custom domain?** It's on `grandlineatlas.vercel.app`. A subdomain of your site (e.g. `atlas.zander-m.com`) is a few minutes in Vercel if you'd like one; `LINKS.site` in `config.ts` would change with it.
 - **Tour pace.** About 8–11 seconds an arc (the voyage, a 1 s pause, then the summary at 4.5 words a second), so the whole timeline takes about 8 minutes. One number each in `TIMING`.
 - **The GIF** is 6.6 MB (33 s, intro included). Leaving out the intro would cut it to about 4 MB, at the cost of the opening.
