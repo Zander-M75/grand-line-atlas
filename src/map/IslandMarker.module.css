@@ -25,6 +25,13 @@
   transform: scale(1.2);
 }
 
+/* A pointed-at or focused island comes to the front, so its name isn't tucked under a
+   neighbor's dot. Leaflet sets each marker's z-index inline, hence !important. */
+.marker:hover,
+.marker:focus-visible {
+  z-index: 1000 !important;
+}
+
 .marker:focus-visible {
   outline: none;
 }
@@ -84,9 +91,14 @@
   bottom: calc(50% + 10px);
 }
 
-/* Farther out than ZOOM.labels, islands are dots only (see useZoomLabels). */
+/* Farther out than ZOOM.labels, islands are dots only (see useZoomLabels), named only while
+   pointed at or focused. */
 :global(.leaflet-container[data-labels='off']) .label {
   display: none;
+}
+
+:global(.leaflet-container[data-labels='off']) .marker:is(:hover, :focus-visible) .label {
+  display: block;
 }
 
 /* Story state (src/map/journey.ts). These come after the variants above so the brass
@@ -161,14 +173,22 @@
   color: var(--color-on-ocean);
 }
 
-/* Islands the voyage hasn't reached yet, faded back until pointed at. */
-.ahead {
+/* Islands the voyage hasn't reached yet, faded back until pointed at. The dot fades; the name
+   only dims, to a tone that still clears AA contrast on the Grand Line, its lightest water. */
+.ahead .dot {
   opacity: 0.5;
 }
 
-.ahead:hover,
-.ahead:focus-visible {
+.ahead .label {
+  color: var(--color-on-ocean-muted);
+}
+
+.ahead:is(:hover, :focus-visible) .dot {
   opacity: 1;
+}
+
+.ahead:is(:hover, :focus-visible) .label {
+  color: var(--color-on-ocean);
 }
 
 /* Dev positioner. */
@@ -185,6 +205,6 @@
   background: var(--color-route-current);
 }
 
-.selected.ahead {
+.selected.ahead .dot {
   opacity: 1;
 }

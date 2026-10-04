@@ -9,16 +9,39 @@
 /* While the intro plays, only the chart shows: the panels, timeline, route, islands, and
    map controls wait, then fade in as it hands over. */
 .app > :not(.mapArea),
-.mapArea > :not(:first-child),
+.mapArea > :not(:global(.leaflet-container)),
 .app :global(:is(.leaflet-route-pane, .leaflet-marker-pane, .leaflet-control-container)) {
   transition: opacity var(--timing-intro-handover) ease-out;
 }
 
 .app[data-intro] > :not(.mapArea),
-.app[data-intro] .mapArea > :not(:first-child),
+.app[data-intro] .mapArea > :not(:global(.leaflet-container)),
 .app[data-intro]
   :global(:is(.leaflet-route-pane, .leaflet-marker-pane, .leaflet-control-container)) {
   opacity: 0;
+}
+
+/* Off screen until it has keyboard focus, then a paper tab at the top of the map. */
+.skipLink {
+  --focus-ring: var(--color-focus-on-paper);
+
+  position: absolute;
+  top: var(--space-3);
+  left: 50%;
+  z-index: 4;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-paper);
+  color: var(--color-ink);
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-panel);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translate(-50%, calc(-100% - 2 * var(--space-3)));
+}
+
+.skipLink:focus {
+  transform: translate(-50%, 0);
 }
 
 /* Panels float over the map. The map is its own stacking context (see WorldMap.module.css),

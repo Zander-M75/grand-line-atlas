@@ -3,16 +3,20 @@
  * About notes (approximate positions, credits). It's a disclosure: the panel follows the
  * button in tab order. Escape, the close button, or a click outside closes it.
  *
+ * On phones the panel spans the map, so there it's a modal dialog instead: opening it moves
+ * focus to its heading, and Tab stays inside it until it closes.
  */
 import { AnimatePresence, m } from 'framer-motion';
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
 import { MOTION_EASE } from '@/animation/easing';
 import { setSound } from '@/audio/sea';
-import { APP_TITLE, FEATURES, LINKS, TIMING } from '@/config';
+import { APP_TITLE, FEATURES, LINKS, MEDIA, TIMING } from '@/config';
 import { meta } from '@/data';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useMotionTransition } from '@/hooks/useMotionTransition';
 import { useSystemReducedMotion } from '@/hooks/useReducedMotion';
 import { chooseSpoilerLimit, setSetting, setShowFiller, useAtlasStore } from '@/store';
+import { trapFocus } from '@/utils/focusTrap';
 import { CloseIcon, SettingsIcon } from './icons';
 import { SpoilerForm } from './SpoilerForm';
 import { Switch } from './Switch';
@@ -22,9 +26,15 @@ export function SettingsMenu() {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const panelId = useId();
   const headingId = useId();
+  const narrow = useMediaQuery(MEDIA.narrow);
   const transition = useMotionTransition({ duration: TIMING.panel, ease: MOTION_EASE.enter });
+
+  useEffect(() => {
+    if (open && narrow) headingRef.current?.focus({ preventScroll: true });
+  }, [open, narrow]);
 
   useEffect(() => {
     if (!open) return;
@@ -65,15 +75,17 @@ export function SettingsMenu() {
           <m.div
             id={panelId}
             className={styles.panel}
-            role="group"
+            role={narrow ? 'dialog' : 'group'}
+            aria-modal={narrow || undefined}
             aria-labelledby={headingId}
+            onKeyDown={narrow ? trapFocus : undefined}
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={transition}
           >
             <header className={styles.header}>
-              <h2 id={headingId} className={styles.heading}>
+              <h2 ref={headingRef} id={headingId} className={styles.heading} tabIndex={-1}>
                 Settings
               </h2>
               <button

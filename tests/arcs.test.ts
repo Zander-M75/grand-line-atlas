@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { arcById, arcs } from '@/data';
-import { arcForEpisode, canonArcFor, episodeLabel, isLocked } from '@/data/arcs';
+import { arcForEpisode, canonArcFor, episodeLabel, isLocked, spokenArc } from '@/data/arcs';
 import type { Arc } from '@/types';
 
 const arc = (id: string): Arc => {
@@ -58,5 +58,15 @@ describe('isLocked', () => {
 describe('episodeLabel', () => {
   it('writes the range with an en dash', () => {
     expect(episodeLabel(arc('enies-lobby'))).toBe('Ep. 264–312');
+  });
+});
+
+describe('spokenArc', () => {
+  it('reads out the arc, its episodes and saga, and the notes shown as tags', () => {
+    expect(spokenArc(arc('enies-lobby'))).toBe(
+      'Enies Lobby Arc, episodes 264 to 312, Water 7 Saga',
+    );
+    expect(spokenArc(arc('impel-down'))).toMatch(/, Summit War Saga, away from the ship$/);
+    expect(spokenArc(arc('post-arabasta'))).toMatch(/, anime-only, no island stop$/);
   });
 });

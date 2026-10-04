@@ -58,6 +58,11 @@
   composes: heading from './paper.module.css';
 }
 
+/* Focused only on phones, when the panel opens as a dialog; the ring would just frame text. */
+.heading:focus {
+  outline: none;
+}
+
 .close {
   composes: iconButton from './paper.module.css';
   margin-right: calc(-1 * var(--space-2));

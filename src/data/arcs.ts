@@ -38,6 +38,23 @@ export function episodeText({ episodes: [start, end] }: Arc): string {
   return start === end ? `episode ${start}` : `episodes ${start} to ${end}`;
 }
 
+/**
+ * The arc as a screen reader hears it, with the notes the timeline shows as tags:
+ * "Impel Down Arc, episodes 422 to 456, Summit War Saga, away from the ship".
+ */
+export function spokenArc(arc: Arc): string {
+  return [
+    arc.name,
+    episodeText(arc),
+    arc.saga,
+    arc.filler && 'anime-only',
+    arc.ongoing && 'now airing',
+    arc.offRoute ? 'away from the ship' : arc.locationIds.length === 0 && 'no island stop',
+  ]
+    .filter(Boolean)
+    .join(', ');
+}
+
 /** "Water 7 Saga" → "Water 7", for tight spaces. */
 export function shortSagaName(saga: string): string {
   return saga.replace(/ Saga$/, '');

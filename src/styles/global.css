@@ -35,6 +35,16 @@ select {
   color: inherit;
 }
 
+/* Read by screen readers, never seen. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* Brass on the sea; paper surfaces swap in ink via --focus-ring. */
 :focus-visible {
   outline: 2px solid var(--focus-ring, var(--color-focus));

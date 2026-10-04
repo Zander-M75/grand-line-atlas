@@ -8,6 +8,8 @@
  *
  * Opening it moves focus to its heading. Escape or the close button hands focus back to the
  * island that opened it. It slides in from the edge it's docked to, and back out on close.
+ * On phones the sheet covers much of the map, so it's a modal dialog there: Tab stays inside
+ * it until it closes.
  */
 import { AnimatePresence, m } from 'framer-motion';
 import { useEffect, useId, useRef, type MouseEvent, type Ref } from 'react';
@@ -20,6 +22,7 @@ import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { useMotionTransition } from '@/hooks/useMotionTransition';
 import { goToArc, selectKnownArcs, selectLocation, useAtlasStore } from '@/store';
 import type { Arc, Location } from '@/types';
+import { trapFocus } from '@/utils/focusTrap';
 import { CloseIcon, ExternalIcon } from './icons';
 import { Tag } from './Tag';
 import styles from './IslandPanel.module.css';
@@ -64,12 +67,16 @@ export function IslandPanel() {
   return (
     <AnimatePresence>
       {island && (
-        <m.aside
+        // A section, since <aside> can't take the dialog role.
+        <m.section
           key="island-panel"
           ref={panelRef}
           className={styles.panel}
+          role={narrow ? 'dialog' : 'complementary'}
+          aria-modal={narrow || undefined}
           aria-labelledby={headingId}
           data-covers-map
+          onKeyDown={narrow ? trapFocus : undefined}
           initial={away}
           animate={{ opacity: 1, x: 0, y: 0 }}
           exit={away}
@@ -84,7 +91,7 @@ export function IslandPanel() {
             headingRef={headingRef}
             onClose={() => close(openerRef.current)}
           />
-        </m.aside>
+        </m.section>
       )}
     </AnimatePresence>
   );
@@ -152,7 +159,7 @@ function IslandDetails({
         >
           Read more on the wiki
           <ExternalIcon />
-          <span className={styles.visuallyHidden}> (opens in a new tab)</span>
+          <span className="visually-hidden"> (opens in a new tab)</span>
         </a>
         {showSpoilerNote && (
           <span className={styles.wikiNote}>

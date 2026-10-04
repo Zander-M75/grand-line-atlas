@@ -1,16 +1,22 @@
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MEDIA } from '@/config';
 import { goToArc, setSpoilerLimit, useAtlasStore } from '@/store';
 import { ArcCard } from '@/ui/ArcCard';
 import { CrewPanel } from '@/ui/CrewPanel';
 import { SettingsMenu } from '@/ui/SettingsMenu';
 import { Timeline } from '@/ui/Timeline';
+import { stubMedia } from './media';
 
 const state = () => useAtlasStore.getState();
 
 beforeEach(() => {
   useAtlasStore.setState(useAtlasStore.getInitialState(), true);
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
 });
 
 describe('ArcCard', () => {
@@ -93,6 +99,21 @@ describe('SettingsMenu', () => {
     await user.click(screen.getByRole('switch', { name: 'Anime-only arcs' }));
     await user.click(screen.getByRole('switch', { name: 'Reduce motion' }));
     expect(state().settings).toMatchObject({ showFiller: false, reducedMotion: true });
+  });
+
+  it('opens as a modal dialog on phones, focused and keeping Tab inside', async () => {
+    const user = userEvent.setup();
+    stubMedia(MEDIA.narrow);
+    render(<SettingsMenu />);
+    await user.click(screen.getByRole('button', { name: 'Settings' }));
+    const dialog = screen.getByRole('dialog', { name: 'Settings' });
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(within(dialog).getByRole('heading', { name: 'Settings' })).toHaveFocus();
+
+    await user.tab({ shift: true });
+    expect(within(dialog).getByRole('link', { name: 'Source on GitHub' })).toHaveFocus();
+    await user.tab();
+    expect(within(dialog).getByRole('button', { name: 'Close settings' })).toHaveFocus();
   });
 
   it('notes that island positions are approximate', async () => {

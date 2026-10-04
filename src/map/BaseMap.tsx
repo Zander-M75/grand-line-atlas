@@ -16,6 +16,7 @@ import { BANDS, BLUE_QUADRANTS, MAP_HEIGHT, MAP_WIDTH, ZONES, type Quadrant } fr
 import { useAtlasStore } from '@/store';
 import { compassRose, graticule, neatlineBars, redLineBand } from './baseMapShapes';
 import { MAP_BOUNDS } from './coords';
+import { MAP_PICTURE_ATTRIBUTES } from './overlay';
 import styles from './BaseMap.module.css';
 
 const GRID_SPACING = 250;
@@ -74,10 +75,7 @@ export function BaseMap() {
   const clip = (id: string) => (introPlaying ? `url(#${id})` : undefined);
 
   return (
-    <SVGOverlay
-      bounds={MAP_BOUNDS}
-      attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`, 'aria-hidden': 'true' }}
-    >
+    <SVGOverlay bounds={MAP_BOUNDS} attributes={MAP_PICTURE_ATTRIBUTES}>
       <Gradients />
       {introPlaying && (
         <defs>

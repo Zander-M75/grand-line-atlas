@@ -14,10 +14,13 @@ import {
   type KeyboardEvent,
   type PointerEvent,
 } from 'react';
-import { episodeLabel, episodeText, shortSagaName } from '@/data/arcs';
+import { episodeLabel, shortSagaName, spokenArc } from '@/data/arcs';
 import type { Arc } from '@/types';
 import { cx } from '@/utils/cx';
 import styles from './ArcSlider.module.css';
+
+/** The slider's id, for the page's "Skip to the timeline" link. */
+export const ARC_SLIDER_ID = 'arc-slider';
 
 interface ArcSliderProps {
   arcs: Arc[];
@@ -77,6 +80,7 @@ export function ArcSlider({ arcs, value, lastOpen, onChange }: ArcSliderProps) {
   return (
     <div
       ref={ref}
+      id={ARC_SLIDER_ID}
       className={styles.slider}
       style={{ '--count': arcs.length, '--value': value } as CSSProperties}
       role="slider"
@@ -85,7 +89,7 @@ export function ArcSlider({ arcs, value, lastOpen, onChange }: ArcSliderProps) {
       aria-valuemin={1}
       aria-valuemax={arcs.length}
       aria-valuenow={value + 1}
-      aria-valuetext={current && valueText(current)}
+      aria-valuetext={current && spokenArc(current)}
       onKeyDown={onKeyDown}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -164,13 +168,6 @@ function StopTooltip({
       </span>
     </div>
   );
-}
-
-/** What screen readers announce: "Enies Lobby Arc, episodes 264 to 312, Water 7 Saga". */
-function valueText(arc: Arc): string {
-  return [arc.name, episodeText(arc), arc.saga, arc.filler && 'anime-only']
-    .filter(Boolean)
-    .join(', ');
 }
 
 interface SagaRun {

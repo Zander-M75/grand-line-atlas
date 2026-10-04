@@ -120,15 +120,6 @@
   color: var(--color-ink-muted);
 }
 
-.visuallyHidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 /* Phones: a bottom sheet across the map's lower part, above the timeline. */
 @media (max-width: 640px) {
   .panel {

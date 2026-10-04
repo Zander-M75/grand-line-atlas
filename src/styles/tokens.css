@@ -6,7 +6,10 @@
  * reserved for the Red Line, and a muted violet marks anime-only (filler) content.
  *
  * Contrast (WCAG): every text pair below is AA (4.5:1+) on its intended surface; the
- * route colors clear 3:1 against both open ocean and the Grand Line band.
+ * route colors clear 3:1 against both open ocean and the Grand Line band. Island names also
+ * carry a deep-water halo for the Calm Belts. The exception is the region lettering painted
+ * into the base map ("Grand Line", "East Blue"): deliberately faint, like a chart's
+ * watermark, and exempt as text that's part of a picture (WCAG 1.4.3, incidental text).
  */
 
 :root {
@@ -36,7 +39,7 @@
 
   /* Text set directly on the sea */
   --color-on-ocean: #ece2c6;
-  --color-on-ocean-muted: #a7b8bb;
+  --color-on-ocean-muted: #b9c6c4; /* AA on the Grand Line band, the lightest open water */
 
   /* States */
   --color-filler: #5a4a7c; /* anime-only, on paper */

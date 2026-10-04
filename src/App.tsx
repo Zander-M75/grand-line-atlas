@@ -7,6 +7,7 @@ import { useUrlSync } from '@/hooks/useUrlSync';
 import { WorldMap } from '@/map/WorldMap';
 import { useAtlasStore } from '@/store';
 import { ArcCard } from '@/ui/ArcCard';
+import { ARC_SLIDER_ID } from '@/ui/ArcSlider';
 import { CrewPanel } from '@/ui/CrewPanel';
 import { Footer } from '@/ui/Footer';
 import { Intro } from '@/ui/Intro';
@@ -20,6 +21,10 @@ import styles from './App.module.css';
  * The page: the map with its floating panels (the logbook top-left, settings and the island
  * panel on the right), the timeline under it, and the footer. While the first-visit intro
  * plays, only the map shows; while it or the spoiler prompt is open, the page is inert.
+ *
+ * Source order is reading and Tab order: a skip link, the logbook and settings, then the map
+ * (one Tab stop per island) and the island panel, the timeline, the footer. The panels float
+ * over the map wherever they sit in the source.
  */
 export function App() {
   useUrlSync();
@@ -37,8 +42,8 @@ export function App() {
         inert={gateOpen || introPlaying}
         data-intro={introPlaying ? 'playing' : undefined}
       >
+        <SkipLink />
         <main className={styles.mapArea}>
-          <WorldMap />
           {/* The chart's cartouche: the atlas title, the current arc, and who's aboard. The
               camera keeps what it frames clear of it (data-covers-map, see map/camera.ts). */}
           <div className={styles.logbook} data-covers-map>
@@ -50,6 +55,7 @@ export function App() {
             <CrewPanel />
           </div>
           <SettingsMenu />
+          <WorldMap />
           <IslandPanel />
         </main>
         <section className={styles.timelineArea} aria-label="Timeline">
@@ -60,5 +66,25 @@ export function App() {
       <SpoilerGate />
       <Intro />
     </LazyMotion>
+  );
+}
+
+/**
+ * The first Tab stop, shown only when focused: straight to the timeline slider, past the
+ * map's islands. It moves focus itself rather than following the link, so the URL never
+ * picks up a #fragment.
+ */
+function SkipLink() {
+  return (
+    <a
+      className={styles.skipLink}
+      href={`#${ARC_SLIDER_ID}`}
+      onClick={(event) => {
+        event.preventDefault();
+        document.getElementById(ARC_SLIDER_ID)?.focus();
+      }}
+    >
+      Skip to the timeline
+    </a>
   );
 }

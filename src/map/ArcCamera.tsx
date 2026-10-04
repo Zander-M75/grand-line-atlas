@@ -8,11 +8,12 @@
  *   somewhere. Milestone crossings (Reverse Mountain, Fish-Man Island, the New World) are the
  *   exception: a slower flight that always moves in close on the crossing.
  * - While the timeline is being scrubbed, it waits until the scrubbing stops, then moves once.
- * - An island whose panel opens over it is panned back into view.
+ * - An island whose panel opens over it is panned back into view, and so is an island reached
+ *   with Tab that's off screen or under a panel.
  *
  * With reduced motion every move is a jump (setView) instead of a flight (flyTo).
  */
-import type { Map as LeafletMap } from 'leaflet';
+import { Marker, type Map as LeafletMap } from 'leaflet';
 import { useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 import { CAMERA, TIMING } from '@/config';
@@ -21,6 +22,7 @@ import type { VoyagePlan } from '@/animation/voyagePlan';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { useAtlasStore } from '@/store';
 import { cameraPadding, framePoints, inClearView, panToReveal } from './camera';
+import { fromLatLng } from './coords';
 
 export function ArcCamera({ plan }: { plan: VoyagePlan }) {
   const map = useMap();
@@ -73,7 +75,30 @@ export function ArcCamera({ plan }: { plan: VoyagePlan }) {
     if (offset.x !== 0 || offset.y !== 0) map.panBy(offset, { animate: !reducedMotion });
   }, [map, selectedId, reducedMotion]);
 
+  // Tabbing through the islands can land on one that's off screen or under a panel: pan it
+  // into the clear, so the focused island is always in sight.
+  useEffect(() => {
+    const container = map.getContainer();
+    const onFocusIn = ({ target }: FocusEvent) => {
+      const marker = markerWithIcon(map, target);
+      if (!marker) return;
+      const offset = panToReveal(map, fromLatLng(marker.getLatLng()), cameraPadding(map));
+      if (offset.x !== 0 || offset.y !== 0) map.panBy(offset, { animate: !reducedMotion });
+    };
+    container.addEventListener('focusin', onFocusIn);
+    return () => container.removeEventListener('focusin', onFocusIn);
+  }, [map, reducedMotion]);
+
   return null;
+}
+
+/** The marker whose icon element this is, if any. */
+function markerWithIcon(map: LeafletMap, element: EventTarget | null): Marker | undefined {
+  let found: Marker | undefined;
+  map.eachLayer((layer) => {
+    if (layer instanceof Marker && layer.getElement() === element) found = layer;
+  });
+  return found;
 }
 
 /** Brings the plan's arc into view if it isn't already (milestones: always, and slower). */

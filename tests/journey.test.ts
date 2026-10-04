@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { arcById, locationById } from '@/data';
 import { knownArcs } from '@/data/spoilers';
-import { journeyAt } from '@/map/journey';
+import { islandLabel, journeyAt } from '@/map/journey';
 import { visibleArcs } from '@/store';
 import type { Arc } from '@/types';
 
@@ -123,5 +123,25 @@ describe('journeyAt', () => {
     expect(journey.islands.map(({ location }) => location.id)).toEqual(['foosha-village']);
     expect(journey.legs).toEqual([]);
     expect(journey.ship?.at).toEqual(at('foosha-village'));
+  });
+});
+
+describe('islandLabel', () => {
+  const place = (id: string) => {
+    const location = locationById.get(id);
+    if (!location) throw new Error(`No place ${id} in the generated data`);
+    return location;
+  };
+
+  it('names the island and where it sits in the story, for screen readers', () => {
+    expect(islandLabel(place('syrup-village'), 'visited')).toBe('Syrup Village, visited');
+    expect(islandLabel(place('impel-down'), 'away')).toBe(
+      'Impel Down, this arc, away from the ship',
+    );
+    expect(islandLabel(place('goat-island'), 'ahead')).toBe('Goat Island, ahead, anime-only');
+  });
+
+  it('is just the name where there is no story (the dev positioner)', () => {
+    expect(islandLabel(place('water-7'))).toBe('Water 7');
   });
 });

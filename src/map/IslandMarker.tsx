@@ -5,7 +5,7 @@ import { BANDS, ZONES } from '@/config';
 import type { Location } from '@/types';
 import { cx } from '@/utils/cx';
 import { fromLatLng, toLatLng, type MapPoint } from './coords';
-import type { IslandState } from './journey';
+import { islandLabel, type IslandState } from './journey';
 import styles from './IslandMarker.module.css';
 
 interface IslandMarkerProps {
@@ -21,14 +21,16 @@ interface IslandMarkerProps {
 }
 
 /**
- * An island: a small chart-style dot, with its name shown at closer zoom levels. The current
- * arc's islands are ringed in brass and always named; islands still ahead are faded. Leaflet
- * makes each one a focusable button.
+ * An island: a small chart-style dot, with its name shown at closer zoom levels (and farther
+ * out, on hover or focus). The current arc's islands are ringed in brass and always named;
+ * islands still ahead are faded. Leaflet makes each one a focusable button; screen readers
+ * hear its name and where it sits in the story (`islandLabel`) instead of the visible label.
  */
 export function IslandMarker({ location, state, selected, onSelect, onMove }: IslandMarkerProps) {
   const variant = markerVariant(location);
   const above = labelGoesAbove(location);
   const draggable = Boolean(onMove);
+  const spokenName = islandLabel(location, state);
   const icon = useMemo(
     () =>
       divIcon({
@@ -42,13 +44,14 @@ export function IslandMarker({ location, state, selected, onSelect, onMove }: Is
         ),
         html:
           `<span class="${styles.dot}"></span>` +
-          `<span class="${styles.label}">${escapeHtml(location.name)}` +
+          `<span class="${styles.label}" aria-hidden="true">${escapeHtml(location.name)}` +
           (state === 'away' ? `<span class="${styles.note}">Away from the ship</span>` : '') +
-          `</span>`,
+          `</span>` +
+          `<span class="visually-hidden">${escapeHtml(spokenName)}</span>`,
         iconSize: [24, 24],
         iconAnchor: [12, 12],
       }),
-    [location.name, variant, state, selected, above, draggable],
+    [location.name, spokenName, variant, state, selected, above, draggable],
   );
 
   const eventHandlers = useMemo(() => {
@@ -71,7 +74,8 @@ export function IslandMarker({ location, state, selected, onSelect, onMove }: Is
     <Marker
       position={toLatLng(location.x, location.y)}
       icon={icon}
-      title={location.name}
+      // ArcCamera pans a focused island into view instead, clear of the panels too.
+      autoPanOnFocus={false}
       draggable={draggable}
       eventHandlers={eventHandlers}
     />

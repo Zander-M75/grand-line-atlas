@@ -20,6 +20,7 @@ import { WEATHER, type WeatherKind } from '@/config';
 import { useJourney } from '@/hooks/useJourney';
 import type { Location } from '@/types';
 import { toLatLng } from './coords';
+import { PICTURE_ATTRIBUTES } from './overlay';
 import styles from './Weather.module.css';
 
 /** Counts loads, for unique ids: tsParticles replaces any container that shares an id. */
@@ -88,7 +89,7 @@ function Patch({ kind, bounds }: { kind: WeatherKind; bounds: LatLngBounds }) {
   }, [kind]);
 
   return (
-    <SVGOverlay bounds={bounds} attributes={{ 'aria-hidden': 'true' }}>
+    <SVGOverlay bounds={bounds} attributes={PICTURE_ATTRIBUTES}>
       <foreignObject width="100%" height="100%">
         <div ref={host} className={styles[kind]} />
       </foreignObject>

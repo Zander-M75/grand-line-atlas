@@ -12,6 +12,7 @@ import { SVGOverlay, useMap } from 'react-leaflet';
 import { BANDS, MAP_HEIGHT, MAP_WIDTH, TIMING, ZONES } from '@/config';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { MAP_BOUNDS } from './coords';
+import { MAP_PICTURE_ATTRIBUTES } from './overlay';
 import styles from './OceanEffects.module.css';
 
 /** The turbulence's resting frequency (across, down): long, low swells running east-west. */
@@ -72,10 +73,7 @@ export function OceanEffects() {
   }, [map, reducedMotion]);
 
   return (
-    <SVGOverlay
-      bounds={MAP_BOUNDS}
-      attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`, 'aria-hidden': 'true' }}
-    >
+    <SVGOverlay bounds={MAP_BOUNDS} attributes={MAP_PICTURE_ATTRIBUTES}>
       <defs>
         {/* Two staggered marks per tile, like the hand-cut waves on an old chart. */}
         <pattern id="ocean-waves" width="112" height="64" patternUnits="userSpaceOnUse">

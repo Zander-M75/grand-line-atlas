@@ -1,7 +1,8 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { arcs } from '@/data';
+import { arcById, arcs } from '@/data';
+import { spokenArc } from '@/data/arcs';
 import { goToArc, useAtlasStore } from '@/store';
 import { Timeline } from '@/ui/Timeline';
 
@@ -77,5 +78,44 @@ describe('Timeline', () => {
     goToArc('impel-down');
     render(<Timeline />);
     expect(screen.getByText('Away from the ship')).toBeInTheDocument();
+  });
+});
+
+describe('Timeline announcements', () => {
+  const status = () => screen.getByRole('status');
+  const spoken = (id: string) => {
+    const arc = arcById.get(id);
+    if (!arc) throw new Error(`No arc ${id} in the generated data`);
+    return spokenArc(arc);
+  };
+
+  it('stays quiet about the arc the page opens on', () => {
+    goToArc('water-7');
+    render(<Timeline />);
+    expect(status()).toBeEmptyDOMElement();
+  });
+
+  it('announces the arc a step button moves to, and who comes aboard', async () => {
+    const user = userEvent.setup();
+    goToArc('syrup-village');
+    render(<Timeline />);
+    await user.click(screen.getByRole('button', { name: 'Next arc' }));
+    expect(status()).toHaveTextContent(`${spoken('baratie')}. Sanji comes aboard.`);
+  });
+
+  it('leaves the arc to the slider while it has focus, adding only who comes aboard', async () => {
+    const user = userEvent.setup();
+    goToArc('baratie');
+    render(<Timeline />);
+    screen.getByRole('slider').focus();
+    await user.keyboard('{ArrowRight}');
+    expect(status()).toHaveTextContent('Nami comes aboard.');
+    expect(status()).not.toHaveTextContent('Arlong Park');
+  });
+
+  it('announces arcs reached from elsewhere on the page, such as an island’s links', () => {
+    render(<Timeline />);
+    act(() => goToArc('enies-lobby'));
+    expect(status()).toHaveTextContent(`${spoken('enies-lobby')}.`);
   });
 });

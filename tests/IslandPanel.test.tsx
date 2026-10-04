@@ -1,8 +1,10 @@
 import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MEDIA } from '@/config';
 import { goToArc, selectLocation, setShowFiller, setSpoilerLimit, useAtlasStore } from '@/store';
 import { IslandPanel } from '@/ui/IslandPanel';
+import { stubMedia } from './media';
 
 const state = () => useAtlasStore.getState();
 const panel = () => screen.getByRole('complementary');
@@ -13,6 +15,10 @@ const arcLinks = () =>
 
 beforeEach(() => {
   useAtlasStore.setState(useAtlasStore.getInitialState(), true);
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
 });
 
 describe('IslandPanel', () => {
@@ -95,5 +101,32 @@ describe('IslandPanel', () => {
     act(() => selectLocation('water-7'));
     await user.click(screen.getByRole('button', { name: 'Close island details' }));
     expect(state().selectedLocationId).toBeNull();
+  });
+});
+
+describe('IslandPanel on phones', () => {
+  it('is a modal dialog that keeps Tab inside it', async () => {
+    const user = userEvent.setup();
+    stubMedia(MEDIA.narrow);
+    selectLocation('water-7');
+    render(<IslandPanel />);
+    const dialog = screen.getByRole('dialog', { name: 'Water 7' });
+    expect(dialog).toHaveAttribute('aria-modal', 'true');
+    expect(within(dialog).getByRole('heading', { level: 2 })).toHaveFocus();
+
+    const close = within(dialog).getByRole('button', { name: 'Close island details' });
+    const wiki = within(dialog).getByRole('link', { name: /Read more on the wiki/ });
+    wiki.focus();
+    await user.tab();
+    expect(close).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(wiki).toHaveFocus();
+  });
+
+  it('stays a plain side panel on wider screens', () => {
+    selectLocation('water-7');
+    render(<IslandPanel />);
+    expect(panel()).not.toHaveAttribute('aria-modal');
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

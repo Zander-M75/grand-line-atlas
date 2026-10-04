@@ -33,6 +33,20 @@ export type LegState = 'traveled' | 'current';
  */
 export type IslandState = 'current' | 'away' | 'visited' | 'ahead';
 
+const STATE_NAMES: Record<IslandState, string> = {
+  current: 'this arc',
+  away: 'this arc, away from the ship',
+  visited: 'visited',
+  ahead: 'ahead',
+};
+
+/** What screen readers call an island: "Syrup Village, visited", "Goat Island, ahead, anime-only". */
+export function islandLabel(location: Location, state?: IslandState): string {
+  return [location.name, state && STATE_NAMES[state], location.animeOnly && 'anime-only']
+    .filter(Boolean)
+    .join(', ');
+}
+
 export interface ShipPose {
   /** The island the ship is moored at. */
   at: MapPoint;

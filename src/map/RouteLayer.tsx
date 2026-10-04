@@ -9,11 +9,11 @@
  */
 import type { Ref } from 'react';
 import { Pane, SVGOverlay } from 'react-leaflet';
-import { MAP_HEIGHT, MAP_WIDTH } from '@/config';
 import { legKey, type LegElements } from '@/animation/sail';
 import type { PlannedLeg } from '@/animation/voyagePlan';
 import { cx } from '@/utils/cx';
 import { MAP_BOUNDS } from './coords';
+import { MAP_PICTURE_ATTRIBUTES } from './overlay';
 import styles from './RouteLayer.module.css';
 
 interface RouteLayerProps {
@@ -28,10 +28,7 @@ export function RouteLayer({ legs, elements, wakeRef }: RouteLayerProps) {
   return (
     // Above the base map (overlay pane, 400), below the islands and ship (marker pane, 600).
     <Pane name="route" style={{ zIndex: 450 }}>
-      <SVGOverlay
-        bounds={MAP_BOUNDS}
-        attributes={{ viewBox: `0 0 ${MAP_WIDTH} ${MAP_HEIGHT}`, 'aria-hidden': 'true' }}
-      >
+      <SVGOverlay bounds={MAP_BOUNDS} attributes={MAP_PICTURE_ATTRIBUTES}>
         {legs.map(({ shape, state, motion }) => {
           const key = legKey(shape);
           // An animating leg is its own element (keyed by its motion), so it starts from its

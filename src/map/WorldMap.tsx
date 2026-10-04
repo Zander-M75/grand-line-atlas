@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import { CRS, latLngBounds, setOptions } from 'leaflet';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useId, useState } from 'react';
 import { MapContainer, useMap, ZoomControl } from 'react-leaflet';
 import { FEATURES, ZOOM } from '@/config';
 import { locations } from '@/data';
@@ -76,8 +76,43 @@ export function WorldMap() {
       <ZoomControl position="bottomright" />
       <FitWorldZoom />
       <LeafletMotion />
+      <MapAccessibility />
       {import.meta.env.DEV && <DevCoordinateLogger />}
     </MapContainer>
+  );
+}
+
+/**
+ * What Leaflet leaves out for keyboard and screen reader users. It makes its container a Tab
+ * stop (arrow keys pan, plus and minus zoom) but gives it no role, name, or hint about those
+ * keys; the hint renders inside the container, hidden, since a description may point at
+ * hidden text. Its zoom buttons are links with the button role, which Enter presses but Space
+ * doesn't, as a button's should.
+ */
+function MapAccessibility() {
+  const map = useMap();
+  const hintId = useId();
+  useEffect(() => {
+    const container = map.getContainer();
+    container.setAttribute('role', 'region');
+    container.setAttribute('aria-label', 'Voyage map');
+    container.setAttribute('aria-describedby', hintId);
+
+    const pressWithSpace = (event: KeyboardEvent) => {
+      const target = event.target;
+      if (event.key !== ' ' || !(target instanceof HTMLElement)) return;
+      if (!target.matches('.leaflet-control a[role="button"]')) return;
+      event.preventDefault();
+      target.click();
+    };
+    container.addEventListener('keydown', pressWithSpace);
+    return () => container.removeEventListener('keydown', pressWithSpace);
+  }, [map, hintId]);
+  return (
+    <p id={hintId} hidden>
+      Arrow keys pan the map, and plus and minus zoom. Each island is a button that opens its
+      details.
+    </p>
   );
 }
 
