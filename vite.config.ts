@@ -22,6 +22,9 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  // The source is public anyway; maps let anyone read it in devtools. Browsers only fetch
+  // them when devtools are open, so they cost viewers nothing.
+  build: { sourcemap: true },
   test: {
     environment: 'jsdom',
     setupFiles: ['./tests/setup.ts'],
