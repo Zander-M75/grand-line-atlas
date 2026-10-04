@@ -1,6 +1,6 @@
 # Grand Line Atlas — Handoff
 
-Where the project stands and what to know before picking it up. Last updated 2026-10-03, at the end of Phase 6.
+Where the project stands and what to know before picking it up. Last updated 2026-10-03, at the end of Phase 7.
 
 ---
 
@@ -8,8 +8,8 @@ Where the project stands and what to know before picking it up. Last updated 202
 
 | | |
 |---|---|
-| Phase | **Phase 6 (animation + polish) is done** and waiting for the owner's review. Next is Phase 7 (content pass: summaries, proofreading, the review list). The Phase 3 placement review is settled (no hand placement for now), the Summit War side route is approved but not built yet, and the Phase 5 and Phase 6 decisions are still open (see Owner decisions). |
-| Data | Through episode 1180, as of 2026-10-01: 51 arcs, 42 places, 10 crew, 42 route connections. `npm run data:fetch -- --refresh && npm run data:build` updates it. |
+| Phase | **Phase 7 (content pass) is done** and waiting for the owner's review. Next is Phase 8 (accessibility, performance, testing). Every arc and island has a summary, episode 45 moved to Loguetown, and the Summit War side route is built. Phase 7's own decisions are open, and so are the Phase 5 and Phase 6 ones (see Owner decisions). |
+| Data | Through episode 1180, re-fetched 2026-10-04 (UTC): 51 arcs, 42 places, 10 crew, 46 route connections (42 the ship sails, 4 on Luffy's side route). `npm run data:fetch -- --refresh && npm run data:build` updates it. |
 | Repo | https://github.com/Zander-M75/grand-line-atlas (public), branch `main` |
 | Hosting | None yet (Vercel in Phase 9). |
 
@@ -18,11 +18,11 @@ Where the project stands and what to know before picking it up. Last updated 202
 1. [PLAN.md](PLAN.md): scope, phases, hard constraints (§2), working agreements (§9).
 2. [README.md](README.md): how to run things, stack, credits.
 3. [src/config.ts](src/config.ts): map dimensions, zone layout, timings. The layout comment there explains how the flat map represents the world.
-4. [scripts/sources/journey.ts](scripts/sources/journey.ts): the curated arc list (which arcs, which places each visits) that the data build checks against the wiki. The header comments in `scripts/build-arcs.ts` and `scripts/build-locations.ts` record what the wiki pages actually look like.
-5. [src/data/voyage.ts](src/data/voyage.ts) and [src/map/journey.ts](src/map/journey.ts): how the route is derived from the visible arcs, and what the map shows at any arc (legs sailed, ship pose, island states, camera focus).
+4. [scripts/sources/journey.ts](scripts/sources/journey.ts): the curated arc list (which arcs, which places each visits, which follow Luffy's side route) and `EPISODE_ARCS` (episodes the wiki's own pages disagree on), which the data build checks against the wiki. [scripts/sources/summaries.ts](scripts/sources/summaries.ts): every summary, with the spoiler rules they follow. The header comments in `scripts/build-arcs.ts` and `scripts/build-locations.ts` record what the wiki pages actually look like.
+5. [src/data/voyage.ts](src/data/voyage.ts) and [src/map/journey.ts](src/map/journey.ts): how the route (and Luffy's side route) is derived from the visible arcs, and what the map shows at any arc (legs drawn, ship pose, island states, camera focus).
 6. [src/data/spoilers.ts](src/data/spoilers.ts) and [src/store/index.ts](src/store/index.ts): the spoiler rules (locked, in progress, known arcs, crew aboard) and the store actions around them (the gate, links past the limit, saving the answer, the intro).
 7. [src/animation/voyagePlan.ts](src/animation/voyagePlan.ts), [src/animation/sail.ts](src/animation/sail.ts), and [src/map/Voyage.tsx](src/map/Voyage.tsx): what a timeline move animates and how it plays. [src/map/ArcCamera.tsx](src/map/ArcCamera.tsx) and [src/map/camera.ts](src/map/camera.ts): the camera. The README's Animation section is the overview.
-8. [data/generated/review/](data/generated/review/): the TODO-REVIEW items from the last data build (the Phase 2 ones are accepted; see Owner decisions).
+8. [data/generated/review/](data/generated/review/): the TODO-REVIEW items from the last data build (the Phase 2 ones are accepted; Phase 7 added one, see Owner decisions).
 
 ## Working rules (from PLAN.md §9)
 
@@ -40,14 +40,15 @@ Where the project stands and what to know before picking it up. Last updated 202
 | Scaffold with `npm create vite` in place | Scaffolded in a temp folder and copied in | The folder already held PLAN.md. Dropped the template's demo assets and README. |
 | ESLint | ESLint, replacing the template's oxlint | Current create-vite ships oxlint; the plan asks for ESLint + Prettier. |
 | `Location` type as written | Added optional `animeOnly` | §5 asks for anime-only islands to be marked in data, but the interface had no field for it. |
-| Episode ranges from arc and episode pages | From the wiki's per-saga `Episode Guide/*` pages, cross-checked against each arc's episode category | Arc pages compute their ranges in a template (`episode = auto`), so their wikitext has no numbers. The guides list every episode with its arc and air date. |
+| `Arc` type as written | Added optional `sideRoute` | The owner's Summit War side route needs to know which off-route arcs follow Luffy traveling; `offRoute` alone covers flashbacks and side stories too. |
+| Episode ranges from arc and episode pages | From the wiki's per-saga `Episode Guide/*` pages, cross-checked episode by episode against each arc's episode category; disagreements settled with evidence in `EPISODE_ARCS` | Arc pages compute their ranges in a template (`episode = auto`), so their wikitext has no numbers. The guides list every episode with its arc and air date. Where the guide is the odd one out (episode 45), the episode's own page wins. |
 | Seed arc list and sagas (§5) | Sagas follow the wiki's episode guide; added Uta's Past and Elbaph | §5 says to verify against the wiki. The wiki splits "Four Emperors Saga" into Whole Cake Island and Wano Country sagas and assigns every filler arc to a saga. Differences are on the review list. |
 | Hand-write `data/generated/crew.json` | Written in `scripts/sources/crew.ts`, emitted by `build-crew` | JSON can't hold the comments §5 asks for on ambiguous joins. The build also re-checks each join against the wiki. |
 | Cache to `data/raw/<sanitized-title>.json` | `data/raw/{pages,categories,categories-of}/<title>.<hash>.json` | The hash suffix guards against macOS's case-insensitive file names. |
 | DevPositioner "Export" downloads or copies positions.json | **Save** writes `data/overrides/positions.json` directly (a dev-server-only endpoint, `scripts/lib/devPositionsPlugin.ts`), plus **Copy JSON** | Placing islands becomes drag, Save, commit. The endpoint exists only under `vite dev`, rejects cross-site requests, and validates the payload. |
 | `data:layout` as its own step | Also chained into `data:build` (after build-locations) | build-locations writes placeholder positions, so the build output is only complete once layout runs. |
 | Hand-coded `public/map/world.svg` loaded with `ImageOverlay` | Inline SVG drawn by `src/map/BaseMap.tsx`, mounted with react-leaflet's `SVGOverlay` | A static file would duplicate every zone boundary in `config.ts`, so a config change wouldn't move the art (§6 wants config-only layout tweaks). An SVG loaded as an image also can't use the app's web fonts, so labels would fall back to a system serif. Still original, hand-written SVG; it just lives in a component. |
-| Off-route arcs: "a dashed side-route or a highlighted location with a short note" | Highlighted location (dashed brass ring, "Away from the ship" under its name and as a timeline tag); no side-route line | A side route from the ship's last stop misleads for most off-route arcs: Uta's Past would draw a line from Wano across the Red Line to Foosha, and Buggy Side Story one back to Orange Town. The owner wants a Luffy-only path for the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) added; see Owner decisions. |
+| Off-route arcs: "a dashed side-route or a highlighted location with a short note" | Both: every off-route arc highlights its location (dashed brass ring, "Away from the ship" under its name and as a timeline tag), and the Summit War arcs also draw Luffy's path as a dashed side route (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) | A side route from the ship's last stop misleads for most off-route arcs: Uta's Past would draw a line from Wano across the Red Line to Foosha, and Buggy Side Story one back to Orange Town. So it's opt-in per arc (`sideRoute`), as the owner asked. |
 | `route.json` waypoints "added by hand" | Bends live in `scripts/sources/waypoints.ts` (with a reason each); `build-route` (last step of `data:build`) writes `route.json` for every leg in both filler modes | Matches the other curated sources: comments explain each bend, and every generated file stays reproducible. `data:validate` fails if a leg in either mode has no entry. |
 | "Show anime-only arcs" toggle in Settings (Phase 5) | In Settings, and also a switch on the timeline itself | Phase 4's acceptance needs a way to toggle filler. It's also where the effect shows. Both bind the same store value. |
 | Episode range "on hover/focus" for each stop | Tooltip on hover and while dragging; on keyboard focus, the header right above shows the current arc's range | A focus tooltip only repeated the header and covered its tags. Screen readers get the full arc, episodes, and saga from `aria-valuetext`. |
@@ -76,6 +77,9 @@ Smaller choices:
 - **Region labels** are title-case italic, not capitals: IM Fell's italic capital U looks like a V ("BLVE").
 - **Zoom:** max zoom is 1 (2× map pixels). The min zoom is computed by `FitWorldZoom` to fit the whole map for the current screen.
 - **No placeholders left:** every component in PLAN.md §4 is built. (Earlier phases kept later ones as `null` stubs so nothing pretended to work early.)
+- **Summaries** live in `scripts/sources/summaries.ts`; build-arcs and build-locations copy them into the JSON. An arc's summary shows from its first episode (to a viewer partway through it too), so it sets the scene and names the goal, never the outcome, and crew who join in an arc aren't said to join. A place's summary describes it as the crew first finds it. They don't say "Anime-only": the arc card and island panel already show that tag. `check-summaries` (the last step of `data:build`) indexes every 6-word run in the cached wiki pages and flags any summary that shares one; `data:validate` fails on a missing summary, more than two sentences, or more than 240 characters (about five lines in the logbook).
+- **Side route:** `sideLegs()` in `src/data/voyage.ts` starts from where the ship waits and runs through the `sideRoute` arcs until an on-route arc puts the ship in somewhere again (Return to Sabaody). Side legs are their own spline (appended to `voyage` after the ship's legs, so they draw on top), carry `leg.side`, and are dashed. They draw and rewind like any leg, but `sail()` keeps the ship moored and drops no wake, the ship's heading ignores them, and they're never camera milestones. They're in `route.json` too, so they can take bends from `waypoints.ts`.
+- **Data date:** `meta.asOf` is the build's date in UTC (the air dates it compares are Japanese), so a build on a US evening can say tomorrow.
 - **Arc data:** names keep the wiki's "Arc" suffix ("Enies Lobby Arc"), so they never collide with place names. `meta.json` records the latest aired episode and the as-of date (`build-arcs --as-of=YYYY-MM-DD` pretends a different date). Locations get their positions from `scripts/auto-layout.ts` (deterministic: ids seed every nudge).
 - **Islands on the map:** `src/data/index.ts` loads the generated JSON and merges `positions.json` over it (`positionSource: 'manual'`). Markers are Leaflet `divIcon`s ([IslandMarker.tsx](src/map/IslandMarker.tsx)); names show from `ZOOM.labels` (−0.5) inward, toggled by a data attribute on the map container so zooming never re-renders markers. Labels point away from the Grand Line's centerline.
 - **Dev positioner:** Shift+D ([useDevToggle](src/hooks/useDevToggle.ts)). It's lazy-loaded behind `import.meta.env.DEV`, and the production build contains none of it (checked). Unsaved moves live in localStorage under `gla:dev-positions-draft`.
@@ -111,7 +115,13 @@ Settled:
 - **Wiki User-Agent contact** (2026-10-01): use the repo URL, not an email.
 - **Phase 2 review list** (2026-10-01): all items accepted as built. Buggy Side Story and Koby and Helmeppo stay anime-only and off-route; Uta's Past and Elbaph are in; sagas follow the wiki; the eight arcs with no named island have no map stop; the place choices and crew join episodes (Nami 44, Jinbe 980) stand.
 - **Island placement (Phase 3 review)** (2026-10-03): as of now there are no islands the owner wants to place by hand. The automatic positions stand, and `data/overrides/positions.json` stays empty. The dev positioner (Shift+D in `npm run dev`) is still there if that changes.
-- **Summit War side route** (2026-10-03): include it. Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) gets a dashed side route. Not built yet. It needs a small data flag on those arcs, since a generic rule for off-route arcs would draw misleading lines for flashbacks and side stories (Uta's Past, Buggy Side Story).
+- **Summit War side route** (2026-10-03): include it. Luffy's own path through the Summit War (Sabaody → Amazon Lily → Impel Down → Marineford → Rusukaina) gets a dashed side route. Built in Phase 7 behind a `sideRoute` flag on those four arcs, since a generic rule for off-route arcs would draw misleading lines for flashbacks and side stories (Uta's Past, Buggy Side Story).
+
+Open (Phase 7):
+
+- **Episode 45 moves to Loguetown.** The guide lists it under Arlong Park, but episode 45's own page opens the Loguetown Arc with it, episode 44's page closes Arlong Park, and the Loguetown Arc page's story starts with Luffy's bounty. Arlong Park is now 31–44 and Loguetown 45–53, with the Buggy Side Story (46–47) airing inside it, so Loguetown now comes before it on the timeline. It's the one new item on the review list. The other disagreements were checked against the episodes' pages and the guide stands: episode 4 is Orange Town's, 227–228 (Aokiji) are Long Ring Long Land's, and the specials at the end of Ice Hunter, Sabaody, and Impel Down stay with those arcs.
+- **The summaries.** All 93 are in `scripts/sources/summaries.ts`, easy to read in one sitting. Worth a read for tone and for spoilers: each one is meant to be safe at its arc's first episode.
+- **Where the side route ends.** As approved, it ends at Rusukaina. Luffy's trip back to Sabaody (Rusukaina → Sabaody in Return to Sabaody) could close the loop as one more side leg, if you'd like that.
 
 Open (Phase 6):
 
@@ -124,11 +134,12 @@ Open (Phase 5):
 - **Arc picker spoilers.** The gate's "or the arc you're on" picker lists every arc name, which can hint at what's ahead (a note under it says so). Alternatives: only list arcs up to the current limit in Settings, or drop the picker and keep the episode field. Kept as PLAN.md asks for now.
 - **Where a first visit lands.** After answering the gate, a viewer stays on the first arc (unless they followed a link). Landing on their own arc (or the latest for "caught up", with the whole route drawn) is a one-line change if you'd prefer it.
 
-The files in [data/generated/review/](data/generated/review/) are now the accepted baseline. Every data build rewrites them, so a new or changed item in their git diff is what needs the owner's eye.
+The files in [data/generated/review/](data/generated/review/) are the accepted baseline (the Phase 2 items). Every data build rewrites them, so a new or changed item in their git diff is what needs the owner's eye. Phase 7's diff: the "Episode ranges" item is gone (every disagreement is now settled in `EPISODE_ARCS`), "loguetown: includes episode 45" is new, and `summaries.json` (the originality check) is empty.
 
 ## Open items
 
-- Arc and island summaries are empty until Phase 7, so the logbook shows none (and on phones the arc section is hidden unless the viewer is partway through it).
+- **Timeline saga labels can overlap.** The current saga is always named in full over its neighbors, on a paper background as wide as its own text. When the saga is narrow and the next label is longer, the end of the hidden label peeks out past it (on Fish-Man Island, a sliver of "DRESSROSA" shows after the name). A fix needs the labels' measured widths, for example hiding a neighbor's name only when the current one overflows into it.
+- **Phones:** now that every arc has a summary, the logbook always shows on phones (it used to fold away without one). With an island sheet open as well, the map is a fairly narrow band between them. The camera still keeps the island clear of both.
 - The island panel and settings don't trap focus on phones yet (Phase 8 per PLAN.md); the spoiler gate already does, via `inert`.
 - Locked timeline stops still show their episode range in the hover tooltip (no name, no anime-only tag). Episode numbers aren't story content, and the range says when an arc unlocks.
 - **Dev server in the Claude Code sandbox:** Vite's file watcher misses edits there, so `npm run dev` serves stale code. Run it with polling instead, from a config outside the repo, e.g. `{ ...base, server: { watch: { usePolling: true } } }` importing `vite.config.ts`.
@@ -136,5 +147,5 @@ The files in [data/generated/review/](data/generated/review/) are now the accept
 - The timeline strip is 7.5rem tall (8.5rem under 640px, where the details wrap). Long arc names truncate with an ellipsis on phones.
 - No favicon yet (Phase 9); headed Chrome logs its 404.
 - Usopp leaves the crew during Water 7 and rejoins in episode 323; the crew data keeps him aboard throughout.
-- Initial JS is 194.6 KB gzipped (Phase 8 target: under ~250 KB). GSAP and Framer Motion added ~60 KB; tsParticles is in a lazy chunk.
+- Initial JS is 200.3 KB gzipped (Phase 8 target: under ~250 KB). GSAP and Framer Motion added ~60 KB and the summaries ~6 KB; tsParticles is in a lazy chunk.
 - A step to a new arc costs one long frame on slow CPUs (53 ms at 4× throttle, production build) while React re-renders the page; everything after it is smooth. Phase 8 could trim what re-renders on an arc change (the 42 island markers and the slider are the bulk).
